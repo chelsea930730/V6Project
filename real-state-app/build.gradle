@@ -1,0 +1,82 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.3'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.realestate'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven { url 'https://repo.maven.apache.org/maven2' } // Maven 저장소 추가
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.boot:spring-boot-dependencies:3.4.3"
+	}
+}
+
+dependencies {
+	// 📌 기본 Spring Boot Starter 패키지
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+	// 📌 OAuth2 & JWT 로그인 인증
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	// 📌 JWT 관련 라이브러리 (3가지 모두 필요)
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	// 📌 WebSocket & STOMP 메시징 (의존성 제거 후 테스트 필요)
+	// implementation 'org.springframework.boot:spring-boot-starter-messaging:3.2.2' (⚠️ 필요 없을 가능성 높음)
+
+	// 📌 Lombok (코드 간결화)
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// 📌 개발 편의 기능
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// 📌 MySQL Database 드라이버
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// 📌 테스트 관련 의존성
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// Bootstrap
+	implementation 'org.webjars:bootstrap:5.3.2'
+
+	// WebJars Locator Core
+	implementation 'org.webjars:webjars-locator-core'
+
+	// jQuery
+	implementation 'org.webjars:jquery:3.7.1'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
