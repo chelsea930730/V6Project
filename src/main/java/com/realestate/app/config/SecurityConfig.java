@@ -30,9 +30,18 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(request -> request
                         // 인증없이 접근 할 수 있는 URL을 설정 (메인 페이지, 로그인 페이지, 회원 가입 페이지, 에러)
-                        .requestMatchers("/", "/auth/login", "/auth/register", "/error").permitAll()
+                        .requestMatchers(
+                                "/",
+                                "/auth/login",
+                                "/auth/register",
+                                "/error",
+                                "/property/**",  // /property 아래 모든 경로 허용
+                                "/css/**",
+                                "/js/**",
+                                "/images/**"
+                        ).permitAll()
                         // /admin/* 경로는 ADMIN, MANAGER 권한을 가지고 있어야 접근할 수 있다.
-                        .requestMatchers("/admin/*").hasAnyRole("ADMIN")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         // 그 외 모든 경로는 인증을 받아야 접근 가능하다.
                         .anyRequest().authenticated())
                 // 폼 로그인 방식을 사용
