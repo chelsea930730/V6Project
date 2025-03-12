@@ -54,7 +54,10 @@ public class Property {
     @Column(name = "built_year")
     private String builtYear; // '2001년'과 같은 문자열 형태 저장
 
+    @Column(precision = 20, scale = 7)
     private BigDecimal latitude;
+
+    @Column(precision = 20, scale = 7)
     private BigDecimal longitude;
 
     @Column(name = "created_at")
@@ -69,15 +72,15 @@ public class Property {
 }
 
 enum BuildingType {
-    APARTMENT,
-    HOUSE,
-    OFFICE,
-    맨션   // 인서트문에서 '맨션' 값을 위해 추가
+    아파트,
+    맨션,   // 인서트문에서 '맨션' 값을 위해 추가
+    타운하우스,
+    오피스텔,
+    셰어하우스
 }
 
 enum Status {
-    AVAILABLE,
-    RESERVED,
-    SOLD,
+    예약중,
+    거래완료,
     예약가능  // 인서트문에서 '예약가능' 값을 위해 추가
 }
