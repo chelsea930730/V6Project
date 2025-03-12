@@ -38,7 +38,8 @@ public class SecurityConfig {
                                 "/property/**",  // /property 아래 모든 경로 허용
                                 "/css/**",
                                 "/js/**",
-                                "/images/**"
+                                "/images/**",
+                                "/api/geocoding/**"
                         ).permitAll()
                         // /admin/* 경로는 ADMIN, MANAGER 권한을 가지고 있어야 접근할 수 있다.
                         .requestMatchers("/admin/**").hasRole("ADMIN")
