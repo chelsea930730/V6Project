@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PropertyController {
     private final PropertyService propertyService;
-
+    //수빈
     // 매물 목록 조회
     @GetMapping("/list")
     public String listProperties(Model model) {
