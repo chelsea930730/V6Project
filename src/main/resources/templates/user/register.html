@@ -1,26 +1,34 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>회원가입</title>
-    <link rel="stylesheet" href="/HTML/css/register.css" />
-  </head>
-  <body>
-    <!-- 회원가입 폼 -->
-    <div class="signup-container">
-      <div class="signup-box">
-        <h2>회원가입</h2>
-        <form>
-          <div class="input-group">
-            <input type="email" placeholder="이메일" id="email" required />
-            <input type="text" placeholder="이름" id="name" required />
-            <input type="password" placeholder="비밀번호" id="password" required />
-          </div>
-          <button type="submit" class="signup-btn">회원가입</button>
-          <p class="login-link">이미 계정이 있나요? <a href="login.html">로그인</a></p>
-        </form>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>회원가입</title>
+  <link rel="stylesheet" href="/css/register.css" />
+  <!-- Bootstrap CSS -->
+  <link
+          th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
+  <!-- Bootstrap JS -->
+  <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</head>
+<body>
+<!-- 회원가입 폼 -->
+<div class="signup-container">
+  <div class="signup-box">
+    <h2>회원가입</h2>
+    <form action="/user/register" method="post" th:object="${userRegisterDto}">
+      <div class="input-group">
+        <input type="email" th:field="*{email}" class="form-control" placeholder="이메일" id="email" required />
+        <input type="text" th:field="*{name}" class="form-control" placeholder="이름" id="name" required />
+        <input type="password" th:field="*{password}" class="form-control" placeholder="비밀번호" id="password" required/>
       </div>
-    </div>
-  </body>
+      <button type="submit" class="signup-btn">회원가입</button>
+      <p class="login-link">
+        이미 계정이 있나요? <a th:href="@{user/login}">로그인</a>
+      </p>
+    </form>
+  </div>
+</div>
+</body>
 </html>
+
