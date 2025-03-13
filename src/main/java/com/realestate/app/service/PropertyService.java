@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -23,19 +24,23 @@ public class PropertyService {
         return propertyRepository.findAll();
     }
 
+    @Transactional
     public Property saveProperty(Property property) {
-        // 주소가 있을 경우 위도/경도 설정
         if (property.getLocation() != null) {
-            GeocodingResult result = geocodingService.getCoordinates(property.getLocation());
+            var result = geocodingService.getCoordinates(property.getLocation());
             if (result != null) {
-                property.setLatitude(result.latitude());
-                property.setLongitude(result.longitude());
+                property.setLatitude(BigDecimal.valueOf(result.latitude()));
+                property.setLongitude(BigDecimal.valueOf(result.longitude()));
             }
         }
         return propertyRepository.save(property);
     }
 
-    // 기존 데이터의 위도/경도 업데이트 (테스트 작업)
+    public Property getPropertyById(Long id) {
+        return propertyRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("매물을 찾을 수 없습니다: " + id));
+    }
+
     @Transactional
     public void updateAllPropertiesCoordinates() {
         List<Property> properties = propertyRepository.findAll();
@@ -45,11 +50,11 @@ public class PropertyService {
                 (property.getLatitude() == null || property.getLongitude() == null)) {
                 
                 log.info("Updating coordinates for property: {}", property.getTitle());
-                GeocodingResult result = geocodingService.getCoordinates(property.getLocation());
+                var result = geocodingService.getCoordinates(property.getLocation());
                 
                 if (result != null) {
-                    property.setLatitude(result.latitude());
-                    property.setLongitude(result.longitude());
+                    property.setLatitude(BigDecimal.valueOf(result.latitude()));
+                    property.setLongitude(BigDecimal.valueOf(result.longitude()));
                     propertyRepository.save(property);
                     log.info("Updated coordinates for {}: lat={}, lng={}", 
                         property.getTitle(), result.latitude(), result.longitude());

@@ -174,7 +174,9 @@
     
     <!-- 매물 목록 표시 -->
     <div th:each="property : ${properties}" class="property-item">
-        <h2 th:text="${property.title}">매물 제목</h2>
+        <h2>
+            <a th:href="@{/property/{id}(id=${property.propertyId})}" th:text="${property.title}">매물 제목</a>
+        </h2>
         <div class="property-info">
             <p>월세: <span th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA')}">0</span>원</p>
             <p>보증금: <span th:text="${#numbers.formatInteger(property.shikikin, 0, 'COMMA')}">0</span>원</p>
