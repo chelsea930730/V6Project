@@ -1,8 +1,9 @@
 package com.realestate.app.config;
 
 
-import com.realestate.app.model.user.User;
-import com.realestate.app.repository.UserRepository;
+import com.realestate.app.user.User;
+import com.realestate.app.user.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
