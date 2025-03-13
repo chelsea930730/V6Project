@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>상세페이지</title>
+    <!-- Bootstrap CSS -->
+    <link
+      th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap JS -->
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/css/detail.css}" />
+  </head>
+  <style>
+    body {
+      font-family: "Cafe24 Ssurround air OTF Light";
+    }
+  </style>
+  <body>
+    <div id="navbar-placeholder"></div>
+
+       <div class="main-content">
+          <!-- 왼쪽: 사진 섹션 -->
+          <section class="building-photos">
+                <div class="photo-grid" id="propertyPhotos">
+                      <!-- 여기에 데이터베이스의 사진들이 동적으로 표시될 예정 -->
+                      <div class="property-images">
+                            <img src="https://via.placeholder.com/400x300" alt="매물 이미지">
+                      </div>
+                </div>
+          </section>
+    
+          <!-- 오른쪽: 상세 정보 -->
+          <div class="property-info-section">
+                <div class="property-stats">
+                      <div class="stat-item">
+                            <div class="stat-label">주거면적</div>
+                            <div class="stat-value" th:text="${property.area}"></div>
+                      </div>
+                      <div class="stat-item">
+                            <div class="stat-label">건물타입</div>
+                            <div class="stat-value" th:text="${property.buildingType}"></div>
+                      </div>
+                      <div class="stat-item">
+                            <div class="stat-label">층수</div>
+                            <div class="stat-value">-</div>
+                      </div>
+                      <div class="stat-item">
+                            <div class="stat-label">건축년도</div>
+                            <div class="stat-value" th:text="${property.builtYear}"></div>
+                      </div>
+                      <div class="stat-item">
+                         <div class="stat-label">월세</div>
+                         <div class="stat-value">
+                            <span th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA')}">0</span>원
+                         </div>
+                   </div>
+                   <div class="stat-item">
+                      <div class="stat-label">가까운 역</div>
+                      <div class="stat-value" th:text="${property.subwayLine}"></div>
+                </div>
+
+                </div>
+        
+                <!-- 카트에 추가하는 버튼 -->
+        <div class="add-to-cart">
+            <button class="cart-button">Add to cart</button>
+        </div>
+    </div>
+</div>
+
+<!-- 추가 사진 섹션 -->
+<section class="building-photos2">
+    <h2>건물 사진</h2>
+    <div class="photo-grid2" id="propertyPhotos2">
+          <!-- 여기에 데이터베이스의 사진들이 동적으로 표시될 예정 -->
+    </div>
+</section>
+
+<div class="details-section">
+    <table class="details-table">
+       <h2>상세 정보</h2> 
+       <tr>
+                <th>주소</th>
+                <td colspan="3" id="address"></td>
+          </tr>
+          <tr>
+                <th>건물 타입</th>
+                <td colspan="3" id="buildingType"></td>
+          </tr>
+          <tr>
+                <th>등록일</th>
+                <td colspan="3" id="registDate"></td>
+          </tr>
+          <tr>
+                <th>초기비용</th>
+                <td colspan="3" id="costDetail"></td>
+          </tr>
+
+          <tr>
+                <th>비고</th>
+                <td colspan="3" id="notes"></td>
+          </tr>
+    </table>
+</div>
+
+    <div class="amenities">
+       <h2>방의 특징과 설비</h2>
+          <div class="amenities-content" id="amenitiesList">
+        <!-- 편의시설 목록이 동적으로 추가됨 -->
+      </ul>
+    </div>
+
+    <div class="location">
+      <h2>위치 정보</h2>
+      <div id="map" style="height: 400px">
+        <!-- 지도가 표시될 영역 -->
+      </div>
+    </div>
+  </div>
+
+
+    <div class="appointment">
+       <button class="appointment-button">상담예약 페이지 이동</button>
+</div>
+
+    <script th:src="@{/js/navbar.js}"></script>
+    <script th:src="@{/js/detail.js}"></script>
+  </body>
+</html>
+
+
+
+
+새 항목
+
+
+
+
+
+
+
