@@ -1,9 +1,10 @@
 package com.realestate.app.config;
 
-import com.realestate.app.model.user.Provider;
-import com.realestate.app.model.user.Role;
-import com.realestate.app.model.user.User;
-import com.realestate.app.repository.UserRepository;
+import com.realestate.app.user.Provider;
+import com.realestate.app.user.Role;
+import com.realestate.app.user.User;
+import com.realestate.app.user.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;

@@ -1,10 +1,11 @@
 package com.realestate.app.config;
 
-import com.realestate.app.model.user.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+
+import com.realestate.app.user.User;
 
 import java.util.ArrayList;
 import java.util.Collection;

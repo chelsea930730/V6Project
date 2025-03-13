@@ -13,9 +13,11 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+
+import com.realestate.app.config.CustomAuthenticationProvider;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import com.realestate.app.config.CustomAuthenticationProvider;
 
 @Configuration
 @RequiredArgsConstructor
