@@ -53,6 +53,7 @@ function checkLoginStatus() {
                     <a href="/mypage/mypage.html" class="nav-link">마이페이지</a>
                     <button class="logout-btn">LOGOUT</button>
                 `;
+
 			} else {
 				// ✅ 로그아웃 상태
 				navMenu.innerHTML = `
@@ -64,12 +65,12 @@ function checkLoginStatus() {
 }
 
 // 로그아웃 처리 함수
-document.addEventListener("click", function (event) {
+document.body.addEventListener("click", function (event) {
 	if (event.target.classList.contains("logout-btn")) {
 		fetch("/user/logout", { method: "POST" }) // ✅ 서버에 로그아웃 요청
 			.then(() => {
 				checkLoginStatus(); // ✅ 네비게이션 업데이트
-				window.location.href = "/user/login"; // ✅ 로그인 페이지로 이동
+				window.location.href = "/"; // 메인 페이지로 이동
 			})
 			.catch(error => console.error("❌ 로그아웃 실패:", error));
 	}
