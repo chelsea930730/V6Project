@@ -1,0 +1,90 @@
+ /* 테이블 스타일 */
+.table {
+	font-size: 0.95rem;
+}
+
+.table thead th {
+	background-color: #f8f9fa;
+	font-weight: 500;
+	border-bottom: 1px solid #dee2e6;
+	color: #495057;
+}
+
+.table tbody tr {
+	border-bottom: 1px solid #dee2e6;
+}
+
+.table tbody tr:hover {
+	background-color: #f8f9fa;
+}
+
+/* 체크박스 스타일 */
+.form-check-input {
+	cursor: pointer;
+	width: 1.2rem;
+	height: 1.2rem;
+}
+
+.form-check-input:checked {
+	background-color: #4682B4;
+	border-color: #4682B4;
+}
+
+/* 상태 버튼 스타일 */
+.status-btn {
+	min-width: 90px;
+	border-radius: 15px;
+	font-size: 0.85rem;
+	padding: 0.3rem 0.8rem;
+	cursor: pointer;
+}
+
+.btn-warning {
+	background-color: #ffc107;
+	border-color: #ffc107;
+	color: #000;
+}
+
+.btn-success {
+	background-color: #28a745;
+	border-color: #28a745;
+	color: #fff;
+}
+
+.btn-danger {
+	background-color: #dc3545;
+	border-color: #dc3545;
+	color: #fff;
+}
+
+/* 상태 변경 드롭다운 메뉴 */
+.status-dropdown {
+	position: absolute;
+	background-color: white;
+	border: 1px solid #dee2e6;
+	border-radius: 5px;
+	box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+	display: none;
+	z-index: 1000;
+}
+
+.status-dropdown.show {
+	display: block;
+}
+
+.status-dropdown-item {
+	padding: 0.5rem 1rem;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.status-dropdown-item:hover {
+	background-color: #f8f9fa;
+}
+
+/* 카드 스타일 */
+.card {
+	border: none;
+	box-shadow: 0 0 15px rgba(0,0,0,0.05);
+	border-radius: 10px;
+}

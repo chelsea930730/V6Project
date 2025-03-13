@@ -1,102 +1,97 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>도쿄 23구 클릭 지도</title>
-    <link rel="stylesheet" href="/HTML/css/map.css" />
-    <!-- ✅ 스타일 연결 확인 -->
-  </head>
-  <style>
-    body {
-      font-family: "Cafe24 Ssurround air OTF Light";
-    }
-  </style>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>도쿄 23구 클릭 지도</title>
+  <!-- Bootstrap CSS -->
+  <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+  <!-- Bootstrap JS -->
+  <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/map.css" />
+  <!-- ✅ 스타일 연결 확인 -->
+</head>
+<style>
+  body {
+    font-family: "Cafe24 Ssurround air OTF Light";
+  }
+</style>
 
-  <body>
-    <div id="navbar-placeholder"></div>
-<!--오징어-->
-<br><br><br><br>
-    <!-- 지도 -->
-    <div class="container">
-      <aside>
-        <h1>
-          우측 지도에서 원하는
-          <br />
-          지역을 선택해 주세요
-        </h1>
-        <p>일본에서의 새로운 시작, 쉽고 안전하게!</p>
-        <p>원하는 지역과 예산에 맞는 집을 지금 바로 찾아보세요.</p>
-<br>
-        <div class="image-gallery">
-          <a th:href="@{/property/list}"><button class="all-build">전체 매물 보기</button></a>
-        </div>
-      </aside>
+<body>
+<div id="navbar-placeholder"></div>
 
-      <div class="map-container" id="mapContainer">
-        <img src="/img/jido.png" alt="도쿄 23구 지도" class="map-image" id="mapImage" usemap="#image-map">
-        <map name="image-map">
+<main>
+  <!-- 지도 -->
+  <div class="container">
+    <aside>
+      <h1>
+        우측 지도에서 원하는
+        <br />
+        지역을 선택해 주세요
+      </h1>
+      <p>일본에서의 새로운 시작, 쉽고 안전하게!</p>
+      <p>원하는 지역과 예산에 맞는 집을 지금 바로 찾아보세요.</p>
+      <br>
+      <div class="image-gallery">
+        <a th:href="@{/property/list}"><button class="all-build">전체 매물 보기</button></a>
+      </div>
+    </aside>
 
-</map>
+    <div class="map-container" id="mapContainer">
+      <img src="/img/jido.png" alt="도쿄 23구 지도" class="map-image" id="mapImage" usemap="#image-map">
+      <map name="image-map">
+
+      </map>
     </div>
   </div>
 
-    <!-- 노선별 -->
-		<div class="line-container">
-		<aside class="aside2">
-    <section class="lineAll">
-      <div class="h2">
-        <h2>노선별 매물 검색 지원</h2>
-        <p class="sub">간편한 노선 클릭으로 최적의 위치 찾기!</p>
-      </div>
-
-      <div class="jr">
-        <img src="/img/jr.png" alt="jr 로고" class="jr-logo" />
-        <span class="line yamanote">야마노테</span>
-        <span class="line chuuo">츄오- 소부</span>
-        <span class="line saikyou">사이쿄</span>
-        <span class="line joban">죠반</span>
-        <span class="line takasaki">타카사키</span>
-        <span class="line yokosuka">요코스카</span>
-        <span class="line keitoku">케이힌토쿠</span>
-      </div>
-      <div class="tokyometro">
-        <img src="/img/Tokyo_Metro_logo.svg.png" alt="도쿄메트로 로고" class="tokyometro-logo" />
-        <span class="line hanzomon">한조몬</span>
-        <span class="line marunouchi">마루노우치</span>
-        <span class="line hibiya">히비야</span>
-        <span class="line chiyoda">치요다</span>
-        <span class="line fukutoshin">후쿠토신</span>
-        <span class="line ginza">긴자</span>
-        <span class="line namboku">난보쿠</span>
-        <span class="line yurakucho">유라쿠쵸</span>
-        <span class="line tozai">토자이</span>
-      </div>
-    </section>
-	</aside>
-	
-	<div class="picture">
-		<img src="/img/yamanote.jpeg" alt="야마노테사진"/>
-	</div>
-</div>
-	
-    <p>처음부터 입주까지, 라이온 부동산이 함께합니다.</p>
-
-    <footer class="footer">
-      <div class="footer-container">
-        <div class="footer-left">
-          <strong><a href="/HTML/map.html" class="footer-logo">LION</a></strong>
+  <!-- 노선별 -->
+  <div class="line-container">
+    <aside class="aside2">
+      <section class="lineAll">
+        <div class="h2">
+          <h2>노선별 매물 검색 지원</h2>
+          <p class="sub">간편한 노선 클릭으로 최적의 위치 찾기!</p>
         </div>
-        <div class="footer-right">
-          <strong><a href="/*" class="kakao-link"
-            >상담원 카카오톡 문의</a
-          ></strong>
-          <p class="account">비니니: BBBBB</p>
-        </div>
-      </div>
-    </footer>
 
-    <script src="/HTML/js/map.js"></script>
-    <script src="/HTML/js/navbar.js"></script>
-  </body>
+        <div class="jr">
+          <img src="/img/jr.png" alt="jr 로고" class="jr-logo" />
+          <span class="line yamanote">야마노테</span>
+          <span class="line chuuo">츄오- 소부</span>
+          <span class="line saikyou">사이쿄</span>
+          <span class="line joban">죠반</span>
+          <span class="line takasaki">타카사키</span>
+          <span class="line yokosuka">요코스카</span>
+          <span class="line keitoku">케이힌토쿠</span>
+        </div>
+        <div class="tokyometro">
+          <img src="/img/Tokyo_Metro_logo.svg.png" alt="도쿄메트로 로고" class="tokyometro-logo" />
+          <span class="line hanzomon">한조몬</span>
+          <span class="line marunouchi">마루노우치</span>
+          <span class="line hibiya">히비야</span>
+          <span class="line chiyoda">치요다</span>
+          <span class="line fukutoshin">후쿠토신</span>
+          <span class="line ginza">긴자</span>
+          <span class="line namboku">난보쿠</span>
+          <span class="line yurakucho">유라쿠쵸</span>
+          <span class="line tozai">토자이</span>
+        </div>
+      </section>
+    </aside>
+
+    <div class="picture">
+      <img src="/img/yamanote.jpeg" alt="야마노테사진"/>
+    </div>
+  </div>
+
+  <p class="final-message">
+    <strong>처음부터 입주까지, 라이온 부동산이 함께합니다.</strong>
+  </p>
+</main>
+
+
+<script src="/js/map.js"></script>
+<script src="/js/navbar.js"></script>
+</body>
 </html>
