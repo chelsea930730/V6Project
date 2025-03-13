@@ -1,30 +1,47 @@
 <!DOCTYPE html>
-<html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>로그인</title>
-    <link rel="stylesheet" href="/HTML/css/login.css" />
-  </head>
-  <style>
-    body {
-      font-family: "Cafe24 Ssurround air OTF Light";
-    }
-  </style>
-  <body>
-    <!-- 로그인 폼 -->
-    <div class="login-container">
-      <div class="login-box">
-        <h2>로그인</h2>
-        <form>
-          <div class="input-group">
-            <input type="text" placeholder="아이디" id="username" />
-            <input type="password" placeholder="비밀번호" id="password" />
-          </div>
-          <button type="submit" class="login-btn">로그인</button>
-          <p class="signup-link">계정이 없나요? <a href="#">회원가입</a></p>
-        </form>
-      </div>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>로그인</title>
+  <!-- Bootstrap CSS -->
+  <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+  <!-- Bootstrap JS -->
+  <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+  <!-- CSS -->
+  <link rel="stylesheet" th:href="@{/css/login.css}" />
+</head>
+<body>
+<!-- 로그인 폼 -->
+<div class="login-container">
+  <div class="login-box">
+    <h2>로그인</h2>
+
+    <!-- ✅ 로그인 실패 메시지 출력 (추가된 부분) -->
+    <div th:if="${param.loginErrorMessage}" class="alert alert-danger">
+      <p th:text="${param.loginErrorMessage}"></p>
     </div>
-  </body>
+
+    <form action="/user/login" method="post" th:object="${userLoginDto}">
+      <!-- 아이디 입력 -->
+      <div class="input-group">
+        <input type="text" th:field="*{email}" class="form-control" placeholder="아이디" id="username" />
+      </div>
+
+      <!-- 비밀번호 입력 -->
+      <div class="input-group mt-2">
+        <input type="password" th:field="*{password}" class="form-control" placeholder="비밀번호" id="password" />
+      </div>
+
+      <!-- 일반 로그인 버튼 -->
+      <button type="submit" class="login-btn mt-3">로그인</button>
+    </  form>
+    <!-- ✅ Google 로그인 버튼 추가 -->
+    <a href="/oauth2/authorization/google" class="login-btn mt-3" style="text-decoration: none; display: inline-block;">
+      Google 계정으로 로그인
+    </a>
+    <p class="signup-link">계정이 없나요? <a th:href="@{/user/register}">회원가입</a></p>
+  </div>
+</div>
+</body>
 </html>

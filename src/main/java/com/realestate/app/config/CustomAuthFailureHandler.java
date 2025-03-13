@@ -39,7 +39,7 @@ public class CustomAuthFailureHandler extends SimpleUrlAuthenticationFailureHand
             message = "알 수 없는 이유로 로그인에 실패하였습니다.";
         }
         message = URLEncoder.encode(message, StandardCharsets.UTF_8);
-        setDefaultFailureUrl("/users/login?loginErrorMessage=" + message);
+        setDefaultFailureUrl("/user/login?loginErrorMessage=" + message);
         super.onAuthenticationFailure(request, response, exception);
     }
 }
