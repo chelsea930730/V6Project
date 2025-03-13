@@ -1,0 +1,158 @@
+body {
+    background-color: #f8f9fa;
+		font-family: 'Cafe24 Ssurround air OTF Light';
+}
+
+/* 로그아웃 버튼 스타일 */
+.btn-primary {
+    background-color: #4682B4;
+    border-color: #4682B4;
+    transition: all 0.3s ease;
+		border-radius: 18px;
+		height: 51px;
+		width: 105px;
+}
+
+.btn-primary:hover {
+    background-color: #375f87;  /* 더 진한 색상 */
+    border-color: #375f87;
+}
+
+/* 카드 스타일 */
+.card {
+    border: none;
+    box-shadow: 0 0 15px rgba(0,0,0,0.05);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    background-color: #a7c6e0;
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(70, 130, 180, 0.3);
+}
+
+.card:hover .card-subtitle,
+.card:hover .card-title {
+    color: #ffffff !important;
+}
+
+.card-title {
+    margin-bottom: 0;
+    font-weight: 600;
+}
+
+/* 테이블 스타일 */
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* 배지 스타일 */
+.badge {
+    padding: 0.5em 1em;
+    font-weight: 500;
+}
+
+/* 차트 컨테이너 스타일 */
+#reservationChart, #propertyChart {
+    width: 100%;
+    margin: 1rem 0;
+}
+
+/* 예약 현황 스타일 */
+.calendar-header h6 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.calendar-days {
+    color: #666;
+}
+
+/* 달력 스타일 */
+.calendar-days .col {
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+}
+
+.calendar-days .col:hover {
+    background-color: #e9ecef;
+}
+
+.calendar-days .current-day {
+    background-color: #4682B4;
+    color: white;
+    font-weight: bold;
+}
+
+.calendar-days .prev-month,
+.calendar-days .next-month {
+    color: #dee2e6;
+    cursor: default;
+}
+
+.calendar-days .prev-month:hover,
+.calendar-days .next-month:hover {
+    background-color: transparent;
+}
+
+.day-name {
+    font-weight: 500;
+    color: #495057;
+    cursor: pointer;
+    padding: 10px;
+    transition: all 0.3s ease;
+}
+
+.day-name:hover {
+    background-color: #e9ecef;
+    border-radius: 5px;
+}
+
+.reservation-item {
+    background-color: #fff;
+    transition: all 0.3s ease;
+}
+
+.reservation-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.reservation-item h6 {
+    color: #333;
+    font-weight: 500;
+}
+
+.reservation-number {
+    font-size: 0.9rem;
+    text-align: right;
+}
+
+.badge.bg-success {
+    background-color: #28a745 !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+}
+
+/* Show More 버튼 스타일 */
+.btn-outline-primary {
+    color: #4682B4;
+    border-color: #4682B4;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background-color: #4682B4;
+    color: white;
+} 
