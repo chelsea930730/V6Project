@@ -8443,3 +8443,38 @@ INSERT INTO property (
              NULL, NULL,
              NULL
          );
+INSERT INTO property (
+    property_title, monthly_price, shikikin, reikin, management_fee, location,
+    district, subway_line, room_type, building_type, status, description, area,
+    built_year, latitude, longitude, created_at
+) VALUES (
+             '東京都新宿区北新宿1丁目23-18
+ 1R', 8000,
+             0.0, 1.0,
+             7000.0, '東京都新宿区北新宿1丁目23-19
+',
+             '東京都新宿区北新宿1丁目23-19
+', '마루노우치선', '1R', '맨션',
+             '예약가능', '인터넷 무료,  4월입주',
+             18.13, '1998년',
+             NULL, NULL,
+             NULL
+         );
+
+INSERT INTO property (
+    property_title, monthly_price, shikikin, reikin, management_fee, location,
+    district, subway_line, room_type, building_type, status, description, area,
+    built_year, latitude, longitude, created_at
+) VALUES (
+             '東京都新宿区北新宿1丁目23-17
+ 1R', 9000,
+             0.0, 1.0,
+             7000.0, '東京都新宿区北新宿1丁目23-19
+',
+             '東京都新宿区北新宿1丁目23-17
+', '마루노우치선', '1R', '맨션',
+             '예약가능', '인터넷 무료,  4월입주',
+             18.13, '1998년',
+             NULL, NULL,
+             NULL
+         );
