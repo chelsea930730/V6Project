@@ -1,5 +1,6 @@
 /* 전체 스타일 */
 body {
+  font-family: 'Arial', sans-serif;
   background-color: #ffffff;
   margin: 0;
   padding: 0;
@@ -22,7 +23,44 @@ body {
   overflow-y: auto;
 }
 
+/* 네비게이션 바 스타일 */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 90%;
+  padding: 20px 45px;
+  border-bottom: 1px solid #ddd;
+}
 
+/* nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-family: 'Cafe24 Ssurround air OTF Light';
+} */
+
+nav a {
+  text-decoration: none;
+  color: #355c86;
+  font-size: 30px;
+  font-family: 'Cafe24 Ssurround air OTF Light';
+}
+
+.login-btn {
+  background-color: #6a99cd;
+  color: white;
+  border: none;
+  padding: 15px 35px;
+  border-radius: 25px;
+  font-size: 20px;
+  cursor: pointer;
+  font-family: 'Cafe24 Ssurround air OTF Light';
+}
+
+.login-btn:hover {
+  background-color: #355c86;
+}
 
 /* 화면 전체를 차20는 컨테이너 */
 .container {
@@ -39,7 +77,7 @@ aside {
   width: 45%;
   max-width: 600px;
   text-align: left;
-  margin-left: -50px;
+  margin-left: 20px;
 }
 
 aside h1 {
@@ -55,13 +93,13 @@ aside p {
 /* 전체 매물 확인 버튼 */
 .all-build{
   background-color: #6a99cd;
-color: white;
-border: none;
-padding: 15px 35px;
-border-radius: 25px;
-font-size: 20px;
-cursor: pointer;
-font-family: 'Cafe24 Ssurround air OTF Light';
+  color: white;
+  border: none;
+  padding: 15px 35px;
+  border-radius: 25px;
+  font-size: 20px;
+  cursor: pointer;
+  font-family: 'Cafe24 Ssurround air OTF Light';
 }
 
 .all-build:hover{
@@ -93,14 +131,13 @@ font-family: 'Cafe24 Ssurround air OTF Light';
 
 /* 지도 크기 조정 (화면 크기에 따라 자동 조절) */
 .map-image {
-  width: 100%;
-  max-width: 500px; /* 최대 크기 설정 */
+  width: 120%;
+  max-width: 2000px; /* 최대 크기 설정 */
   height: auto;
   transition: filter 0.5s ease-in-out;
   padding-left: 15%;
-  margin-top: 10%;
+  margin-top: 20%;
 }
-
 
 
 /* 노선 버튼 */
@@ -108,7 +145,7 @@ font-family: 'Cafe24 Ssurround air OTF Light';
   max-width: 600px;
   text-align: left;
   margin-left: -50px;
-  flex: 1; 
+  flex: 1;
 
   padding: 20px;
 }
@@ -126,8 +163,8 @@ font-family: 'Cafe24 Ssurround air OTF Light';
   justify-content: center;
 }
 .picture img{
-  width: 100%; 
-  max-width: 400px; 
+  width: 100%;
+  max-width: 400px;
   height: 400px;
   border-radius: 10px;
   margin-left: 20px;
@@ -217,11 +254,6 @@ font-family: 'Cafe24 Ssurround air OTF Light';
   max-width: 1200px;
 }
 
-.footer-logo{
-  font-size: 20px;
-  color: #355c86;
-}
-
 /* 왼쪽 영역 */
 .footer-left {
   display: flex;
@@ -248,13 +280,15 @@ font-family: 'Cafe24 Ssurround air OTF Light';
 
 /* 노선+사진 */
 .line-container {
-  display: flex; /* 좌우 배치 */
-  align-items: top; /* 세로 정렬 */
-  justify-content: space-between; /* 양쪽 정렬 */
-  width: 90vw;
-  max-width: 1200px;
+  display: flex;
+  justify-content: flex-start;
+  padding: 20px;
+  width: 85vw;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 10%;
+  margin-top: 1200px;  /* 600px에서 1200px로 증가 */
+  position: relative;
+  top: 200px;  /* 100px에서 200px로 증가 */
 }
 
 /* 노선 왼쪽 */
@@ -264,6 +298,7 @@ font-family: 'Cafe24 Ssurround air OTF Light';
   max-width: 600px;
   text-align: left;
   margin-left: 20px;
+  padding-top: 20px;  /* 상단 여백 추가 */
 }
 
 .h2{
@@ -273,4 +308,184 @@ font-family: 'Cafe24 Ssurround air OTF Light';
 }
 
 
+.district-button {
+  position: absolute;
+  background-color: rgba(100, 100, 100, 0);
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  font-weight: bold;
+  color: black;
+  font-size: 14px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
+.district-button:hover {
+  background-color: rgba(100, 100, 100, 0); /* 투명 색상 */
+}
+
+/* ✅ 기본 설정 */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* ✅ 노선 버튼 + 야마노테 사진 배치 */
+.line-container {
+  display: flex;
+  justify-content: flex-start;  /* 중앙 정렬에서 왼쪽 정렬로 변경 */
+  padding: 20px;
+  width: 85vw;  /* 전체 너비 조정 */
+  margin: 0 auto;
+}
+
+.line-content {
+  display: flex;
+  align-items: flex-start;  /* 상단 정렬 */
+  gap: 30px;  /* 버튼과 이미지 사이 간격 */
+  margin-left: 20px;  /* 왼쪽 여백 추가 */
+}
+
+.train-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;  /* 버튼들 왼쪽 정렬 */
+}
+
+.train-lines button {
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.yamanote-sajin {
+  width: 500px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-left: 80px;  /* 40px에서 80px로 증가 */
+  margin-top: 20px;
+}
+
+.yamanote-sajin img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+/* hover 효과 제거 */
+.yamanote-sajin:hover {
+  transform: none;
+}
+
+/* ✅ "지금 남아있는 매물 확인" 섹션 */
+.available-properties {
+  text-align: center;
+  padding: 40px 20px;
+  margin-top: 200px;  /* 야마노테 사진과의 간격 추가 */
+}
+
+.property-list {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.property-item {
+  flex: 1;
+  max-width: 30%;
+  padding: 16px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.property-item:hover {
+  transform: translateY(-4px);
+}
+
+.property-item p {
+  font-weight: 600;
+  margin: 16px 0 8px 0;
+  color: #2d3436;
+}
+
+.property-item span {
+  color: #636e72;
+  line-height: 1.5;
+}
+
+/* ✅ "부동산 소개" 섹션 */
+.real-estate-info {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.info-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.info-item {
+  flex: 1;
+  padding: 16px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+  max-width: 48%;
+}
+
+.info-item img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.info-item h3 {
+  margin-top: 10px;
+}
+
+.info-item p {
+  font-size: 14px;
+  color: #555;
+}
+.info-item:hover {
+  transform: translateY(-4px);
+}
+
+
+/* ✅ 푸터 */
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  margin-top: 40px;
+}
+
+/* 모든 이미지에 대한 기본 스타일 */
+.property-item img,
+.info-item img,
+.picture img {
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.property-item img:hover,
+.info-item img:hover,
+.picture img:hover {
+  transform: scale(1.02);
+}
