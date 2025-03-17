@@ -71,4 +71,12 @@ public class PropertyService {
             }
         }
     }
+
+    public List<Property> getPropertiesByDistrict(String district) {
+        return propertyRepository.findByDistrictContaining(district);
+    }
+
+    public List<Property> getPropertiesBySubwayLine(String line) {
+        return propertyRepository.findBySubwayLineContaining(line);
+    }
 }
