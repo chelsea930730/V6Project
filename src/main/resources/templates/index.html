@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,7 +9,7 @@
   <!-- Bootstrap JS -->
   <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
   <!-- CSS -->
-  <link rel="stylesheet" href="/css/map.css" />
+  <link th:href="@{/css/map.css}" rel="stylesheet" />
   <!-- ✅ 스타일 연결 확인 -->
 </head>
 <style>
@@ -39,7 +39,7 @@
     </aside>
 
     <div class="map-container" id="mapContainer">
-      <img src="/img/jido.png" alt="도쿄 23구 지도" class="map-image" id="mapImage" usemap="#image-map">
+      <img th:src="@{/img/jido.png}" alt="도쿄 23구 지도" class="map-image" id="mapImage" usemap="#image-map">
       <map name="image-map">
         <!-- 아다치구 -->
         <a href="/HTML/adachi.html" class="district-button"
@@ -224,7 +224,7 @@
 
 
 
-<script src="/js/map.js"></script>
-<script src="/js/navbar.js"></script>
+<script th:src="@{/js/map.js}"></script>
+<script th:src="@{/js/navbar.js}"></script>
 </body>
 </html>

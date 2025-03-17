@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>매물 게시글 작성 및 수정</title>
-    <link rel="stylesheet" href="/css/create.css" />
-    <script src="/js/navibar.js" defer></script>
-    <script src="/js/create.js" defer></script>
+    <link th:href="@{/css/create.css}" rel="stylesheet" />
+    <script th:src="@{/js/navibar.js}" defer></script>
+    <script th:src="@{/js/create.js}" defer></script>
   </head>
   <body>
     <main class="create-container">
