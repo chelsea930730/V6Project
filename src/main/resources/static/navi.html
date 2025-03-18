@@ -8,12 +8,12 @@
 <body>
 <header>
 	<nav>
-		<strong><a href="/templates/index.html">LION</a></strong>
+		<strong><a th:href="@{/}">LION</a></strong>
 	</nav>
 
 	<!-- 네비 로그인 시 변경 -->
 	<div id="nav-menu">
-		<a href="/user/login" class="nav-link login-btn">LOGIN</a>
+		<a th:href="@{/user/login}" class="nav-link login-btn">LOGIN</a>
 	</div>
 </header>
 
