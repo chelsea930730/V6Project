@@ -62,7 +62,7 @@ nav a {
   background-color: #355c86;
 }
 
-/* 화면 전체를 차20는 컨테이너 */
+/* 화면 전체를 차지하는 컨테이너 */
 .container {
   display: flex;
   justify-content: center;
@@ -106,7 +106,6 @@ aside p {
   background-color: #355c86;
 }
 
-
 /* 썸네일 이미지 */
 .image-gallery {
   display: flex;
@@ -129,7 +128,7 @@ aside p {
   justify-content: center;
 }
 
-/* 지도 크기 조정 (화면 크기에 따라 자동 조절) */
+/* 지도 크기 조정 */
 .map-image {
   width: 120%;
   max-width: 2000px; /* 최대 크기 설정 */
@@ -139,17 +138,14 @@ aside p {
   margin-top: 20%;
 }
 
-
 /* 노선 버튼 */
 .lineAll{
   max-width: 600px;
   text-align: left;
   margin-left: -50px;
   flex: 1;
-
   padding: 20px;
 }
-
 
 .sub{
   font-size: 16px;
@@ -233,8 +229,6 @@ aside p {
 .namboku{background:#00ae9a;}
 .yurakucho{background:#ebb600;}
 
-
-
 /* 푸터 */
 .footer {
   width: 100%;
@@ -292,7 +286,6 @@ aside p {
 }
 
 /* 노선 왼쪽 */
-
 .aside2{
   width: 45%;
   max-width: 600px;
@@ -306,7 +299,6 @@ aside p {
   font-weight: bold;
   margin-bottom: 10px;
 }
-
 
 .district-button {
   position: absolute;
@@ -464,7 +456,6 @@ body {
 .info-item:hover {
   transform: translateY(-4px);
 }
-
 
 /* ✅ 푸터 */
 footer {
