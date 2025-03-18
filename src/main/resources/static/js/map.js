@@ -5,65 +5,7 @@ document.querySelectorAll(".line").forEach(button => {
     });
 });
 
-// 역 링크 생성 함수
-function createStationLinks() {
-    // 각 노선별 역 정보
-    const stations = {
-        '야마노테': ["신주쿠", "이케부쿠로", "도쿄", "우에노", "시부야"],
-        '츄오- 소부': ["코이와", "신코이와", "히라이", "카메이도", "킨시쵸"],
-        // 다른 노선들의 역 정보도 추가...
-    };
 
-    // 노선 클릭 시 해당 노선의 역 목록 표시
-    document.querySelectorAll('.line').forEach(lineLink => {
-        lineLink.addEventListener('click', function(e) {
-            // 링크의 기본 동작 막기
-            e.preventDefault();
-            
-            const lineName = this.textContent.trim();
-            const stationList = stations[lineName] || [];
-            
-            // 역 목록 컨테이너
-            const stationContainer = document.createElement('div');
-            stationContainer.className = 'station-list-popup';
-            stationContainer.innerHTML = `<h3>${lineName} 노선 역</h3>`;
-            
-            // 역 목록 생성
-            stationList.forEach(station => {
-                const stationLink = document.createElement('a');
-                stationLink.href = `/property/list?station=${station}`;
-                stationLink.className = 'station-link';
-                stationLink.textContent = station;
-                stationContainer.appendChild(stationLink);
-            });
-            
-            // 전체 노선 보기 링크
-            const allStationsLink = document.createElement('a');
-            allStationsLink.href = `/property/list?line=${lineName}`;
-            allStationsLink.className = 'all-stations-link';
-            allStationsLink.textContent = `${lineName} 전체 역 보기`;
-            stationContainer.appendChild(allStationsLink);
-            
-            // 팝업 닫기 버튼
-            const closeButton = document.createElement('button');
-            closeButton.className = 'close-popup-btn';
-            closeButton.textContent = '닫기';
-            closeButton.addEventListener('click', () => {
-                document.body.removeChild(stationContainer);
-            });
-            stationContainer.appendChild(closeButton);
-            
-            // 페이지에 팝업 추가
-            document.body.appendChild(stationContainer);
-        });
-    });
-}
-
-// 페이지 로드 시 함수 실행
-document.addEventListener('DOMContentLoaded', () => {
-    createStationLinks();
-    // 기존 코드...
-});
 
 function resizeMap() {
     let img = document.getElementById("mapImage");
@@ -90,8 +32,63 @@ function resizeMap() {
     });
 }
 
+// 페이지 로드 및 리사이즈시 지도 크기 유지
+window.addEventListener('DOMContentLoaded', function() {
+    resizeMap();
 
+    // 이미지 크기를 정확히 지정
+    fixMapImageSize();
+});
 
+window.addEventListener('resize', function() {
+    resizeMap();
 
+    // 윈도우 크기가 변경되어도 이미지 크기는 고정
+    fixMapImageSize();
+});
 
+// 이미지 크기를 정확히 고정하는 함수
+function fixMapImageSize() {
+    const mapImage = document.getElementById('mapImage');
+    if (mapImage) {
+        // 정확한 픽셀 크기 설정 (로그인 전 크기로 고정)
+        mapImage.style.width = '810px';
+        mapImage.style.height = '728px';
 
+        // 상대적인 % 설정 제거하고 픽셀 단위로 고정
+        mapImage.style.maxWidth = 'none';
+
+        // 지도 컨테이너도 적절히 조정
+        const mapContainer = document.getElementById('mapContainer');
+        if (mapContainer) {
+            // 이미지가 컨테이너에 맞게 조정
+            mapContainer.style.width = 'auto';
+            mapContainer.style.minWidth = '810px';
+            mapContainer.style.display = 'flex';
+            mapContainer.style.justifyContent = 'center';
+        }
+
+        // 구역 버튼들의 위치 재조정
+        adjustDistrictButtonPositions();
+    }
+}
+
+// 구역 버튼 위치 재조정 함수
+function adjustDistrictButtonPositions() {
+    // 이미지 크기가 고정되었으므로 버튼 위치도 그에 맞게 조정
+    const buttons = document.querySelectorAll('.district-button');
+    if (buttons.length > 0) {
+        // 각 버튼의 위치를 재계산 (필요한 경우)
+        // 여기선 각 버튼의 위치를 원래대로 유지
+        buttons.forEach(button => {
+            // 버튼이 지도 이미지 위에 올바르게 위치하도록 z-index 설정
+            button.style.zIndex = '10';
+        });
+    }
+}
+
+// 로그인 상태에 따른 레이아웃 조정 함수는 제거하거나 변경
+function adjustLayoutForLoginState(isLoggedIn) {
+    // 더 이상 부분적인 스타일 조정 대신 fixMapImageSize()가 모든 케이스를 처리
+    fixMapImageSize();
+}

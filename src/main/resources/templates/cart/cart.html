@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상담 예약 상세보기</title>
+    <!-- Bootstrap CSS -->
+    <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Bootstrap JS -->
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <link th:href="@{/css/baguni.css}" rel="stylesheet" />
+    <script th:src="@{/js/navbar.js}" defer></script>
+    <script th:src="@{/js/baguni.js}" defer></script>
+</head>
+<body>
+<div id="navbar-placeholder"></div>
+
+<main>
+    <h1>장바구니</h1>
+    <p>바로 예약해보세요.</p>
+
+    <div class="property-info">
+        <div class="property-header">
+                <span class="property-number">
+                    NO.000001
+                    <input type="checkbox" id="property-checkbox-1" />
+                </span>
+            <h2 class="property-title">세이부 이케부쿠로선 네리마 역 인접, 4층, 건축 7년</h2>
+        </div>
+        <div class="property-content">
+            <div class="property-grid">
+                <div class="grid-item">
+                    <img th:src="@{/img/nakono.jpg}" alt="매물 이미지" />
+                </div>
+                <div class="grid-item">
+                    <span class="label">월세/관리비</span>
+                    <span class="value">9.7만원 / 1,000엔</span>
+                </div>
+                <div class="grid-item">
+                    <span class="label">시키킹/레이킹</span>
+                    <span class="value">1/0</span>
+                </div>
+                <div class="grid-item">
+                    <span class="label">방 타입/면적</span>
+                    <span class="value">2K / 25.92㎡</span>
+                </div>
+                <div class="grid-item">
+                    <span class="label">건축년도</span>
+                    <span class="value">2018년</span>
+                </div>
+                <div class="grid-item">
+                    <span class="label">예약</span>
+                    <span class="value">예약가능</span>
+                </div>
+            </div>
+            <button class="detail-btn">상세보기</button>
+        </div>
+    </div>
+
+    <div class="property-info">
+        <div class="property-header">
+                <span class="property-number">
+                    NO.000002
+                    <input type="checkbox" id="property-checkbox-2" />
+                </span>
+            <h2 class="property-title">세이부 이케부쿠로선 네리마 역 인접, 4층, 건축 7년</h2>
+        </div>
+        <div class="property-content">
+            <div class="property-grid">
+                <div class="grid-item">
+                    <img th:src="@{/img/nakono.jpg}" alt="매물 이미지" />
+                </div>
+                <div class="grid-item">
+                    <span class="label">월세/관리비</span>
+                    <span class="value">9.7만원 / 1,000엔</span>
+                </div>
+                <div class="grid-item">
+                    <span class="label">시키킹/레이킹</span>
+                    <span class="value">1/0</span>
+                </div>
+                <div class="grid-item">
+                    <span class="label">방 타입/면적</span>
+                    <span class="value">2K / 25.92㎡</span>
+                </div>
+                <div class="grid-item">
+                    <span class="label">건축년도</span>
+                    <span class="value">2018년</span>
+                </div>
+                <div class="grid-item">
+                    <span class="label">예약</span>
+                    <span class="value">예약가능</span>
+                </div>
+            </div>
+            <button class="detail-btn">상세보기</button>
+        </div>
+    </div>
+
+    <div class="property-info">
+        <div class="property-header">
+                <span class="property-number">
+                    NO.000003
+                    <input type="checkbox" id="property-checkbox-3" />
+                </span>
+            <h2 class="property-title">세이부 이케부쿠로선 네리마 역 인접, 4층, 건축 7년</h2>
+        </div>
+        <div class="property-content">
+            <div class="property-grid">
+                <div class="grid-item">
+                    <img th:src="@{/img/nakono.jpg}" alt="매물 이미지" />
+                </div>
+                <div class="grid-item">
+                    <span class="label">월세/관리비</span>
+                    <span class="value">9.7만원 / 1,000엔</span>
+                </div>
+                <div class="grid-item">
+                    <span class="label">시키킹/레이킹</span>
+                    <span class="value">1/0</span>
+                </div>
+                <div class="grid-item">
+                    <span class="label">방 타입/면적</span>
+                    <span class="value">2K / 25.92㎡</span>
+                </div>
+                <div class="grid-item">
+                    <span class="label">건축년도</span>
+                    <span class="value">2018년</span>
+                </div>
+                <div class="grid-item">
+                    <span class="label">예약</span>
+                    <span class="value">예약가능</span>
+                </div>
+            </div>
+            <button class="detail-btn">상세보기</button>
+        </div>
+    </div>
+
+    <button class="consult-btn">체크한 매물 상담 바로 가기</button>
+</main>
+
+<div id="footer-placeholder"></div>
+
+<!-- 모달 추가 -->
+<div id="imageModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+</body>
+</html>

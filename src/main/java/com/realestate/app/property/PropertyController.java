@@ -31,7 +31,7 @@ public class PropertyController {
         Model model) {
         
         System.out.println("요청 파라미터: district=" + district + ", line=" + line + ", station=" + station);
-        
+
         List<Property> properties;
         
         // 모든 매물 가져오기 (나중에 필터링을 위해)

@@ -118,8 +118,6 @@ document.getElementById('searchInput').addEventListener('keypress', function(e) 
 });
 
 
-
-
 document.addEventListener("DOMContentLoaded", function () {
 	checkLoginStatus();
 
@@ -260,9 +258,16 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
 	});
 
-	// ✅ 노선 클릭 시 역 버튼 생성
+	// ✅ 노선 클릭 시 역 버튼 생성 - 여기가 문제되는 부분입니다
 	document.querySelectorAll(".line").forEach(line => {
-			line.addEventListener("click", function () {
+			line.addEventListener("click", function (event) {
+					// a 태그인 경우 기본 링크 동작을 유지
+					if (this.tagName === 'A') {
+							return; // a 태그의 경우 기본 동작 실행 (href로 이동)
+					}
+					
+					// a 태그가 아닌 경우에만 팝업 동작 실행
+					event.preventDefault(); // 기본 동작 방지
 					const selectedLine = this.textContent.trim();
 					stationListContainer.innerHTML = `<h3>${selectedLine} 노선 역 선택</h3>`;
 					
