@@ -6,14 +6,47 @@
     <title>상세페이지</title>
     <!-- Bootstrap CSS -->
     <link
-      th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"
-      rel="stylesheet"
+    th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"
+    rel="stylesheet"
     />
     <!-- Bootstrap JS -->
     <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
     <!-- CSS -->
     <link rel="stylesheet" th:href="@{/css/detail.css}" />
-  </head>
+    <style>
+          #map{
+                width: 400px;
+                height: 400px;
+            }
+            </style>
+<script th:inline="javascript">
+      function initMap() {
+            // 데이터베이스에서 가져온 위도/경도 값을 JavaScript 변수로 설정
+            const latitude = [[${property.latitude}]];
+            const longitude = [[${property.longitude}]];
+            
+            // 위치 정보가 없는 경우 기본값 사용 (선택사항)
+            const lat = latitude || 37.498095;
+            const lng = longitude || 126.854614;
+            
+            const propertyLocation = {lat: lat, lng: lng};
+            
+            const map = new google.maps.Map(document.getElementById('map'), {
+                  center: propertyLocation,
+                  zoom: 20,
+            });
+            
+            const marker = new google.maps.Marker({
+                  position: propertyLocation,  // center가 아닌 propertyLocation 사용
+                  map: map,
+                  title: "매물 위치"
+            });
+      }
+</script>
+      <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDAqy6z-ttqo5AzxjzeO05vLev6rahKO2Q&callback=initMap">
+      </script>
+</head>
   <style>
     body {
       font-family: "Cafe24 Ssurround air OTF Light";
@@ -38,7 +71,7 @@
                 <div class="property-stats">
                       <div class="stat-item">
                             <div class="stat-label">주거면적</div>
-                            <div class="stat-value" th:text="${property.area}"></div>
+                            <span class="stat-value" th:text="${property.area}"></span>㎡
                       </div>
                       <div class="stat-item">
                             <div class="stat-label">건물타입</div>
@@ -55,7 +88,7 @@
                       <div class="stat-item">
                          <div class="stat-label">월세</div>
                          <div class="stat-value">
-                            <span th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA')}">0</span>원
+                            <span th:text="${property.monthlyPrice}">0</span>엔
                          </div>
                    </div>
                    <div class="stat-item">
@@ -85,11 +118,11 @@
        <h2>상세 정보</h2> 
        <tr>
                 <th>주소</th>
-                <td colspan="3" id="address"></td>
+                <td colspan="3" id="address" th:text="${property.location}"></td>
           </tr>
           <tr>
                 <th>건물 타입</th>
-                <td colspan="3" id="buildingType"></td>
+                <td colspan="3" id="buildingType" th:text="${property.buildingType}"></td>
           </tr>
           <tr>
                 <th>등록일</th>
@@ -116,7 +149,7 @@
 
     <div class="location">
       <h2>위치 정보</h2>
-      <div id="map" style="height: 400px">
+      <div id="map">
         <!-- 지도가 표시될 영역 -->
       </div>
     </div>
@@ -131,15 +164,4 @@
     <script th:src="@{/js/detail.js}"></script>
   </body>
 </html>
-
-
-
-
-새 항목
-
-
-
-
-
-
 
