@@ -1,291 +1,34 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>매물 리스트</title>
-    <!-- Bootstrap CSS -->
-    <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
-    <!-- Bootstrap JS -->
-    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
-    <!--  -->
-    <link th:href="@{/css/memul.css}" rel="stylesheet">
-</head>
-<body>
-
-<!-- 헤더 -->
-<header class="navbar">
-    <div class="nav-left">
-        <a th:href="@{/}" class="logo">LION</a>
+<!-- 사이드바 -->
+<nav class="col-md-2 d-none d-md-block sidebar">
+    <div class="position-sticky">
+        <div class="logo-area">
+            <h5>LION</h5>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#">
+                    <i class="fas fa-home"></i>
+                    대시보드
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-building"></i>
+                    매물 관리
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-comments"></i>
+                    상담 관리
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-comment-dots"></i>
+                    채팅 관리
+                </a>
+            </li>
+        </ul>
     </div>
-    <div class="nav-right" id="nav-menu">
-        <!-- JavaScript에서 로그인 여부에 따라 내용 변경 -->
-    </div>
-</header>
-
-
-<!-- 배경 섹션 -->
-<section class="hero">
-    <h1>매물 리스트</h1>
-    <div th:if="${filterType != null}">
-        <p th:if="${filterType == 'district' && filterValueKorean != null}"
-           th:text="${filterValue} + ' (' + ${filterValueKorean} + ') 지역 매물을 보고 계십니다'"></p>
-        <p th:if="${filterType == 'district' && filterValueKorean == null}"
-           th:text="${filterValue} + ' 지역 매물을 보고 계십니다'"></p>
-        <p th:if="${filterType == 'line'}"
-           th:text="${filterValue} + ' 노선 매물을 보고 계십니다'"></p>
-    </div>
-    <br>
-    <a th:href="@{/user/sangdam}" class="cta-btn">상담 예약 페이지 이동</a>
-</section>
-
-
-<!-- 검색 및 필터 -->
-<div class="filter-container">
-    <aside class="filter-box">
-        <h2>매물 필터</h2>
-        <!-- 검색 영역 -->
-        <div class="search-container">
-            <input type="text" id="searchInput" class="search-input"
-                   placeholder="네리마, 이타바시 등 구역명을 입력하세요">
-        </div>
-
-
-        <div class="station-filter">
-            <button class="filter-btn line-btn" onclick="openLinePopup()">노선 변경</button>
-
-        </div>
-
-        <br>
-
-        <!-- 월세 -->
-        <label for="minPrice">월세</label>
-        <br>
-        <div class="slider-container">
-            <div class="range-bar"></div>
-            <div class="slider">
-
-                <input type="range" id="minPrice" min="50000" max="150000" step="1000" value="50000">
-                <input type="range" id="maxPrice" min="50000" max="150000" step="1000" value="80000">
-            </div>
-            <span id="minValue" class="slider-value" style="left: 0%;">50,000</span>
-            <span id="maxValue" class="slider-value" style="left: 100%;">150,000</span>
-        </div>
-
-
-        <br><br>
-
-        <!-- 기존 필터들 -->
-        <div class="building-type">
-            <label>건물 타입</label>
-            <label><input type="checkbox" name="type" value="원룸"> 원룸</label>
-            <label><input type="checkbox" name="type" value="아파트"> 아파트</label>
-            <label><input type="checkbox" name="type" value="LDK 주택"> LDK 주택</label>
-            <label><input type="checkbox" name="type" value="기타"> 기타</label>
-        </div>
-
-        <br>
-
-        <!-- 방 타입 -->
-        <div class="room-type">
-            <label>방 타입</label>
-            <label><input type="checkbox" name="room" value="1R"> 1R</label>
-            <label><input type="checkbox" name="room" value="1K"> 1K</label>
-            <label><input type="checkbox" name="room" value="1DK"> 1DK</label>
-            <label><input type="checkbox" name="room" value="1LDK"> 1LDK</label>
-            <label><input type="checkbox" name="room" value="2K이상"> 2K이상</label>
-        </div>
-
-        <br>
-
-        <!-- 건축년도 -->
-        <label for="building-year">건축년도</label>
-        <select class="form-control" id="building-year">
-            <option value="">지정없음</option>
-            <option value="1년 이내">1년 이내</option>
-            <option value="5년 이내">5년 이내</option>
-            <option value="10년 이내">10년 이내</option>
-            <option value="15년 이내">15년 이내</option>
-            <option value="20년 이내">20년 이내</option>
-            <option value="25년 이내">25년 이내</option>
-            <option value="30년 이내">30년 이내</option>
-        </select>
-
-
-        <br><br>
-
-        <!-- 상세조건 -->
-        <div class="detail-type">
-            <label>방 타입</label>
-            <label><input type="checkbox" name="detail" value="주차장"> 주차장</label>
-            <label><input type="checkbox" name="detail" value="2인 입주"> 2인 입주</label>
-            <label><input type="checkbox" name="detail" value="욕실, 화장실"> 욕실, 화장실 분리</label>
-            <label><input type="checkbox" name="detail" value="인터넷 무료"> 인터넷 무료</label>
-            <label><input type="checkbox" name="detail" value="에어컨"> 에어컨</label>
-        </div>
-
-        <br>
-
-    </aside>
-
-
-
-    <!-- 노선 변경 팝업 -->
-    <div id="linePopup" class="popup">
-        <div class="popup-content">
-            <button class="close-btn" onclick="closeLinePopup()">&times;</button>
-            <h3>노선 선택</h3>
-            <div class="jr">
-                <img th:src="@{/img/jr.png}" alt="jr 로고" class="jr-logo">
-                <span class="line yamanote">야마노테</span>
-                <span class="line chuuo">츄오- 소부</span>
-                <span class="line saikyou">사이쿄</span>
-                <span class="line joban">죠반</span>
-                <span class="line takasaki">타카사키</span>
-                <span class="line yokosuka">요코스카</span>
-                <span class="line keitoku">케이힌토쿠</span>
-            </div>
-            <div class="tokyometro">
-                <img th:src="@{/img/Tokyo_Metro_logo.svg.png}" alt="도쿄메트로 로고" class="tokyometro-logo" />
-                <span class="line hanzomon">한조몬</span>
-                <span class="line marunouchi">마루노우치</span>
-                <span class="line hibiya">히비야</span>
-                <span class="line chiyoda">치요다</span>
-                <span class="line fukutoshin">후쿠토신</span>
-                <span class="line ginza">긴자</span>
-                <span class="line namboku">난보쿠</span>
-                <span class="line yurakucho">유라쿠쵸</span>
-                <span class="line tozai">토자이</span>
-            </div>
-            <h3>역 선택</h3>
-            <div id="stationList" class="station-list">
-
-            </div>
-        </div>
-    </div>
-
-
-    <!-- 매물 리스트 -->
-    <section class="property-list">
-        <h1>매물 리스트</h1>
-
-        <!-- 정렬 옵션 -->
-        <div class="sort-options">
-            <select class="form-select" style="width: 200px; display: inline-block;">
-                <option value="Featured">Featured</option>
-                <option value="newest">최신순</option>
-                <option value="price-low">가격 낮은순</option>
-                <option value="price-high">가격 높은순</option>
-            </select>
-            <button class="btn btn-outline-secondary ms-2">
-                <i class="bi bi-grid"></i>
-            </button>
-            <button class="btn btn-outline-secondary">
-                <i class="bi bi-list"></i>
-            </button>
-        </div>
-
-        <!-- 매물이 없을 경우 -->
-        <div th:if="${#lists.isEmpty(properties)}" class="empty-message">
-            등록된 매물이 없습니다.
-        </div>
-
-        <!-- 매물 목록 -->
-        <div class="property-list">
-            <div th:each="property : ${properties}" class="property-item">
-                <!-- 매물 헤더 -->
-                <div class="property-header">
-                    <div class="header-left">
-                        <input type="checkbox" th:value="${property.propertyId}">
-                        <span class="property-no" th:text="'NO.' + ${property.propertyId}">NO.0000001</span>
-                        <span th:text="${property.title}">매물 제목</span>
-                    </div>
-                </div>
-
-                <!-- 매물 정보 테이블 -->
-                <table class="property-info-table">
-                    <tr>
-                        <th>사진</th>
-                        <th>월세/관리비</th>
-                        <th>시키킹/레이킹</th>
-                        <th>방 타입/면적</th>
-                        <th>건축년도</th>
-                        <th>예약상태</th>
-                        <th>상세보기</th>
-                    </tr>
-                    <tr>
-                        <td>
-                            <img th:src="@{/img/property-placeholder.jpg}" class="property-image" alt="매물 이미지"
-                                 style="width: 150px; height: 100px; object-fit: cover;">
-                        </td>
-                        <td>
-                            <div th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA') + '円'}">9.7만円</div>
-                            <div th:text="${#numbers.formatInteger(property.managementFee, 0, 'COMMA') + '円'}">10000円</div>
-                        </td>
-                        <td>
-                            <div th:text="${#numbers.formatInteger(property.shikikin, 0, 'COMMA') + ' / ' +
-                                      #numbers.formatInteger(property.reikin, 0, 'COMMA') }">1/1</div>
-                        </td>
-                        <td>
-                            <div th:text="${property.roomType}">1K</div>
-                            <div th:text="${property.area + 'm²'}">25.92m²</div>
-                            <div th:text="${property.buildingType}">아파트</div>
-                        </td>
-                        <td th:text="${property.builtYear}">2018년</td>
-                        <td>
-                            <div class="status-available" th:text="${property.status}">예약가능</div>
-                        </td>
-                        <td>
-                            <a th:href="@{/property/{id}(id=${property.propertyId})}" class="detail-button">상세보기</a>
-                        </td>
-                    </tr>
-                </table>
-
-                <!-- 주소 정보 -->
-                <div class="address-info">
-                    <div th:text="${property.location}">도쿄도 세타가야구 상마4쵸메</div>
-                    <div th:text="${property.subwayLine}">오다큐선 / 키타센주역 도보 7분</div>
-                </div>
-            </div>
-        </div>
-    </section>
-</div>
-
-<!-- 푸터 -->
-<footer class="footer">
-    <div class="footer-container">
-        <div class="footer-left">
-            <a href="/index.html" class="footer-logo">LION</a>
-        </div>
-        <div class="footer-right">
-            <a href="/*" class="kakao-link"
-            >상담원 카카오톡 문의</a
-            >
-            <p class="account">비니니: BBBBB</p>
-        </div>
-    </div>
-</footer>
-
-<script th:inline="javascript">
-    // 서버에서 받은 데이터 사용
-    const serverProperties = /*[[${properties}]]*/ [];
-    console.log("서버에서 받은 매물 수:", serverProperties.length);
-
-    // JavaScript 필터링 비활성화 (서버 필터링 사용)
-    window.useServerFilter = true;
-</script>
-<script th:src="@{/js/memul.js}"></script>
-</body>
-</html>
-
-
-
-
-새 항목
-
-
-
-
-
-
-
+</nav>
