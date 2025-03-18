@@ -42,96 +42,96 @@
       <img th:src="@{/img/jido.png}" alt="도쿄 23구 지도" class="map-image" id="mapImage" usemap="#image-map">
       <map name="image-map">
         <!-- 아다치구 -->
-        <a href="/HTML/adachi.html" class="district-button"
-           style="left: 390px; top: 180px; width: 120px; height: 100px;">아다치구</a>
+        <a th:href="@{/property/list(district='足立区')}" class="district-button"
+           style="left: 495px; top: 230px; width: 120px; height: 100px;">아다치구</a>
 
         <!-- 가쓰시카구 -->
-        <a href="/HTML/katsushika.html" class="district-button"
-           style="left: 520px; top: 270px; width: 80px; height: 69px;">가쓰시카구</a>
+        <a th:href="@{/property/list(district='葛飾区')}" class="district-button"
+           style="left: 640px; top: 315px; width: 80px; height: 69px;">가쓰시카구</a>
 
         <!-- 에도가와구 -->
-        <a href="/HTML/edogawa.html" class="district-button"
-           style="left: 550px; top: 390px; width: 70px; height: 150px;">에도가와구</a>
+        <a th:href="@{/property/list(district='江戸川区')}" class="district-button"
+           style="left: 675px; top: 430px; width: 70px; height: 150px;">에도가와구</a>
 
         <!-- 고토구 -->
-        <a href="/HTML/kotou.html" class="district-button"
-           style="left: 450px; top: 450px; width: 80px; height: 69px;">고토구</a>
+        <a th:href="@{/property/list(district='江東区')}"  class="district-button"
+           style="left: 570px; top: 490px; width: 80px; height: 69px;">고토구</a>
 
         <!-- 스미다구 -->
-        <a href="/HTML/sumida.html" class="district-button"
-           style="left: 450px; top: 370px; width: 80px; height: 40px;">스미다구</a>
+        <a th:href="@{/property/list(district='墨田区')}" class="district-button"
+           style="left: 570px; top: 410px; width: 80px; height: 40px;">스미다구</a>
 
         <!-- 아라카와구 -->
-        <a href="/HTML/arakawa.html" class="district-button"
-           style="left: 390px; top: 310px; width: 80px; height: 40px;">아라카와구</a>
+        <a th:href="@{/property/list(district='荒川区')}" class="district-button"
+           style="left: 505px; top: 350px; width: 80px; height: 40px;">아라카와구</a>
 
         <!-- 다이토구 -->
-        <a href="/HTML/taito.html" class="district-button"
-           style="left: 388px; top: 365px; width: 80px; height: 40px;">다이토구</a>
+        <a th:href="@{/property/list(district='台東区')}" class="district-button"
+           style="left: 505px; top: 405px; width: 80px; height: 40px;">다이토구</a>
 
         <!-- 기타구 -->
-        <a href="/HTML/kita.html" class="district-button"
-           style="left: 290px; top: 235px; width: 80px; height: 80px;">기타구</a>
+        <a th:href="@{/property/list(district='北区')}" class="district-button"
+           style="left: 405px; top: 280px; width: 80px; height: 80px;">기타구</a>
 
         <!-- 분쿄구 -->
-        <a href="/HTML/bunkyo.html" class="district-button"
-           style="left: 315px; top: 360px; width: 80px; height: 40px;">분쿄구</a>
+        <a th:href="@{/property/list(district='文京区')}" class="district-button"
+           style="left: 430px; top: 400px; width: 80px; height: 40px;">분쿄구</a>
 
         <!-- 도시마구 -->
-        <a href="/HTML/toshima.html" class="district-button"
-           style="left: 250px; top: 325px; width: 80px; height: 40px;">도시마구</a>
+        <a th:href="@{/property/list(district='豊島区')}"class="district-button"
+           style="left: 370px; top: 365px; width: 80px; height: 40px;">도시마구</a>
 
         <!-- 이타바시구 -->
-        <a href="/HTML/itabashi.html" class="district-button"
-           style="left: 205px; top: 220px; width: 80px; height: 100px;">이타바시구</a>
+        <a th:href="@{/property/list(district='板橋区')}" class="district-button"
+           style="left: 300px; top: 240px; width: 80px; height: 100px;">이타바시구</a>
 
         <!-- 네리마구 -->
-        <a href="/HTML/nerima.html" class="district-button"
-           style="left: 50px; top: 250px; width: 150px; height: 100px;">네리마구</a>
+        <a th:href="@{/property/list(district='練馬区')}" class="district-button"
+           style="left: 150px; top: 290px; width: 150px; height: 100px;">네리마구</a>
 
         <!-- 스기나미구 -->
-        <a href="/HTML/suginami.html" class="district-button"
-           style="left: 30px; top: 390px; width: 150px; height: 70px;">스기나미구</a>
+        <a th:href="@{/property/list(district='杉並区')}" class="district-button"
+           style="left: 170px; top: 430px; width: 150px; height: 70px;">스기나미구</a>
 
         <!-- 나카노구 -->
-        <a href="/HTML/nakano.html" class="district-button"
-           style="left: 180px; top: 370px; width: 60px; height: 70px;">나카노구</a>
+        <a th:href="@{/property/list(district='中野区')}"class="district-button"
+           style="left: 300px; top: 410px; width: 60px; height: 70px;">나카노구</a>
 
         <!-- 신주쿠구 -->
-        <a href="/HTML/shinjuku.html" class="district-button"
-           style="left: 240px; top: 390px; width: 100px; height: 50px;">신주쿠구</a>
+        <a th:href="@{/property/list(district='新宿区')}" class="district-button"
+           style="left: 360px; top: 430px; width: 100px; height: 50px;">신주쿠구</a>
 
         <!-- 지요다구 -->
-        <a href="/HTML/chiyoda.html" class="district-button"
-           style="left: 335px; top: 420px; width: 80px; height: 40px;">지요다구</a>
+        <a th:href="@{/property/list(district='千代田区')}" class="district-button"
+           style="left: 455px; top: 470px; width: 80px; height: 40px;">지요다구</a>
 
         <!-- 주오구 -->
-        <a href="/HTML/chuou.html" class="district-button"
-           style="left: 385px; top: 450px; width: 50px; height: 69px;">주오구</a>
+        <a th:href="@{/property/list(district='中央区')}" class="district-button"
+           style="left: 505px; top: 490px; width: 50px; height: 69px;">주오구</a>
 
         <!-- 시부야구 -->
-        <a href="/HTML/shibuya.html" class="district-button"
-           style="left: 190px; top: 470px; width: 100px; height: 50px;">시부야구</a>
+        <a th:href="@{/property/list(district='渋谷区')}" class="district-button"
+           style="left: 320px; top: 510px; width: 100px; height: 50px;">시부야구</a>
 
         <!-- 세타가야구 -->
-        <a href="/HTML/setagaya.html" class="district-button"
-           style="left: 50px; top: 520px; width: 150px; height: 100px;">세타가야구</a>
+        <a th:href="@{/property/list(district='世田谷区')}" class="district-button"
+           style="left: 175px; top: 550px; width: 150px; height: 100px;">세타가야구</a>
 
         <!-- 미나토구 -->
-        <a href="/HTML/minato.html" class="district-button"
-           style="left: 280px; top: 490px; width: 100px; height: 80px;">미나토구</a>
+        <a th:href="@{/property/list(district='港区')}" class="district-button"
+           style="left: 415px; top: 530px; width: 100px; height: 80px;">미나토구</a>
 
         <!-- 메구로구 -->
-        <a href="/HTML/meguro.html" class="district-button"
-           style="left: 205px; top: 550px; width: 70px; height: 80px;">메구로구</a>
+        <a th:href="@{/property/list(district='目黒区')}"class="district-button"
+           style="left: 340px; top: 590px; width: 70px; height: 80px;">메구로구</a>
 
         <!-- 시나가와구 -->
-        <a href="/HTML/shinagawa.html" class="district-button"
-           style="left: 260px; top: 590px; width: 100px; height: 80px;">시나가와구</a>
+        <a th:href="@{/property/list(district='品川区')}" class="district-button"
+           style="left: 380px; top: 630px; width: 100px; height: 80px;">시나가와구</a>
 
         <!-- 오타구 -->
-        <a href="/HTML/oota.html" class="district-button"
-           style="left: 230px; top: 680px; width: 180px; height: 120px;">오타구</a>
+        <a th:href="@{/property/list(district='大田区')}" class="district-button"
+           style="left: 340px; top: 720px; width: 180px; height: 120px;">오타구</a>
       </map>
     </div>
   </div>
@@ -147,25 +147,25 @@
 
         <div class="jr">
           <img src="/img/jr.png" alt="jr 로고" class="jr-logo" />
-          <span class="line yamanote">야마노테</span>
-          <span class="line chuuo">츄오- 소부</span>
-          <span class="line saikyou">사이쿄</span>
-          <span class="line joban">죠반</span>
-          <span class="line takasaki">타카사키</span>
-          <span class="line yokosuka">요코스카</span>
-          <span class="line keitoku">케이힌토쿠</span>
+          <a th:href="@{/property/list(line='야마노테')}" class="line yamanote">야마노테</a>
+          <a th:href="@{/property/list(line='츄오- 소부')}" class="line chuuo">츄오- 소부</a>
+          <a th:href="@{/property/list(line='사이쿄')}" class="line saikyou">사이쿄</a>
+          <a th:href="@{/property/list(line='죠반')}" class="line joban">죠반</a>
+          <a th:href="@{/property/list(line='타카사키')}" class="line takasaki">타카사키</a>
+          <a th:href="@{/property/list(line='요코스카')}" class="line yokosuka">요코스카</a>
+          <a th:href="@{/property/list(line='케이힌토쿠')}" class="line keitoku">케이힌토쿠</a>
         </div>
         <div class="tokyometro">
           <img src="/img/Tokyo_Metro_logo.svg.png" alt="도쿄메트로 로고" class="tokyometro-logo" />
-          <span class="line hanzomon">한조몬</span>
-          <span class="line marunouchi">마루노우치</span>
-          <span class="line hibiya">히비야</span>
-          <span class="line chiyoda">치요다</span>
-          <span class="line fukutoshin">후쿠토신</span>
-          <span class="line ginza">긴자</span>
-          <span class="line namboku">난보쿠</span>
-          <span class="line yurakucho">유라쿠쵸</span>
-          <span class="line tozai">토자이</span>
+          <a th:href="@{/property/list(line='한조몬')}" class="line hanzomon">한조몬</a>
+          <a th:href="@{/property/list(line='마루노우치')}" class="line marunouchi">마루노우치</a>
+          <a th:href="@{/property/list(line='히비야')}" class="line hibiya">히비야</a>
+          <a th:href="@{/property/list(line='치요다')}" class="line chiyoda">치요다</a>
+          <a th:href="@{/property/list(line='후쿠토신')}" class="line fukutoshin">후쿠토신</a>
+          <a th:href="@{/property/list(line='긴자')}" class="line ginza">긴자</a>
+          <a th:href="@{/property/list(line='난보쿠')}" class="line namboku">난보쿠</a>
+          <a th:href="@{/property/list(line='유라쿠쵸')}" class="line yurakucho">유라쿠쵸</a>
+          <a th:href="@{/property/list(line='토자이')}" class="line tozai">토자이</a>
         </div>
       </section>
     </aside>
@@ -187,7 +187,7 @@
     </div>
     <div class="property-item">
       <img src="/img/room2.jpeg" alt="매물 이미지 2">
-      <p>#4월 입주 #위불 비자 가능</p>
+      <p>#4월 입주 워홀 비자 가능</p>
       <span>심사 간편 & 계약 빠르게! 복잡한 절차 없이 쉽고 빠르게 입주하세요.</span>
     </div>
     <div class="property-item">
