@@ -63,6 +63,12 @@ public class Property {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "initial_cost", columnDefinition = "TEXT")
+    private String initialCost;
+    
+    @Column(name = "nearby_facilities", columnDefinition = "TEXT")
+    private String nearbyFacilities;
+
     @PrePersist
     public void prePersist() {
         if (this.createdAt == null) {
