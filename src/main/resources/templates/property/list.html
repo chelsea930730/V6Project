@@ -70,7 +70,7 @@
         <!-- 기존 필터들 -->
         <div class="building-type">
             <label>건물 타입</label>
-            <label><input type="checkbox" name="type" value="원룸"> 원룸</label>
+            <label><input type="checkbox" name="type" value="맨션"> 맨션</label>
             <label><input type="checkbox" name="type" value="아파트"> 아파트</label>
             <label><input type="checkbox" name="type" value="LDK 주택"> LDK 주택</label>
             <label><input type="checkbox" name="type" value="기타"> 기타</label>
@@ -207,8 +207,10 @@
                 </tr>
                 <tr>
                     <td>
-                        <img th:src="@{/img/property-placeholder.jpg}" class="property-image" alt="매물 이미지" 
-                             style="width: 150px; height: 100px; object-fit: cover;">
+                        <div class="no-image-container"
+                             style="width: 150px; height: 100px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                            <span>이미지 준비중</span>
+                        </div>
                     </td>
                     <td>
                         <div th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA') + '円'}">9.7만円</div>
@@ -245,12 +247,8 @@
 
 
 <script th:inline="javascript">
-    // 서버에서 받은 데이터 사용
+    // 서버에서 받은 데이터를 전역 변수로 설정
     const serverProperties = /*[[${properties}]]*/ [];
-    console.log("서버에서 받은 매물 수:", serverProperties.length);
-    
-    // JavaScript 필터링 비활성화 (서버 필터링 사용)
-    window.useServerFilter = true;
 </script>
 <script th:src="@{/js/memul.js}"></script>
 <script th:src="@{/js/navbar.js}"></script>
