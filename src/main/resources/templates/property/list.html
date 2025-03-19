@@ -13,15 +13,7 @@
 </head>
 <body>
 
-<!-- 헤더 -->
-<header class="navbar">
-    <div class="nav-left">
-        <a th:href="@{/}" class="logo">LION</a>
-    </div>
-    <div class="nav-right" id="nav-menu">
-        <!-- JavaScript에서 로그인 여부에 따라 내용 변경 -->
-    </div>
-</header>
+<div id="navbar-placeholder"></div>
 
 
 <!-- 배경 섹션 -->
@@ -251,20 +243,6 @@
 </section>
 </div>
 
-<!-- 푸터 -->
-<footer class="footer">
-    <div class="footer-container">
-        <div class="footer-left">
-            <a href="/index.html" class="footer-logo">LION</a>
-        </div>
-        <div class="footer-right">
-            <a href="/*" class="kakao-link"
-            >상담원 카카오톡 문의</a
-            >
-            <p class="account">비니니: BBBBB</p>
-        </div>
-    </div>
-</footer>
 
 <script th:inline="javascript">
     // 서버에서 받은 데이터 사용
@@ -275,6 +253,7 @@
     window.useServerFilter = true;
 </script>
 <script th:src="@{/js/memul.js}"></script>
+<script th:src="@{/js/navbar.js}"></script>
 </body>
 </html>
 
