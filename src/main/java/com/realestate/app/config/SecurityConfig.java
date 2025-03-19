@@ -13,8 +13,16 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 import com.realestate.app.config.CustomAuthenticationProvider;
+import com.realestate.app.user.Role;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -29,6 +37,22 @@ public class SecurityConfig {
     private final AuthenticationUserDetails userDetailsService;
 
     @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new SimpleUrlAuthenticationSuccessHandler() {
+            @Override
+            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                    Authentication authentication) throws IOException, ServletException {
+                AuthenticatedUser user = (AuthenticatedUser) authentication.getPrincipal();
+                String targetUrl = user.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
+                        ? "/admin/dashboard"
+                        : "/";
+                getRedirectStrategy().sendRedirect(request, response, targetUrl);
+            }
+        };
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -40,18 +64,18 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/user/login") // ✅ 로그인 페이지 설정
-                        .loginProcessingUrl("/user/login") // ✅ 로그인 요청 URL
-                        .usernameParameter("email") // ✅ 폼에서 전달할 파라미터 이름
-                        .passwordParameter("password") // ✅ 폼에서 전달할 비밀번호 파라미터 이름
-                        .defaultSuccessUrl("/", true) // ✅ 로그인 성공 시 이동할 페이지
-                        .failureUrl("/user/login?error=true") // ✅ 로그인 실패 시 이동할 페이지
+                        .loginPage("/user/login")
+                        .loginProcessingUrl("/user/login")
+                        .usernameParameter("email")
+                        .passwordParameter("password")
+                        .successHandler(authenticationSuccessHandler())
+                        .failureUrl("/user/login?error=true")
                         .permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/user/login") // ✅ 로그인 페이지 설정
-                        .defaultSuccessUrl("/", true) // ✅ 로그인 성공 시 이동할 페이지
-                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuthUserService)) // ✅ Custom OAuth2UserService 등록
+                        .loginPage("/user/login")
+                        .successHandler(authenticationSuccessHandler())
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuthUserService))
                 )
                 .logout(logout -> logout
                         .logoutUrl("/user/logout")
@@ -60,17 +84,14 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID")
                 );
 
-        return http.authenticationProvider(customAuthenticationProvider()).build(); // ✅ CustomAuthenticationProvider 사용
+        return http.authenticationProvider(customAuthenticationProvider()).build();
     }
 
-
-    // ✅ PasswordEncoder를 반드시 @Bean으로 등록해야 함
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ CustomAuthenticationProvider를 @Bean으로 등록
     @Bean
     public AuthenticationProvider customAuthenticationProvider() {
         return new CustomAuthenticationProvider(userDetailsService, passwordEncoder());
