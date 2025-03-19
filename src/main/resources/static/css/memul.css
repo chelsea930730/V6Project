@@ -324,62 +324,137 @@ select {
 
 /* 매물 리스트 */
 .property-list {
-	flex: 1;
-}
-
-.property-list h1 {
-	font-size: 24px;
-	margin-bottom: 20px;
+	margin: 20px;
 	font-family: 'Cafe24 Ssurround air OTF Light';
 }
 
 .property-item {
-	display: flex;
-	align-items: center;
-	background: white;
-	padding: 15px;
-	margin-bottom: 10px;
-	border-radius: 10px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-	font-family: 'Cafe24 Ssurround air OTF Light';
+	border: 1px solid #e0e0e0;
+	margin-bottom: 20px;
+	background-color: white;
 }
 
-.property-item img {
-	width: 150px;
-	height: 100px;
-	object-fit: cover;
-	border-radius: 5px;
-	margin-right: 15px;
-}
-
-.property-info h3 {
-	font-size: 18px;
-	margin: 0;
-	font-family: 'Cafe24 Ssurround air OTF Light';
-}
-
-.property-info p {
-	font-size: 14px;
-	color: gray;
-	font-family: 'Cafe24 Ssurround air OTF Light';
-}
-
-.detail-btn {
-	display: inline-block;
-	background-color: #6a99cd;
+.property-header {
+	background-color: #4b6cb7;
 	color: white;
-	padding: 8px 15px;
+	padding: 15px;
+	font-size: 1.1em;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.property-header .property-no {
+	color: white;
+	margin-right: 10px;
+}
+
+.property-content {
+	display: grid;
+	grid-template-columns: 200px repeat(5, 1fr);
+	padding: 15px;
+	align-items: center;
+	gap: 10px;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.property-image {
+	width: 180px;
+	height: 120px;
+	object-fit: cover;
+}
+
+/* 정렬 옵션 스타일 */
+.sort-options {
+	text-align: right;
+	margin: 20px;
+}
+
+/* 체크박스 영역 스타일 */
+.checkbox-column {
+	width: 30px;
+}
+
+/* 매물 번호 스타일 */
+.property-no {
+	color: #666;
+	font-size: 0.9em;
+}
+
+/* 상세보기 버튼 스타일 */
+.detail-button {
+	background-color: #4b6cb7;
+	color: white;
+	padding: 8px 20px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	white-space: nowrap;
+	display: inline-block;
 	text-decoration: none;
-	border-radius: 5px;
-	margin-top: 5px;
-	font-family: 'Cafe24 Ssurround air OTF Light';
 }
 
-.detail-btn:hover {
-	background-color: #355c86;
-	font-family: 'Cafe24 Ssurround air OTF Light';
+.detail-button:hover {
+	background-color: #3b5998;
 }
 
+/* 예약 가능 상태 스타일 */
+.status-available {
+	color: #28a745;
+	font-weight: bold;
+}
+
+/* 지하철 정보 스타일 */
+.subway-info {
+	color: #666;
+	font-size: 0.9em;
+}
+
+/* 가격 정보 영역 스타일 */
+.price-info {
+	background-color: #f8f9fa;
+	padding: 15px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-top: 1px solid #e0e0e0;
+}
+
+/* 반응형 디자인을 위한 미디어 쿼리 */
+@media (max-width: 1200px) {
+	.property-content {
+		grid-template-columns: 150px 1fr 120px 120px 100px;
+	}
+	
+	.property-image {
+		width: 140px;
+		height: 100px;
+	}
+}
+
+@media (max-width: 768px) {
+	.property-content {
+		grid-template-columns: 1fr;
+		gap: 10px;
+	}
+	
+	.property-image {
+		width: 100%;
+		height: 200px;
+	}
+	
+	.checkbox-column {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
+	}
+	
+	.price-info {
+		grid-template-columns: 1fr;
+		gap: 10px;
+	}
+}
 
 /* '//////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
@@ -545,6 +620,35 @@ select {
 
 .station.selected {
 	border: 2px solid #355c86;
+}
+
+/* 매물 정보 테이블 스타일 */
+.property-info-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 10px;
+}
+
+.property-info-table th {
+	background-color: #f8f9fa;
+	padding: 10px;
+	text-align: center;
+	border: 1px solid #dee2e6;
+	width: 16.66%;
+}
+
+.property-info-table td {
+	padding: 15px;
+	text-align: center;
+	border: 1px solid #dee2e6;
+}
+
+/* 주소 정보 스타일 */
+.address-info {
+	padding: 10px 15px;
+	color: #666;
+	font-size: 0.9em;
+	border-top: 1px solid #e0e0e0;
 }
 
 

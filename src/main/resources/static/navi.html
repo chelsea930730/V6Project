@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Navigation</title>
+</head>
+<body>
+<header>
+	<nav>
+		<strong><a th:href="@{/}">LION</a></strong>
+	</nav>
+
+	<!-- 네비 로그인 시 변경 -->
+	<div id="nav-menu">
+		<a th:href="@{/user/login}" class="nav-link login-btn">LOGIN</a>
+	</div>
+</header>
+
+
+
+<!-- 푸터 -->
+<footer class="footer">
+	<div class="footer-container">
+		<div class="footer-left">
+			<strong><a href="/templates/index.html" class="footer-logo">LION</a></strong>
+		</div>
+		<div class="footer-right">
+			<strong><a href="/*" class="kakao-link">상담원 카카오톡 문의</a></strong>
+			<p class="account">비니니: BBBBB</p>
+		</div>
+	</div>
+</footer>
+
+<style>
+	body {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+		margin: 0;
+		padding: 0;
+	}
+
+	header {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 95%;
+		background-color: white;  /* 배경색 추가 */
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 15px 50px;
+		border-bottom: 1px solid #ddd;
+		z-index: 1000; /* 다른 요소보다 위에 표시 */
+	}
+
+
+
+	/* 푸터 */
+
+	.footer {
+
+		width: 100%;
+		background-color: white;
+		padding: 15px 50px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		border-top: 1px solid #ddd;
+		/* z-index: 1000; */
+		margin-top: auto;
+	}
+
+	.footer-container {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
+		max-width: 1200px;
+	}
+
+	.footer-logo {
+		font-size: 20px;
+		color: #355c86;
+		text-decoration: none;
+	}
+
+	.footer-left {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.footer-right {
+		text-align: right;
+	}
+
+	.kakao-link {
+		text-decoration: none;
+		color: #2d5be3;
+		font-size: 14px;
+	}
+
+	.account {
+		color: black;
+		font-size: 14px;
+		margin-top: 5px;
+	}
+
+
+	/* 네비 */
+
+	nav a {
+		text-decoration: none;
+		color: #355c86;
+		font-size: 30px;
+		font-family: 'Cafe24 Ssurround air OTF Light';
+	}
+
+	.login-btn {
+		background-color: #6a99cd;
+		color: white;
+		border: none;
+		padding: 15px 35px;
+		border-radius: 25px;
+		font-size: 20px;
+		cursor: pointer;
+		font-family: 'Cafe24 Ssurround air OTF Light';
+	}
+
+	.login-btn:hover, .logout-btn:hover {
+		background-color: #355c86;
+	}
+
+	.nav-link{
+		text-decoration: none;
+		color: #355c86;
+		font-size: 16px;
+		margin-right: 10px;
+		font-family: 'Cafe24 Ssurround air OTF Light';
+	}
+</style>
+</body>
+</html>

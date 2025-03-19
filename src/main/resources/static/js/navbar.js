@@ -1,56 +1,87 @@
-//네비 연결
+// 네비게이션과 푸터 연결
 document.addEventListener("DOMContentLoaded", function () {
-	fetch("/HTML/navi.html")  // ✅ `navi.html` 위치 확인 후 수정
-			.then(response => {
-					if (!response.ok) {
-							throw new Error("네비게이션 파일을 찾을 수 없습니다.");
-					}
-					return response.text();
-			})
-			.then(data => {
-					let navbar = document.getElementById("navbar-placeholder");
-					if (navbar) {
-							navbar.innerHTML = data;
-					} else {
-							console.error("❌ `navbar-placeholder` ID를 가진 요소가 존재하지 않습니다.");
-					}
-			})
-			.catch(error => console.error("❌ 네비게이션 로딩 오류:", error));
-});
+	fetch("/navi.html")
+		.then(response => {
+			if (!response.ok) {
+				throw new Error("네비게이션 파일을 찾을 수 없습니다.");
+			}
+			return response.text();
+		})
+		.then(data => {
+			// HTML 파싱
+			const parser = new DOMParser();
+			const doc = parser.parseFromString(data, 'text/html');
 
+			// 헤더와 푸터, 스타일 가져오기
+			const header = doc.querySelector('header');
+			const footer = doc.querySelector('footer');
+			const style = doc.querySelector('style');
+
+			// 헤더 삽입
+			let navbarPlaceholder = document.getElementById("navbar-placeholder");
+			if (navbarPlaceholder) {
+				navbarPlaceholder.innerHTML = header.outerHTML;
+			}
+
+			// 푸터 삽입
+			document.body.insertAdjacentHTML('beforeend', footer.outerHTML);
+
+			// 스타일 삽입
+			if (!document.querySelector('style[data-navi-styles]')) {
+				style.setAttribute('data-navi-styles', '');
+				document.head.appendChild(style);
+			}
+
+			// ✅ 네비게이션이 완전히 로드된 후 로그인 상태 확인
+			checkLoginStatus();
+		})
+		.catch(error => console.error("❌ 네비게이션 로딩 오류:", error));
+});
 
 // 로그인 상태 체크 및 네비게이션 업데이트
 function checkLoginStatus() {
-	const isLoggedIn = localStorage.getItem("isLoggedIn"); // 로그인 상태 확인
-	const user = JSON.parse(localStorage.getItem("user")); // 유저 정보 가져오기
-	const navMenu = document.getElementById("nav-menu"); // 네비게이션 메뉴 영역
+	fetch("/user/index")
+		.then(response => response.json())
+		.then(data => {
+			const navMenu = document.getElementById("nav-menu"); // 네비게이션 메뉴 영역
 
-	if (isLoggedIn === "true" && user) {
-			// 로그인 상태일 때 표시할 메뉴
-			navMenu.innerHTML = `
-					<a href="/HTML/cart.html" class="nav-link">🛒 Cart</a>
-					<a href="/HTML/alarm.html" class="nav-link">알림</a>
-					<a href="/HTML/mypage.html" class="nav-link">마이페이지</a>
-					<button class="logout-btn" onclick="handleLogout()">LOGOUT</button>
-			`;
-	} else {
-			// 로그아웃 상태일 때 표시할 메뉴
-			navMenu.innerHTML = `
-					<a href="/HTML/login.html" class="nav-link">
-							<button class="login-btn">LOGIN</button>
-					</a>
-			`;
-	}
+			if (data.isLoggedIn) {
+				// ✅ 로그인된 경우
+				navMenu.innerHTML = `
+                    <a href="/cart/cart.html" class="nav-link">🛒 Cart</a>
+                    <a href="/mypage/alarm.html" class="nav-link">알림</a>
+                    <a href="/mypage/mypage.html" class="nav-link">마이페이지</a>
+                    <button class="logout-btn">LOGOUT</button>
+                `;
+
+			} else {
+				// ✅ 로그아웃 상태
+				navMenu.innerHTML = `
+                    <a href="/user/login" class="nav-link login-btn">LOGIN</a>
+                `;
+			}
+		})
+		.catch(error => console.error("❌ 로그인 상태 확인 실패:", error));
 }
 
 // 로그아웃 처리 함수
-function handleLogout() {
-	localStorage.removeItem("isLoggedIn"); // 로그인 상태 삭제
-	localStorage.removeItem("user"); // 사용자 정보 삭제
-	checkLoginStatus(); // 네비게이션 업데이트
-	window.location.href = "/HTML/login.html"; // 로그인 페이지로 이동
-}
+document.body.addEventListener("click", function (event) {
+	if (event.target.classList.contains("logout-btn")) {
+		fetch("/user/logout", { method: "POST" }) // ✅ 서버에 로그아웃 요청
+			.then(() => {
+				checkLoginStatus(); // ✅ 네비게이션 업데이트
+				window.location.href = "/"; // 메인 페이지로 이동
+			})
+			.catch(error => console.error("❌ 로그아웃 실패:", error));
+	}
+});
 
-//페이지 로드 시 로그인 상태 확인
+// ✅ 로그인 버튼 클릭 시 `/user/login` 페이지로 이동 (동적으로 생성된 요소 대응)
+document.addEventListener("click", function (event) {
+	if (event.target.classList.contains("login-btn")) {
+		window.location.href = "/user/login";
+	}
+});
+
+// 페이지 로드 시 로그인 상태 확인
 document.addEventListener("DOMContentLoaded", checkLoginStatus);
-

@@ -1,102 +1,230 @@
 <!DOCTYPE html>
-<html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>도쿄 23구 클릭 지도</title>
-    <link rel="stylesheet" href="/HTML/css/map.css" />
-    <!-- ✅ 스타일 연결 확인 -->
-  </head>
-  <style>
-    body {
-      font-family: "Cafe24 Ssurround air OTF Light";
-    }
-  </style>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>도쿄 23구 클릭 지도</title>
+  <!-- Bootstrap CSS -->
+  <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+  <!-- Bootstrap JS -->
+  <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+  <!-- CSS -->
+  <link th:href="@{/css/map.css}" rel="stylesheet" />
+  <!-- ✅ 스타일 연결 확인 -->
+</head>
+<style>
+  body {
+    font-family: "Cafe24 Ssurround air OTF Light";
+  }
+</style>
 
-  <body>
-    <div id="navbar-placeholder"></div>
+<body>
+<div id="navbar-placeholder"></div>
 
-<br><br><br><br>
-    <!-- 지도 -->
-    <div class="container">
-      <aside>
-        <h1>
-          우측 지도에서 원하는
-          <br />
-          지역을 선택해 주세요
-        </h1>
-        <p>일본에서의 새로운 시작, 쉽고 안전하게!</p>
-        <p>원하는 지역과 예산에 맞는 집을 지금 바로 찾아보세요.</p>
-<br>
-        <div class="image-gallery">
-          <a th:href="@{/property/list}"><button class="all-build">전체 매물 보기</button></a>
-        </div>
-      </aside>
+<main>
+  <!-- 지도 -->
+  <div class="container">
+    <aside>
+      <h1>
+        우측 지도에서 원하는
+        <br />
+        지역을 선택해 주세요
+      </h1>
+      <p>일본에서의 새로운 시작, 쉽고 안전하게!</p>
+      <p>원하는 지역과 예산에 맞는 집을 지금 바로 찾아보세요.</p>
+      <br>
+      <div class="image-gallery">
+        <a th:href="@{/property/list}"><button class="all-build">전체 매물 보기</button></a>
+      </div>
+    </aside>
 
-      <div class="map-container" id="mapContainer">
-        <img src="/img/jido.png" alt="도쿄 23구 지도" class="map-image" id="mapImage" usemap="#image-map">
-        <map name="image-map">
+    <div class="map-container" id="mapContainer">
+      <img th:src="@{/img/jido.png}" alt="도쿄 23구 지도" class="map-image" id="mapImage" usemap="#image-map">
+      <map name="image-map">
+        <!-- 아다치구 -->
+        <a th:href="@{/property/list(district='足立区')}" class="district-button"
+           style="left: 495px; top: 230px; width: 120px; height: 100px;">아다치구</a>
 
-</map>
+        <!-- 가쓰시카구 -->
+        <a th:href="@{/property/list(district='葛飾区')}" class="district-button"
+           style="left: 640px; top: 315px; width: 80px; height: 69px;">가쓰시카구</a>
+
+        <!-- 에도가와구 -->
+        <a th:href="@{/property/list(district='江戸川区')}" class="district-button"
+           style="left: 675px; top: 430px; width: 70px; height: 150px;">에도가와구</a>
+
+        <!-- 고토구 -->
+        <a th:href="@{/property/list(district='江東区')}"  class="district-button"
+           style="left: 570px; top: 490px; width: 80px; height: 69px;">고토구</a>
+
+        <!-- 스미다구 -->
+        <a th:href="@{/property/list(district='墨田区')}" class="district-button"
+           style="left: 570px; top: 410px; width: 80px; height: 40px;">스미다구</a>
+
+        <!-- 아라카와구 -->
+        <a th:href="@{/property/list(district='荒川区')}" class="district-button"
+           style="left: 505px; top: 350px; width: 80px; height: 40px;">아라카와구</a>
+
+        <!-- 다이토구 -->
+        <a th:href="@{/property/list(district='台東区')}" class="district-button"
+           style="left: 505px; top: 405px; width: 80px; height: 40px;">다이토구</a>
+
+        <!-- 기타구 -->
+        <a th:href="@{/property/list(district='北区')}" class="district-button"
+           style="left: 405px; top: 280px; width: 80px; height: 80px;">기타구</a>
+
+        <!-- 분쿄구 -->
+        <a th:href="@{/property/list(district='文京区')}" class="district-button"
+           style="left: 430px; top: 400px; width: 80px; height: 40px;">분쿄구</a>
+
+        <!-- 도시마구 -->
+        <a th:href="@{/property/list(district='豊島区')}"class="district-button"
+           style="left: 370px; top: 365px; width: 80px; height: 40px;">도시마구</a>
+
+        <!-- 이타바시구 -->
+        <a th:href="@{/property/list(district='板橋区')}" class="district-button"
+           style="left: 300px; top: 240px; width: 80px; height: 100px;">이타바시구</a>
+
+        <!-- 네리마구 -->
+        <a th:href="@{/property/list(district='練馬区')}" class="district-button"
+           style="left: 150px; top: 290px; width: 150px; height: 100px;">네리마구</a>
+
+        <!-- 스기나미구 -->
+        <a th:href="@{/property/list(district='杉並区')}" class="district-button"
+           style="left: 170px; top: 430px; width: 150px; height: 70px;">스기나미구</a>
+
+        <!-- 나카노구 -->
+        <a th:href="@{/property/list(district='中野区')}"class="district-button"
+           style="left: 300px; top: 410px; width: 60px; height: 70px;">나카노구</a>
+
+        <!-- 신주쿠구 -->
+        <a th:href="@{/property/list(district='新宿区')}" class="district-button"
+           style="left: 360px; top: 430px; width: 100px; height: 50px;">신주쿠구</a>
+
+        <!-- 지요다구 -->
+        <a th:href="@{/property/list(district='千代田区')}" class="district-button"
+           style="left: 455px; top: 470px; width: 80px; height: 40px;">지요다구</a>
+
+        <!-- 주오구 -->
+        <a th:href="@{/property/list(district='中央区')}" class="district-button"
+           style="left: 505px; top: 490px; width: 50px; height: 69px;">주오구</a>
+
+        <!-- 시부야구 -->
+        <a th:href="@{/property/list(district='渋谷区')}" class="district-button"
+           style="left: 320px; top: 510px; width: 100px; height: 50px;">시부야구</a>
+
+        <!-- 세타가야구 -->
+        <a th:href="@{/property/list(district='世田谷区')}" class="district-button"
+           style="left: 175px; top: 550px; width: 150px; height: 100px;">세타가야구</a>
+
+        <!-- 미나토구 -->
+        <a th:href="@{/property/list(district='港区')}" class="district-button"
+           style="left: 415px; top: 530px; width: 100px; height: 80px;">미나토구</a>
+
+        <!-- 메구로구 -->
+        <a th:href="@{/property/list(district='目黒区')}"class="district-button"
+           style="left: 340px; top: 590px; width: 70px; height: 80px;">메구로구</a>
+
+        <!-- 시나가와구 -->
+        <a th:href="@{/property/list(district='品川区')}" class="district-button"
+           style="left: 380px; top: 630px; width: 100px; height: 80px;">시나가와구</a>
+
+        <!-- 오타구 -->
+        <a th:href="@{/property/list(district='大田区')}" class="district-button"
+           style="left: 340px; top: 720px; width: 180px; height: 120px;">오타구</a>
+      </map>
     </div>
   </div>
 
-    <!-- 노선별 -->
-		<div class="line-container">
-		<aside class="aside2">
-    <section class="lineAll">
-      <div class="h2">
-        <h2>노선별 매물 검색 지원</h2>
-        <p class="sub">간편한 노선 클릭으로 최적의 위치 찾기!</p>
-      </div>
-
-      <div class="jr">
-        <img src="/img/jr.png" alt="jr 로고" class="jr-logo" />
-        <span class="line yamanote">야마노테</span>
-        <span class="line chuuo">츄오- 소부</span>
-        <span class="line saikyou">사이쿄</span>
-        <span class="line joban">죠반</span>
-        <span class="line takasaki">타카사키</span>
-        <span class="line yokosuka">요코스카</span>
-        <span class="line keitoku">케이힌토쿠</span>
-      </div>
-      <div class="tokyometro">
-        <img src="/img/Tokyo_Metro_logo.svg.png" alt="도쿄메트로 로고" class="tokyometro-logo" />
-        <span class="line hanzomon">한조몬</span>
-        <span class="line marunouchi">마루노우치</span>
-        <span class="line hibiya">히비야</span>
-        <span class="line chiyoda">치요다</span>
-        <span class="line fukutoshin">후쿠토신</span>
-        <span class="line ginza">긴자</span>
-        <span class="line namboku">난보쿠</span>
-        <span class="line yurakucho">유라쿠쵸</span>
-        <span class="line tozai">토자이</span>
-      </div>
-    </section>
-	</aside>
-	
-	<div class="picture">
-		<img src="/img/yamanote.jpeg" alt="야마노테사진"/>
-	</div>
-</div>
-	
-    <p>처음부터 입주까지, 라이온 부동산이 함께합니다.</p>
-
-    <footer class="footer">
-      <div class="footer-container">
-        <div class="footer-left">
-          <strong><a href="/HTML/map.html" class="footer-logo">LION</a></strong>
+  <!-- 노선별 -->
+  <div class="line-container">
+    <aside class="aside2">
+      <section class="lineAll">
+        <div class="h2">
+          <h2>노선별 매물 검색 지원</h2>
+          <p class="sub">간편한 노선 클릭으로 최적의 위치 찾기!</p>
         </div>
-        <div class="footer-right">
-          <strong><a href="/*" class="kakao-link"
-            >상담원 카카오톡 문의</a
-          ></strong>
-          <p class="account">비니니: BBBBB</p>
-        </div>
-      </div>
-    </footer>
 
-    <script src="/HTML/js/map.js"></script>
-    <script src="/HTML/js/navbar.js"></script>
-  </body>
+        <div class="jr">
+          <img src="/img/jr.png" alt="jr 로고" class="jr-logo" />
+          <a th:href="@{/property/list(line='야마노테')}" class="line yamanote">야마노테</a>
+          <a th:href="@{/property/list(line='츄오- 소부')}" class="line chuuo">츄오- 소부</a>
+          <a th:href="@{/property/list(line='사이쿄')}" class="line saikyou">사이쿄</a>
+          <a th:href="@{/property/list(line='죠반')}" class="line joban">죠반</a>
+          <a th:href="@{/property/list(line='타카사키')}" class="line takasaki">타카사키</a>
+          <a th:href="@{/property/list(line='요코스카')}" class="line yokosuka">요코스카</a>
+          <a th:href="@{/property/list(line='케이힌토쿠')}" class="line keitoku">케이힌토쿠</a>
+        </div>
+        <div class="tokyometro">
+          <img src="/img/Tokyo_Metro_logo.svg.png" alt="도쿄메트로 로고" class="tokyometro-logo" />
+          <a th:href="@{/property/list(line='한조몬')}" class="line hanzomon">한조몬</a>
+          <a th:href="@{/property/list(line='마루노우치')}" class="line marunouchi">마루노우치</a>
+          <a th:href="@{/property/list(line='히비야')}" class="line hibiya">히비야</a>
+          <a th:href="@{/property/list(line='치요다')}" class="line chiyoda">치요다</a>
+          <a th:href="@{/property/list(line='후쿠토신')}" class="line fukutoshin">후쿠토신</a>
+          <a th:href="@{/property/list(line='긴자')}" class="line ginza">긴자</a>
+          <a th:href="@{/property/list(line='난보쿠')}" class="line namboku">난보쿠</a>
+          <a th:href="@{/property/list(line='유라쿠쵸')}" class="line yurakucho">유라쿠쵸</a>
+          <a th:href="@{/property/list(line='토자이')}" class="line tozai">토자이</a>
+        </div>
+      </section>
+    </aside>
+
+    <div class="picture">
+      <img src="/img/yamanote.jpeg" alt="야마노테사진"/>
+    </div>
+  </div>
+</main>
+
+<!-- 현재 남아있는 매물 확인 -->
+<section class="available-properties">
+  <h2>지금 남아있는 매물 확인</h2>
+  <div class="property-list">
+    <div class="property-item">
+      <img src="/img/room1.jpeg" alt="매물 이미지 1">
+      <p>#신주쿠 역까지 도보 5분</p>
+      <span>편리한 역세권! 넓고 쾌적한 공간에서 새로운 생활을 시작하세요.</span>
+    </div>
+    <div class="property-item">
+      <img src="/img/room2.jpeg" alt="매물 이미지 2">
+      <p>#4월 입주 워홀 비자 가능</p>
+      <span>심사 간편 & 계약 빠르게! 복잡한 절차 없이 쉽고 빠르게 입주하세요.</span>
+    </div>
+    <div class="property-item">
+      <img src="/img/room3.jpeg" alt="매물 이미지 3">
+      <p>#2인 입주 #펫 가능</p>
+      <span>자연과 함께하는 삶! 조용한 주거 환경에서 여유로운 일상을 즐겨보세요.</span>
+    </div>
+  </div>
+</section>
+
+<!-- 부동산 소개 -->
+<section class="real-estate-info">
+  <h2>처음부터 입주까지, 라이온 부동산이 함께합니다.</h2>
+  <div class="info-container">
+    <div class="info-item">
+      <img src="/img/memul.jpeg" alt="찾아오시는 길 이미지">
+      <h3>찾아오시는 길</h3>
+      <p>주소: 123-4567 東京都新宿区X X町1−2</p>
+      <p>오에도선 아카시주쿠역 A3출구 도보 7분</p>
+    </div>
+    <div class="info-item">
+      <img src="/img/room3.jpeg" alt="문의 방법 이미지">
+      <h3>문의 방법</h3>
+      <p>전화: 1600-1234</p>
+      <p>카카오톡 오픈채팅: lion1234</p>
+    </div>
+  </div>
+</section>
+
+
+<p>처음부터 입주까지, 라이온 부동산이 함께합니다.</p>
+
+
+
+
+
+<script th:src="@{/js/map.js}"></script>
+<script th:src="@{/js/navbar.js}"></script>
+</body>
 </html>

@@ -1,7 +1,11 @@
 package com.realestate.app.user;
 
+import com.realestate.app.config.AuthenticatedUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +13,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Slf4j
 @RequestMapping("/user")
@@ -46,6 +52,29 @@ public class UserController {
         model.addAttribute("userLoginDto", new UserLoginDto());
 
         return "/user/login";
+    }
+
+    @GetMapping("/index")
+    public ResponseEntity<Map<String, Object>> checkLoginStatus() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();  // ✅ 인증 정보 가져오기
+        log.info("🔍 현재 로그인 상태: {}", authentication);
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+            log.info("🔍 principal 객체: {}", principal);
+
+            if (principal instanceof AuthenticatedUser) {
+                AuthenticatedUser user = (AuthenticatedUser) principal;
+                log.info("✅ 로그인 유저 확인: {}", user.getUsername());
+
+                return ResponseEntity.ok(Map.of(
+                        "isLoggedIn", true,
+                        "email", user.getUsername(),
+                        "name", user.getName()
+                ));
+            }
+        }
+        return ResponseEntity.ok(Map.of("isLoggedIn", false));
     }
 
 }
