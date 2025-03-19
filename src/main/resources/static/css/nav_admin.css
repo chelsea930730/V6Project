@@ -6,14 +6,13 @@ nav{
 
 /* 사이드바 기본 스타일 */
 .sidebar {
-    min-height: 100vh;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    background-color: #4682B4;
     position: fixed;
     top: 0;
+    bottom: 0;
     left: 0;
     z-index: 100;
     padding: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 /* 로고 영역 스타일 */
@@ -31,31 +30,24 @@ nav{
 
 /* 네비게이션 링크 스타일 */
 .sidebar .nav-link {
-    padding: 0.8rem 1.5rem;
-    color: rgba(255,255,255,0.8);
-    font-size: 0.95rem;
-    border-radius: 4px;
-    margin: 0.2rem 1rem;
-    transition: all 0.3s ease;
+    color: rgba(255,255,255,.75);
+    padding: 1rem 1.5rem;
+    font-weight: 500;
 }
 
 .sidebar .nav-link:hover {
-    background-color: rgba(255,255,255,0.1);
-    color: #ffffff;
-    transform: translateX(5px);
+    color: #fff;
+    background: rgba(255,255,255,.1);
 }
 
 .sidebar .nav-link.active {
-    background-color: rgba(255,255,255,0.2);
-    color: #ffffff;
-    font-weight: 500;
+    color: #fff;
+    background: rgba(255,255,255,.1);
 }
 
 /* 아이콘 스타일 (아이콘 사용시) */
 .sidebar .nav-link i {
     margin-right: 0.5rem;
-    width: 20px;
-    text-align: center;
 }
 
 /* 반응형 스타일 */
@@ -69,4 +61,10 @@ nav{
     .sidebar .nav-link {
         margin: 0.2rem 0.5rem;
     }
+} 
+
+/* 메인 컨텐츠 영역 조정 */
+main {
+    margin-left: 16.666667%; /* col-md-2의 너비 */
+    padding-top: 1.5rem;
 } 
