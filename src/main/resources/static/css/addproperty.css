@@ -1,6 +1,9 @@
 /* 글꼴 */
 body {
-    font-family: 'Cafe24 Ssurround air OTF Light';
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
 }
 
 /* 테이블 스타일 */
@@ -47,25 +50,25 @@ body {
 
 /* 상태 배지 스타일 */
 .status-badge {
-    padding: 0.35rem 0.65rem;
-    border-radius: 15px;
-    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
     font-weight: 500;
 }
 
-.status-badge.available {
-    background-color: #d1e7dd;
-    color: #0f5132;
+.status-badge.예약가능 {
+    background-color: #28a745;
+    color: white;
 }
 
-.status-badge.pending {
-    background-color: #fff3cd;
-    color: #856404;
+.status-badge.예약중 {
+    background-color: #ffc107;
+    color: #212529;
 }
 
-.status-badge.sold {
-    background-color: #f8d7da;
-    color: #842029;
+.status-badge.거래완료 {
+    background-color: #dc3545;
+    color: white;
 }
 
 /* 카드 스타일 */
@@ -104,10 +107,11 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
     opacity: 0;
     transition: opacity 0.3s ease;
+    z-index: 1000;
 }
 
 .popup-container {
@@ -116,25 +120,22 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: white;
-    border-radius: 20px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-    z-index: 1001;
-    width: 90%;
-    max-width: 1000px;
-    height: 80vh;
-    max-height: 80vh;
-    margin: 5vh auto;
+    width: 80%;
+    height: 80%;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: none;
     opacity: 0;
     transition: opacity 0.3s ease;
-    overflow: hidden;
+    z-index: 1001;
 }
 
 .popup-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
+    padding: 1rem;
     border-bottom: 1px solid #dee2e6;
 }
 
@@ -168,6 +169,7 @@ body {
     z-index: 1000;
     opacity: 1;
     transition: opacity 0.3s ease;
+    z-index: 1002;
 }
 
 .notification.success {
@@ -187,4 +189,112 @@ body {
         transform: translateX(0);
         opacity: 1;
     }
-} 
+}
+
+/* 폼 컨테이너 스타일 */
+.property-form-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    margin-left: 300px; /* nav-admin의 너비만큼 여백 추가 */
+}
+
+.property-form-container h2 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 24px;
+    font-weight: 500;
+}
+
+/* 섹션 스타일 */
+.form-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.form-section h3 {
+    color: #4682B4;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+/* 폼 그룹 스타일 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #495057;
+    font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-group input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 2px dashed #ced4da;
+    border-radius: 4px;
+    background: #fff;
+}
+
+/* 버튼 스타일 */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.submit-btn {
+    background-color: #4682B4;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.submit-btn:hover {
+    background-color: #355c86;
+}
+
+.cancel-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.cancel-btn:hover {
+    background-color: #5a6268;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .property-form-container {
+        margin: 10px;
+        padding: 20px;
+    }
+}
