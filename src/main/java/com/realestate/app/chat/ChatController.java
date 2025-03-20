@@ -6,9 +6,12 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.security.Principal;
 import java.util.List;
@@ -90,5 +93,22 @@ public class ChatController {
                     return userMap;
                 })
                 .collect(Collectors.toList());
+    }
+
+    // 채팅방 삭제 API
+    @DeleteMapping("/api/chat/delete")
+    @ResponseBody
+    public ResponseEntity<?> deleteChatRoom(@RequestParam String partner, Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        String currentUser = principal.getName();
+        try {
+            chatService.deleteChatHistory(currentUser, partner);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

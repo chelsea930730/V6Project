@@ -4,6 +4,7 @@ import com.realestate.app.user.User;
 import com.realestate.app.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,5 +44,20 @@ public class ChatService {
         return chatMessageRepository.findTopBySenderAndRecipientOrSenderAndRecipientOrderBySentAtDesc(
                         user1, user2, user2, user1)
                 .orElse(new ChatMessage("새 채팅이 시작되었습니다.", "시스템", LocalDateTime.now()));
+    }
+
+    // 두 사용자 간의 채팅 기록 삭제
+    @Transactional
+    public void deleteChatHistory(String user1, String user2) {
+        try {
+            List<ChatMessage> messages = chatMessageRepository.findBySenderAndRecipientOrSenderAndRecipientOrderBySentAtAsc(
+                    user1, user2, user2, user1);
+            
+            if (!messages.isEmpty()) {
+                chatMessageRepository.deleteAll(messages);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("채팅 기록 삭제 중 오류 발생: " + e.getMessage(), e);
+        }
     }
 }

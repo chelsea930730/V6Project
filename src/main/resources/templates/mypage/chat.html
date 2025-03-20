@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Room</title>
     <link rel="stylesheet" href="/css/chat.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </head>
@@ -12,18 +13,58 @@
     <div id="navbar-placeholder"></div>
 
     <h1 id="chatRoomTitle">채팅</h1>
+
     <div id="chat-container">
         <div id="user-selection" class="user-selection"></div>
         <div id="messages" class="messages"></div>
     </div>
 
+    <!-- URL 입력 영역 (토글) -->
+    <div id="urlInputContainer" class="attachment-container">
+        <div class="attachment-header">
+            <span>URL 입력</span>
+            <button id="closeUrlInput" class="close-attachment"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="attachment-content">
+            <input type="text" id="urlInput" placeholder="https://..." class="attachment-input">
+            <button id="addUrlBtn" class="attachment-button">추가</button>
+        </div>
+    </div>
+
+    <!-- 이미지 미리보기 영역 (토글) -->
+    <div id="imagePreviewContainer" class="attachment-container">
+        <div class="attachment-header">
+            <span>이미지 미리보기</span>
+            <button id="closeImagePreview" class="close-attachment"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="attachment-content">
+            <img id="imagePreview" src="" alt="이미지 미리보기">
+        </div>
+    </div>
+
     <div class="input-container">
+        <div class="media-buttons">
+            <button id="imageButton" class="media-btn" title="이미지 첨부">
+                <i class="fas fa-image"></i>
+            </button>
+            <button id="urlButton" class="media-btn" title="URL 첨부">
+                <i class="fas fa-link"></i>
+            </button>
+            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+        </div>
         <input id="message" type="text" placeholder="메시지를 입력하세요..." />
         <button id="sendButton" onclick="sendMessage()">전송</button>
     </div>
 
+    <!-- 이미지 확대 모달 -->
+    <div id="imageModal" class="image-modal">
+        <img src="" alt="확대 이미지">
+    </div>
+
+
     <input type="hidden" id="currentUserEmail" th:value="${currentUserEmail}" />
 
+    <script src="/js/navbar.js" defer></script>
     <script src="/js/chat.js" defer></script>
 </body>
 </html>
