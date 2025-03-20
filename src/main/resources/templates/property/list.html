@@ -28,11 +28,11 @@
 <section class="hero">
     <h1>매물 리스트</h1>
     <div th:if="${filterType != null}">
-        <p th:if="${filterType == 'district' && filterValueKorean != null}"
+        <p th:if="${filterType == 'district' && filterValueKorean != null}" 
            th:text="${filterValue} + ' (' + ${filterValueKorean} + ') 지역 매물을 보고 계십니다'"></p>
-        <p th:if="${filterType == 'district' && filterValueKorean == null}"
+        <p th:if="${filterType == 'district' && filterValueKorean == null}" 
            th:text="${filterValue} + ' 지역 매물을 보고 계십니다'"></p>
-        <p th:if="${filterType == 'line'}"
+        <p th:if="${filterType == 'line'}" 
            th:text="${filterValue} + ' 노선 매물을 보고 계십니다'"></p>
     </div>
     <br>
@@ -165,90 +165,90 @@
     </div>
 
 
-    <!-- 매물 리스트 -->
-    <section class="property-list">
-        <h1>매물 리스트</h1>
-
-        <!-- 정렬 옵션 -->
-        <div class="sort-options">
-            <select class="form-select" style="width: 200px; display: inline-block;">
-                <option value="Featured">Featured</option>
-                <option value="newest">최신순</option>
-                <option value="price-low">가격 낮은순</option>
-                <option value="price-high">가격 높은순</option>
-            </select>
-            <button class="btn btn-outline-secondary ms-2">
-                <i class="bi bi-grid"></i>
-            </button>
-            <button class="btn btn-outline-secondary">
-                <i class="bi bi-list"></i>
-            </button>
-        </div>
-
-        <!-- 매물이 없을 경우 -->
-        <div th:if="${#lists.isEmpty(properties)}" class="empty-message">
-            등록된 매물이 없습니다.
-        </div>
-
-        <!-- 매물 목록 -->
-        <div class="property-list">
-            <div th:each="property : ${properties}" class="property-item">
-                <!-- 매물 헤더 -->
-                <div class="property-header">
-                    <div class="header-left">
-                        <input type="checkbox" th:value="${property.propertyId}">
-                        <span class="property-no" th:text="'NO.' + ${property.propertyId}">NO.0000001</span>
-                        <span th:text="${property.title}">매물 제목</span>
-                    </div>
-                </div>
-
-                <!-- 매물 정보 테이블 -->
-                <table class="property-info-table">
-                    <tr>
-                        <th>사진</th>
-                        <th>월세/관리비</th>
-                        <th>시키킹/레이킹</th>
-                        <th>방 타입/면적</th>
-                        <th>건축년도</th>
-                        <th>예약상태</th>
-                        <th>상세보기</th>
-                    </tr>
-                    <tr>
-                        <td>
-                            <img th:src="@{/img/property-placeholder.jpg}" class="property-image" alt="매물 이미지"
-                                 style="width: 150px; height: 100px; object-fit: cover;">
-                        </td>
-                        <td>
-                            <div th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA') + '円'}">9.7만円</div>
-                            <div th:text="${#numbers.formatInteger(property.managementFee, 0, 'COMMA') + '円'}">10000円</div>
-                        </td>
-                        <td>
-                            <div th:text="${#numbers.formatInteger(property.shikikin, 0, 'COMMA') + ' / ' +
-                                      #numbers.formatInteger(property.reikin, 0, 'COMMA') }">1/1</div>
-                        </td>
-                        <td>
-                            <div th:text="${property.roomType}">1K</div>
-                            <div th:text="${property.area + 'm²'}">25.92m²</div>
-                            <div th:text="${property.buildingType}">아파트</div>
-                        </td>
-                        <td th:text="${property.builtYear}">2018년</td>
-                        <td>
-                            <div class="status-available" th:text="${property.status}">예약가능</div>
-                        </td>
-                        <td>
-                            <a th:href="@{/property/{id}(id=${property.propertyId})}" class="detail-button">상세보기</a>
-                        </td>
-                    </tr>
-                </table>
-
-                <!-- 주소 정보 -->
-                <div class="address-info">
-                    <div th:text="${property.location}">도쿄도 세타가야구 상마4쵸메</div>
-                    <div th:text="${property.subwayLine}">오다큐선 / 키타센주역 도보 7분</div>
+   <!-- 매물 리스트 -->
+   <section class="property-list">
+    <h1>매물 리스트</h1>
+    
+    <!-- 정렬 옵션 -->
+    <div class="sort-options">
+        <select class="form-select" style="width: 200px; display: inline-block;">
+            <option value="Featured">Featured</option>
+            <option value="newest">최신순</option>
+            <option value="price-low">가격 낮은순</option>
+            <option value="price-high">가격 높은순</option>
+        </select>
+        <button class="btn btn-outline-secondary ms-2">
+            <i class="bi bi-grid"></i>
+        </button>
+        <button class="btn btn-outline-secondary">
+            <i class="bi bi-list"></i>
+        </button>
+    </div>
+    
+    <!-- 매물이 없을 경우 -->
+    <div th:if="${#lists.isEmpty(properties)}" class="empty-message">
+        등록된 매물이 없습니다.
+    </div>
+    
+    <!-- 매물 목록 -->
+    <div class="property-list">
+        <div th:each="property : ${properties}" class="property-item">
+            <!-- 매물 헤더 -->
+            <div class="property-header">
+                <div class="header-left">
+                    <input type="checkbox" th:value="${property.propertyId}">
+                    <span class="property-no" th:text="'NO.' + ${property.propertyId}">NO.0000001</span>
+                    <span th:text="${property.title}">매물 제목</span>
                 </div>
             </div>
+
+            <!-- 매물 정보 테이블 -->
+            <table class="property-info-table">
+                <tr>
+                    <th>사진</th>
+                    <th>월세/관리비</th>
+                    <th>시키킹/레이킹</th>
+                    <th>방 타입/면적</th>
+                    <th>건축년도</th>
+                    <th>예약상태</th>
+                    <th>상세보기</th>
+                </tr>
+                <tr>
+                    <td>
+                        <img th:src="@{/img/property-placeholder.jpg}" class="property-image" alt="매물 이미지" 
+                             style="width: 150px; height: 100px; object-fit: cover;">
+                    </td>
+                    <td>
+                        <div th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA') + '円'}">9.7만円</div>
+                        <div th:text="${#numbers.formatInteger(property.managementFee, 0, 'COMMA') + '円'}">10000円</div>
+                    </td>
+                    <td>
+                        <div th:text="${#numbers.formatInteger(property.shikikin, 0, 'COMMA') + ' / ' + 
+                                      #numbers.formatInteger(property.reikin, 0, 'COMMA') }">1/1</div>
+                    </td>
+                    <td>
+                        <div th:text="${property.roomType}">1K</div>
+                        <div th:text="${property.area + 'm²'}">25.92m²</div>
+                        <div th:text="${property.buildingType}">아파트</div>
+                    </td>
+                    <td th:text="${property.builtYear}">2018년</td>
+                    <td>
+                        <div class="status-available" th:text="${property.status}">예약가능</div>
+                    </td>
+                    <td>
+                        <a th:href="@{/property/{id}(id=${property.propertyId})}" class="detail-button">상세보기</a>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- 주소 정보 -->
+            <div class="address-info">
+                <div th:text="${property.location}">도쿄도 세타가야구 상마4쵸메</div>
+                <div th:text="${property.subwayLine}">오다큐선 / 키타센주역 도보 7분</div>
+            </div>
         </div>
-    </section>
+    </div>
+</section>
 </div>
 
 <!-- 푸터 -->
@@ -270,7 +270,7 @@
     // 서버에서 받은 데이터 사용
     const serverProperties = /*[[${properties}]]*/ [];
     console.log("서버에서 받은 매물 수:", serverProperties.length);
-
+    
     // JavaScript 필터링 비활성화 (서버 필터링 사용)
     window.useServerFilter = true;
 </script>

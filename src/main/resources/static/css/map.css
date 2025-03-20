@@ -70,6 +70,7 @@ nav a {
   width: 90vw; /* 화면 크기에 맞춤 */
   height: 80vh; /* 화면 높이 유지 */
   max-width: 1200px;
+  margin-top: 20px;
 }
 
 /* 왼쪽 설명 영역 */

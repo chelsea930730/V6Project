@@ -1,82 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마이 페이지</title>
-    <link th:href="@{/css/mypage.css}" rel="stylesheet" />
-    <script th:src="@{/js/navibar.js}" defer></script>
-    <script th:src="@{/js/mypage.js}" defer></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
 </head>
 <body>
-    <div id="navbar-placeholder"></div>
-
-    <main class="mypage-container">
-        <h1>마이 페이지</h1>
-        <p class="sub-heading">당신이 예약한 건물을 확인하세요!</p>
-
-        <section class="reservation-section">
-            <h2>예약 리스트</h2>
-            <table class="reservation-table">
-                <thead>
-                    <tr>
-                        <th><input type="checkbox" id="selectAll"></th>
-                        <th>예약번호</th>
-                        <th>상담 날짜</th>
-                        <th>진행 상태</th>
-                        <th>채팅 바로가기</th>
-                        <th>예약 상세보기</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><input type="checkbox"></td>
-                        <td>NO.000006</td>
-                        <td>2025-03-22</td>
-                        <td>상담대기</td>
-                        <td><button class="chat-btn">채팅하기</button></td>
-                        <td><button class="view-btn">상세보기</button></td>
-                    </tr>
-                </tbody>
-            </table>
-            <button class="cancel-btn">체크된 예약 취소하기</button>
-        </section>
-
-        <section class="history-section">
-            <h2>상담 완료 목록</h2>
-            <table class="history-table">
-                <thead>
-                    <tr>
-                        <th><input type="checkbox" id="selectAllHistory"></th>
-                        <th>예약번호</th>
-                        <th>상담 날짜</th>
-                        <th>진행 상태</th>
-                        <th>채팅로그 보기</th>
-                        <th>예약 상세보기</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><input type="checkbox"></td>
-                        <td>NO.000001</td>
-                        <td>2022-10-22</td>
-                        <td>상담취소</td>
-                        <td><button class="log-btn">로그보기</button></td>
-                        <td><button class="view-btn">상세보기</button></td>
-                    </tr>
-                    <!-- 추가 행들... -->
-                </tbody>
-            </table>
-            <button class="delete-btn">체크한 상담 내역 삭제하기</button>
-        </section>
-    </main>
-
-    <div id="footer-placeholder"></div>
-
-    <!-- 모달 추가 -->
-    <div id="imageModal" class="modal">
-        <span class="close">&times;</span>
-        <img class="modal-content" id="modalImage">
-    </div>
+	<div id="navbar-placeholder"></div>
+	<h1>마이페이지</h1>
 </body>
+
+
+<script src="/HTML/js/navbar.js"></script>
 </html>
