@@ -7,102 +7,6 @@ body {
 	
 }
 
-/* 네비게이션 바 스타일 */
-.navbar {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 20px 50px;
-	background: transparent;
-	position: absolute;
-	height: 70px;
-	width: 100%;
-	top: 0;
-	left: 0;
-	z-index: 1000;
-}
-
-.nav-left .logo {
-	font-size: 40px;
-	font-weight: bold;
-	text-decoration: none;
-	color: white;
-}
-
-.nav-right {
-	display: flex;
-	align-items: center;
-	gap: 20px;
-	padding-right: 100px;
-}
-
-.nav-right a {
-	text-decoration: none;
-	color: rgb(255, 255, 255);
-	font-size: 16px;
-}
-
-.logout-btn {
-	background-color: #6a99cd;
-  color: white;
-  border: none;
-  padding: 15px 35px;
-  border-radius: 25px;
-  font-size: 20px;
-  cursor: pointer;
-	font-family: 'Cafe24 Ssurround air OTF Light';
-}
-
-.logout-btn:hover {
-	background-color: #99b7d6;
-}
-
-nav a {
-  text-decoration: none;
-  color: #355c86;
-  font-size: 30px;
-  font-family: 'Cafe24 Ssurround air OTF Light';
-}
-
-.login-btn {
-  background-color: #6a99cd;
-  color: white;
-  border: none;
-  padding: 15px 35px;
-  border-radius: 25px;
-  font-size: 20px;
-  cursor: pointer;
-  font-family: 'Cafe24 Ssurround air OTF Light';
-}
-
-.login-btn:hover {
-  background-color: #99b7d6;
-}
-
-
-/* 네비게이션 링크 스타일 */
-.nav-link {
-	text-decoration: none;
-	color: white;
-	font-size: 16px;
-	padding: 8px 15px;
-	transition: all 0.3s ease;
-}
-
-.nav-link:hover {
-	color: #d5e9ff;
-}
-
-
-/* 애니메이션 효과 */
-.nav-link, .login-btn, .logout-btn {
-	opacity: 1;
-	transition: opacity 0.3s ease;
-}
-
-.nav-link.fade-out, .login-btn.fade-out, .logout-btn.fade-out {
-	opacity: 0;
-}
 
 
 /* '//////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -110,7 +14,7 @@ nav a {
 /* Hero 섹션 (배경 이미지 + 오버레이) */
 .hero {
 	position: relative;
-	background: url('/img/memul.jpeg') no-repeat center center/cover; /* ✅ 배경 이미지 적용 */
+	background: url('../img/memul.jpeg') no-repeat center center/cover; /* ✅ 배경 이미지 적용 */
 	height: 500px;
 	display: flex;
 	flex-direction: column;
@@ -203,17 +107,25 @@ nav a {
 	display: flex;
 	max-width: 1400px;
 	margin: 20px auto;
-	gap: 20px;
+	gap: 30px;
+	padding: 0 20px;
+	position: relative;
+	min-height: calc(100vh - 70px);
+	justify-content: flex-start;
 }
 
 /* 필터 박스 */
 .filter-box {
-	width: 250px;
+	position: sticky;
+	top: 20px;
+	width: 300px;
 	background: #fff;
 	padding: 20px;
 	border-radius: 10px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 	font-family: 'Cafe24 Ssurround air OTF Light';
+	height: fit-content;
+	flex-shrink: 0;
 }
 
 .filter-box h2 {
@@ -324,8 +236,17 @@ select {
 
 /* 매물 리스트 */
 .property-list {
-	margin: 20px;
-	font-family: 'Cafe24 Ssurround air OTF Light';
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center; /* 가운데 정렬 */
+	justify-content: center; /* 중앙 정렬 */
+	min-height: 400px; /* 최소 높이 추가 */
+}
+/* 매물 리스트 내부 h1 스타일 */
+.property-list h1 {
+	margin-top: 0;
+	margin-bottom: 20px;
 }
 
 .property-item {
@@ -362,6 +283,23 @@ select {
 	width: 180px;
 	height: 120px;
 	object-fit: cover;
+}
+
+/* 매물이 없을 경우*/
+empty-message{
+	padding: 20px;
+	text-align: center; /* 가운데 정렬 */
+	color: #666;
+	font-style: italic;
+	width: 100%;
+	background: #fff;
+	border-radius: 8px;
+	font-size: 18px;
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 200px; /* 높이 추가 */
 }
 
 /* 정렬 옵션 스타일 */
@@ -651,5 +589,15 @@ select {
 	border-top: 1px solid #e0e0e0;
 }
 
+
+.no-image-container {
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.no-image-container span {
+	color: #999;
+	font-size: 14px;
+}
 
 

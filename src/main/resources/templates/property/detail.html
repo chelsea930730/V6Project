@@ -78,8 +78,8 @@
                             <div class="stat-value" th:text="${property.buildingType}"></div>
                       </div>
                       <div class="stat-item">
-                            <div class="stat-label">층수</div>
-                            <div class="stat-value">-</div>
+                            <div class="stat-label">방타입</div>
+                            <div class="stat-value" th:text="${property.roomType}">-</div>
                       </div>
                       <div class="stat-item">
                             <div class="stat-label">건축년도</div>
@@ -88,7 +88,7 @@
                       <div class="stat-item">
                          <div class="stat-label">월세</div>
                          <div class="stat-value">
-                            <span th:text="${property.monthlyPrice}">0</span>엔
+                            <span th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA') + '円'}">0</span>
                          </div>
                    </div>
                    <div class="stat-item">
@@ -126,7 +126,7 @@
           </tr>
           <tr>
                 <th>등록일</th>
-                <td colspan="3" id="registDate"></td>
+                <td colspan="3" id="registDate" th:text="${#temporals.format(property.createdAt, 'yyyy년 M월 d일')}"></td>
           </tr>
           <tr>
                 <th>초기비용</th>
@@ -135,7 +135,7 @@
 
           <tr>
                 <th>비고</th>
-                <td colspan="3" id="notes"></td>
+                <td colspan="3" id="notes" th:text="${property.description}"></td>
           </tr>
     </table>
 </div>

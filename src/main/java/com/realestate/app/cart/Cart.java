@@ -29,4 +29,10 @@ public class Cart {
     private Property property;
 
     private LocalDateTime addedAt = LocalDateTime.now();
+
+    public Cart(User user, Property property) {
+        this.user = user;
+        this.property = property;
+        this.addedAt = LocalDateTime.now();
+    }
 }
