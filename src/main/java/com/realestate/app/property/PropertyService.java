@@ -3,6 +3,8 @@ package com.realestate.app.property;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.realestate.app.geocoding.GeocodingService;
 
@@ -78,5 +80,9 @@ public class PropertyService {
 
     public List<Property> getPropertiesBySubwayLine(String line) {
         return propertyRepository.findBySubwayLineContaining(line);
+    }
+
+    public Page<Property> getAllPropertiesWithPaging(Pageable pageable) {
+        return propertyRepository.findAll(pageable);
     }
 }

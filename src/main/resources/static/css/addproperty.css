@@ -28,12 +28,12 @@ body {
 
 /* 테이블 컨테이너 크기 조정 */
 .table-responsive {
-    max-height: calc(100vh - 250px);
-    overflow-y: auto;
+    max-height: none;
+    overflow-y: visible;
 }
 
 .card-body {
-    min-height: calc(100vh - 150px);
+    padding: 1.25rem;
 }
 
 /* 체크박스 스타일 */
@@ -76,6 +76,7 @@ body {
     border: none;
     box-shadow: 0 0 15px rgba(0,0,0,0.05);
     border-radius: 10px;
+    margin-bottom: 1rem;
 }
 
 /* 버튼 스타일 */
@@ -293,4 +294,33 @@ body {
         margin: 10px;
         padding: 20px;
     }
+}
+
+/* 페이징 스타일 */
+.pagination {
+    margin: 1rem 0;
+}
+
+.pagination .page-link {
+    color: #4682B4;
+    border-color: #dee2e6;
+    padding: 0.5rem 0.75rem;
+    margin: 0 2px;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #4682B4;
+    border-color: #4682B4;
+    color: white;
+}
+
+.pagination .page-link:hover {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    color: #2c5282;
+}
+
+.pagination .page-item:first-child .page-link,
+.pagination .page-item:last-child .page-link {
+    border-radius: 4px;
 } 

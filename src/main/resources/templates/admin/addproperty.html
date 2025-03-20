@@ -77,8 +77,8 @@
                       </td>
                       <td th:text="${property.propertyId}">1</td>
                       <td th:text="${property.title}">매물명</td>
-                      <td th:text="${property.monthlyPrice + '만원'}">월세</td>
-                      <td th:text="${property.managementFee + '만원'}">관리비</td>
+                      <td th:text="'¥' + ${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA')}">월세</td>
+                      <td th:text="'¥' + ${#numbers.formatInteger(property.managementFee, 0, 'COMMA')}">관리비</td>
                       <td th:text="${property.buildingType}">건물 타입</td>
                       <td th:text="${property.roomType}">방 타입</td>
                       <td th:text="${property.builtYear}">건축년도</td>
@@ -106,6 +106,34 @@
                 </table>
               </div>
             </div>
+          </div>
+
+          <!-- 페이징 -->
+          <div class="d-flex justify-content-center mt-4">
+            <nav aria-label="Page navigation">
+              <ul class="pagination">
+                <!-- 이전 페이지 그룹으로 이동 -->
+                <li class="page-item" th:if="${hasPrevious}">
+                  <a class="page-link" th:href="@{/admin/addproperty(page=${previousPageGroup})}" aria-label="Previous group">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                
+                <!-- 페이지 번호 -->
+                <li class="page-item" th:each="pageNumber : ${pageNumbers}" 
+                    th:classappend="${pageNumber == currentPage} ? 'active'">
+                  <a class="page-link" th:href="@{/admin/addproperty(page=${pageNumber})}" 
+                     th:text="${pageNumber}">1</a>
+                </li>
+                
+                <!-- 다음 페이지 그룹으로 이동 -->
+                <li class="page-item" th:if="${hasNext}">
+                  <a class="page-link" th:href="@{/admin/addproperty(page=${nextPageGroup})}" aria-label="Next group">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
           </div>
         </main>
       </div>
