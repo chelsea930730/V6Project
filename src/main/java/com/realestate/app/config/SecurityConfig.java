@@ -59,9 +59,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.sameOrigin())
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/user/login", "/user/register", "/error","/property/**",
-                                "/css/**", "/js/**", "/img/**", "/static/**", "/navi.html").permitAll()
+                                "/css/**", "/js/**", "/img/**", "/static/**", "/navi.html", 
+                                "/webjars/**", "/fonts/**", "/images/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/oauth2/**").permitAll()
                         .anyRequest().authenticated()
