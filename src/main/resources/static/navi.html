@@ -15,7 +15,7 @@
 			<th:block th:if="${isLoggedIn}">
 				<div class="nav-links">
 					<a th:href="@{cart}" class="nav-link">🛒 Cart</a>
-					<a href="/mypage/alarm.html" class="nav-link">알림</a>
+					<a href="/mypage/chat.html" class="nav-link" id="chat-link">채팅</a>
 					<a href="/mypage/mypage.html" class="nav-link">마이페이지</a>
 					<form th:action="@{/user/logout}" method="post">
 						<button type="submit" class="logout-btn">LOGOUT</button>
@@ -207,5 +207,17 @@
 		color: #6a99cd;
 	}
 </style>
+
+<script>
+// 관리자가 채팅 버튼 클릭 시 대화 선택창 표시
+document.getElementById("chat-link").addEventListener("click", function(event) {
+    if (currentUserEmail === "admin@realestate.com") {
+        // 관리자인 경우, 이벤트를 중지하고 유저 선택 UI 표시
+        event.preventDefault();
+        window.location.href = "/mypage/chat-list.html"; // 채팅 목록 페이지로 이동
+    }
+    // 일반 유저는 기본 동작 (채팅 페이지로 이동)
+});
+</script>
 </body>
 </html>

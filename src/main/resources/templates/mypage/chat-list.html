@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>채팅 목록</title>
+    <link rel="stylesheet" href="/css/chat.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <h1>채팅 요청 목록</h1>
+    <div id="chat-users-container">
+        <div id="user-selection" class="user-selection"></div>
+    </div>
+
+    <input type="hidden" id="currentUserEmail" th:value="${currentUserEmail}" />
+
+    <script>
+        var currentUserEmail = "";
+        
+        // 페이지 로드 시 채팅 목록 불러오기
+        document.addEventListener("DOMContentLoaded", function() {
+            // 이메일 가져오기
+            var emailInput = document.getElementById('currentUserEmail');
+            if (emailInput && emailInput.value) {
+                currentUserEmail = emailInput.value;
+            }
+            
+            // 관리자 확인
+            if (currentUserEmail === "admin@realestate.com") {
+                loadChatUsers();
+            } else {
+                // 관리자가 아니면 접근 제한
+                window.location.href = "/mypage/chat.html";
+            }
+        });
+        
+        // 채팅 요청한 사용자 목록 불러오기
+        function loadChatUsers() {
+            fetch('/api/chat/active-users')
+                .then(response => response.json())
+                .then(users => {
+                    const userSelectionDiv = document.getElementById('user-selection');
+                    userSelectionDiv.innerHTML = ''; // 기존 내용 초기화
+                    
+                    if (users.length === 0) {
+                        userSelectionDiv.innerHTML = '<p>현재 채팅 요청이 없습니다.</p>';
+                        return;
+                    }
+                    
+                    users.forEach(user => {
+                        const chatItem = document.createElement('div');
+                        chatItem.className = 'chat-user-item';
+                        chatItem.innerHTML = `
+                            <div class="user-info">
+                                <span class="user-email">${user.email}</span>
+                                <span class="last-message-time">${new Date(user.lastMessageTime).toLocaleString()}</span>
+                            </div>
+                            <div class="last-message">${user.lastMessage || '새로운 채팅'}</div>
+                            <button class="start-chat-btn" onclick="startChat('${user.email}')">채팅하기</button>
+                        `;
+                        userSelectionDiv.appendChild(chatItem);
+                    });
+                })
+                .catch(error => console.error("Error fetching chat users:", error));
+        }
+        
+        // 채팅 시작
+        function startChat(userEmail) {
+            window.location.href = `/mypage/chat.html?user=${userEmail}`;
+        }
+    </script>
+</body>
+</html>

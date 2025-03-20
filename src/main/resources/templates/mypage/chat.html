@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="/css/chat.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <h1 id="chatRoomTitle">채팅</h1>
+    <div id="chat-container">
+        <div id="user-selection" class="user-selection"></div>
+        <div id="messages" class="messages"></div>
+    </div>
+
+    <div class="input-container">
+        <input id="message" type="text" placeholder="메시지를 입력하세요..." />
+        <button id="sendButton" onclick="sendMessage()">전송</button>
+    </div>
+
+    <input type="hidden" id="currentUserEmail" th:value="${currentUserEmail}" />
+
+    <script src="/js/chat.js" defer></script>
+</body>
+</html>
+
+
+
