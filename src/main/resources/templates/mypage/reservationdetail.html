@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상담 예약 상세보기</title>
+    <!-- Bootstrap CSS -->
+    <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Bootstrap JS -->
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <link th:href="@{/css/sangdamsangse.css}" rel="stylesheet" />
+    <script th:src="@{/js/navbar.js}" defer></script>
+    <script th:src="@{/js/sangdamsangse.js}" defer></script>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <main class="sangdam-container">
+        <h1>상담 예약 상세보기</h1>
+        <p class="sub-heading">진행 상태: <span class="status">상담대기</span></p>
+
+        <div class="form-section">
+            <form id="sangdamForm" class="sangdam-form">
+                <div class="form-group">
+                    <label for="name">성명</label>
+                    <input type="text" id="name" name="name" value="Jane" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">이메일</label>
+                    <input type="email" id="email" name="email" value="email@somefakedomain.net" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">연락 가능한 전화번호</label>
+                    <input type="tel" id="phone" name="phone" value="010-1234-5678" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">상담 날짜</label>
+                    <input type="date" id="date" name="date" value="2025-03-12" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">기타 문의 사항</label>
+                    <textarea id="message" name="message" readonly>Enter your question or message</textarea>
+                </div>
+
+                <button type="button" class="submit-btn" onclick="history.back()">뒤로가기</button>
+            </form>
+        </div>
+
+        <div class="property-list">
+            <h2>상담 하실 물건</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>게시번호</th>
+                        <th>건물명</th>
+                        <th>월세+관리비</th>
+                        <th>시키킹/레이킹</th>
+                        <th>방타입</th>
+                        <th>건축년도</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>NO.000001</td>
+                        <td>리버사이드 오오지</td>
+                        <td>9.7</td>
+                        <td>1/1</td>
+                        <td>1K</td>
+                        <td>2020년</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+</body>
+</html>

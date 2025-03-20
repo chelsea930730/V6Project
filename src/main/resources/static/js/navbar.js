@@ -48,7 +48,7 @@ function checkLoginStatus() {
 			if (data.isLoggedIn) {
 				// ✅ 로그인된 경우
 				navMenu.innerHTML = `
-                    <a href="/cart/cart.html" class="nav-link">🛒 Cart</a>
+                    <a href="/cart" class="nav-link">🛒 Cart</a>
                     <a href="/mypage/alarm.html" class="nav-link">알림</a>
                     <a href="/mypage/mypage.html" class="nav-link">마이페이지</a>
                     <button class="logout-btn">LOGOUT</button>

@@ -25,6 +25,10 @@ public class AuthenticatedUser implements UserDetails, OAuth2User {
         this.attributes = attributes;
     }
 
+    // User 객체를 반환하는 메서드 추가
+    public User getUser() {
+        return this.user;
+    }
 
     // 사용자의 권한 정보를 리턴한다.
     @Override
