@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 상태 버튼 클릭 이벤트
     const statusButtons = document.querySelectorAll('.status-btn');
-    
+
     statusButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             const currentStatus = this.getAttribute('data-current-status');
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const item = document.createElement('div');
                 item.className = 'status-dropdown-item';
                 item.textContent = status.text;
-                
+
                 item.addEventListener('click', async () => {
                     try {
                         const response = await fetch(`/api/consultations/${consultationId}/status`, {
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         button.textContent = status.text;
                         button.className = `btn ${status.class} btn-sm status-btn`;
                         button.setAttribute('data-current-status', status.value);
-                        
+
                         // 알림 표시
                         showNotification('상태가 성공적으로 변경되었습니다.', 'success');
                     } catch (error) {
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         dropdown.remove();
                     }
                 });
-                
+
                 dropdown.appendChild(item);
             }
         });

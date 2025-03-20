@@ -1,6 +1,6 @@
 /* 네비 전체 글씨 설정 */
 nav{
-	font-family: 'Cafe24 Ssurround air OTF Light';
+    font-family: 'Cafe24 Ssurround air OTF Light';
 }
 
 
@@ -65,7 +65,7 @@ nav{
         position: relative;
         min-height: auto;
     }
-    
+
     .sidebar .nav-link {
         margin: 0.2rem 0.5rem;
     }

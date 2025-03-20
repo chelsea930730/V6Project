@@ -48,7 +48,7 @@ public class PropertyService {
 
         for (Property property : properties) {
             if (property.getLocation() != null &&
-                (property.getLatitude() == null || property.getLongitude() == null)) {
+                    (property.getLatitude() == null || property.getLongitude() == null)) {
 
                 log.info("Updating coordinates for property: {}", property.getTitle());
                 var result = geocodingService.getCoordinates(property.getLocation());
@@ -58,7 +58,7 @@ public class PropertyService {
                     property.setLongitude(BigDecimal.valueOf(result.longitude()));
                     propertyRepository.save(property);
                     log.info("Updated coordinates for {}: lat={}, lng={}",
-                        property.getTitle(), result.latitude(), result.longitude());
+                            property.getTitle(), result.latitude(), result.longitude());
                 } else {
                     log.error("Failed to get coordinates for property: {}", property.getTitle());
                 }

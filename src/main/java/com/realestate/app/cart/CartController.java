@@ -30,22 +30,22 @@ public class CartController {
         if (authenticatedUser == null) {
             return "redirect:/user/login";
         }
-        
+
         Long userId = getUserIdFromAuthenticatedUser(authenticatedUser);
         List<Property> cartItems = cartService.getCartItems(userId);
-        
+
         // 각 매물에 대한 이미지 정보 로드
         Map<Long, String> propertyImages = new HashMap<>();
         for (Property property : cartItems) {
             // 첫 번째 이미지만 가져오는 예시
             String imageUrl = propertyImageRepository.findFirstImageUrlByPropertyId(property.getPropertyId());
-            propertyImages.put(property.getPropertyId(), 
-                imageUrl != null ? imageUrl : "/img/property-placeholder.jpg");
+            propertyImages.put(property.getPropertyId(),
+                    imageUrl != null ? imageUrl : "/img/property-placeholder.jpg");
         }
-        
+
         model.addAttribute("properties", cartItems);
         model.addAttribute("propertyImages", propertyImages);
-        
+
         return "cart/cart";
     }
 
@@ -54,12 +54,12 @@ public class CartController {
      */
     @PostMapping("/add")
     public String addToCart(@AuthenticationPrincipal AuthenticatedUser authenticatedUser,
-                           @RequestParam("propertyIds") List<Long> propertyIds,
-                           RedirectAttributes redirectAttributes) {
+                            @RequestParam("propertyIds") List<Long> propertyIds,
+                            RedirectAttributes redirectAttributes) {
         if (authenticatedUser == null) {
             return "redirect:/user/login"; // 로그인 경로 수정
         }
-        
+
         Long userId = getUserIdFromAuthenticatedUser(authenticatedUser);
         cartService.addMultipleToCart(userId, propertyIds);
         redirectAttributes.addFlashAttribute("message", propertyIds.size() + "개의 매물이 장바구니에 추가되었습니다.");
@@ -71,12 +71,12 @@ public class CartController {
      */
     @PostMapping("/remove")
     public String removeFromCart(@AuthenticationPrincipal AuthenticatedUser authenticatedUser,
-                                @RequestParam("propertyId") Long propertyId,
-                                RedirectAttributes redirectAttributes) {
+                                 @RequestParam("propertyId") Long propertyId,
+                                 RedirectAttributes redirectAttributes) {
         if (authenticatedUser == null) {
             return "redirect:/user/login"; // 로그인 경로 수정
         }
-        
+
         Long userId = getUserIdFromAuthenticatedUser(authenticatedUser);
         cartService.removeFromCart(userId, propertyId);
         redirectAttributes.addFlashAttribute("message", "매물이 장바구니에서 제거되었습니다.");
@@ -88,17 +88,17 @@ public class CartController {
      */
     @PostMapping("/clear")
     public String clearCart(@AuthenticationPrincipal AuthenticatedUser authenticatedUser,
-                           RedirectAttributes redirectAttributes) {
+                            RedirectAttributes redirectAttributes) {
         if (authenticatedUser == null) {
             return "redirect:/user/login"; // 로그인 경로 수정
         }
-        
+
         Long userId = getUserIdFromAuthenticatedUser(authenticatedUser);
         cartService.clearCart(userId);
         redirectAttributes.addFlashAttribute("message", "장바구니가 비워졌습니다.");
         return "redirect:/cart";
     }
-    
+
     /**
      * AuthenticatedUser에서 userId를 추출하는 유틸리티 메서드
      */

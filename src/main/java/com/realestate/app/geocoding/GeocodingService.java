@@ -28,12 +28,12 @@ public class GeocodingService {
 
         try {
             String url = String.format(
-                "https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s",
-                address, apiKey
+                    "https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s",
+                    address, apiKey
             );
 
             var response = restTemplate.getForObject(url, GeocodeResponse.class);
-            
+
             if (response != null && !response.results.isEmpty()) {
                 var location = response.results.get(0).geometry.location;
                 return new GeocodingResult(location.lat, location.lng);

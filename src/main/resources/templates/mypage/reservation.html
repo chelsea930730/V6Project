@@ -13,99 +13,30 @@
     <script th:src="@{/js/sangdam.js}" defer></script>
 </head>
 <body>
+<div id="navbar-placeholder"></div>
+
+<main class="sangdam-container"><!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>상담 예약</title>
+        <!-- Bootstrap CSS -->
+        <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+        <!-- Bootstrap JS -->
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <link th:href="@{/css/sangdam.css}" rel="stylesheet" />
+        <script th:src="@{/js/navbar.js}" defer></script>
+        <script th:src="@{/js/sangdam.js}" defer></script>
+    </head>
+    <body>
     <div id="navbar-placeholder"></div>
 
-    <main class="sangdam-container"><!DOCTYPE html>
-        <html xmlns:th="http://www.thymeleaf.org">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>상담 예약</title>
-            <!-- Bootstrap CSS -->
-            <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
-            <!-- Bootstrap JS -->
-            <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
-            <link th:href="@{/css/sangdam.css}" rel="stylesheet" />
-            <script th:src="@{/js/navbar.js}" defer></script>
-            <script th:src="@{/js/sangdam.js}" defer></script>
-        </head>
-        <body>
-        <div id="navbar-placeholder"></div>
-
-        <main class="sangdam-container">
-            <div class="form-section">
-                <h1>상담 예약 진행하기</h1>
-                <p class="sub-heading">Subheading for description or instructions</p>
-
-                <form id="sangdamForm" class="sangdam-form">
-                    <div class="form-group">
-                        <label for="name">성명</label>
-                        <input type="text" id="name" name="name" placeholder="Jane" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email">이메일</label>
-                        <input type="email" id="email" name="email" placeholder="email@somefakedomain.net" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="phone">연락 가능한 전화번호</label>
-                        <input type="tel" id="phone" name="phone" placeholder="010-1234-5678" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="date">상담 날짜</label>
-                        <input type="date" id="date" name="date" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="message">기타 문의 사항</label>
-                        <textarea id="message" name="message" placeholder="Enter your question or message"></textarea>
-                    </div>
-
-                    <button type="submit" class="submit-btn">제출</button>
-                </form>
-            </div>
-
-            <div class="image-section">
-                <!-- 이미지는 여기에 추가될 예정 -->
-            </div>
-
-            <div class="property-list">
-                <h2>상담 하실 물건</h2>
-                <table>
-                    <thead>
-                    <tr>
-                        <th>게시번호</th>
-                        <th>건물명</th>
-                        <th>월세+관리비</th>
-                        <th>시키킹/레이킹</th>
-                        <th>방타입</th>
-                        <th>건축년도</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>NO.000001</td>
-                        <td>리버사이드 오오지</td>
-                        <td>9.7</td>
-                        <td>1/1</td>
-                        <td>1K</td>
-                        <td>2020년</td>
-                    </tr>
-                    <!-- 추가 행들... -->
-                    </tbody>
-                </table>
-            </div>
-        </main>
-
-        <div id="footer-placeholder"></div>
-        </body>
-        </html>
+    <main class="sangdam-container">
         <div class="form-section">
             <h1>상담 예약 진행하기</h1>
             <p class="sub-heading">Subheading for description or instructions</p>
-            
+
             <form id="sangdamForm" class="sangdam-form">
                 <div class="form-group">
                     <label for="name">성명</label>
@@ -135,7 +66,7 @@
                 <button type="submit" class="submit-btn">제출</button>
             </form>
         </div>
-        
+
         <div class="image-section">
             <!-- 이미지는 여기에 추가될 예정 -->
         </div>
@@ -144,30 +75,99 @@
             <h2>상담 하실 물건</h2>
             <table>
                 <thead>
-                    <tr>
-                        <th>게시번호</th>
-                        <th>건물명</th>
-                        <th>월세+관리비</th>
-                        <th>시키킹/레이킹</th>
-                        <th>방타입</th>
-                        <th>건축년도</th>
-                    </tr>
+                <tr>
+                    <th>게시번호</th>
+                    <th>건물명</th>
+                    <th>월세+관리비</th>
+                    <th>시키킹/레이킹</th>
+                    <th>방타입</th>
+                    <th>건축년도</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>NO.000001</td>
-                        <td>리버사이드 오오지</td>
-                        <td>9.7</td>
-                        <td>1/1</td>
-                        <td>1K</td>
-                        <td>2020년</td>
-                    </tr>
-                    <!-- 추가 행들... -->
+                <tr>
+                    <td>NO.000001</td>
+                    <td>리버사이드 오오지</td>
+                    <td>9.7</td>
+                    <td>1/1</td>
+                    <td>1K</td>
+                    <td>2020년</td>
+                </tr>
+                <!-- 추가 행들... -->
                 </tbody>
             </table>
         </div>
     </main>
 
     <div id="footer-placeholder"></div>
+    </body>
+    </html>
+    <div class="form-section">
+        <h1>상담 예약 진행하기</h1>
+        <p class="sub-heading">Subheading for description or instructions</p>
+
+        <form id="sangdamForm" class="sangdam-form">
+            <div class="form-group">
+                <label for="name">성명</label>
+                <input type="text" id="name" name="name" placeholder="Jane" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">이메일</label>
+                <input type="email" id="email" name="email" placeholder="email@somefakedomain.net" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">연락 가능한 전화번호</label>
+                <input type="tel" id="phone" name="phone" placeholder="010-1234-5678" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date">상담 날짜</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="message">기타 문의 사항</label>
+                <textarea id="message" name="message" placeholder="Enter your question or message"></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">제출</button>
+        </form>
+    </div>
+
+    <div class="image-section">
+        <!-- 이미지는 여기에 추가될 예정 -->
+    </div>
+
+    <div class="property-list">
+        <h2>상담 하실 물건</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>게시번호</th>
+                <th>건물명</th>
+                <th>월세+관리비</th>
+                <th>시키킹/레이킹</th>
+                <th>방타입</th>
+                <th>건축년도</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>NO.000001</td>
+                <td>리버사이드 오오지</td>
+                <td>9.7</td>
+                <td>1/1</td>
+                <td>1K</td>
+                <td>2020년</td>
+            </tr>
+            <!-- 추가 행들... -->
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<div id="footer-placeholder"></div>
 </body>
 </html>

@@ -62,19 +62,19 @@ document.addEventListener("DOMContentLoaded", function () {
         fetch(`/api/admin/property/${propertyId}`, {
             method: 'DELETE'
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('매물 삭제에 실패했습니다.');
-            }
-            return response.json();
-        })
-        .then(data => {
-            showNotification("매물이 성공적으로 삭제되었습니다.", "success");
-            location.reload();
-        })
-        .catch(error => {
-            showNotification(error.message, "error");
-        });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('매물 삭제에 실패했습니다.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                showNotification("매물이 성공적으로 삭제되었습니다.", "success");
+                location.reload();
+            })
+            .catch(error => {
+                showNotification(error.message, "error");
+            });
     }
 
     // 팝업창 열기 함수

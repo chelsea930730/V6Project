@@ -4,7 +4,7 @@ body {
 	font-family: "Cafe24 Ssurround air OTF Light";
 	margin: 0;
 	padding: 0;
-	
+
 }
 
 
@@ -363,7 +363,7 @@ empty-message{
 	.property-content {
 		grid-template-columns: 150px 1fr 120px 120px 100px;
 	}
-	
+
 	.property-image {
 		width: 140px;
 		height: 100px;
@@ -375,19 +375,19 @@ empty-message{
 		grid-template-columns: 1fr;
 		gap: 10px;
 	}
-	
+
 	.property-image {
 		width: 100%;
 		height: 200px;
 	}
-	
+
 	.checkbox-column {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		width: 100%;
 	}
-	
+
 	.price-info {
 		grid-template-columns: 1fr;
 		gap: 10px;
@@ -398,45 +398,45 @@ empty-message{
 
 /* 푸터 */
 .footer {
-  width: 100%;
-  background-color: #ffffff;
-  padding: 20px 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-top: 1px solid #ddd;
+	width: 100%;
+	background-color: #ffffff;
+	padding: 20px 50px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-top: 1px solid #ddd;
 }
 
 .footer-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	max-width: 1200px;
 }
 
 /* 왼쪽 영역 */
 .footer-left {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
 }
 
 /* 오른쪽 영역 */
 .footer-right {
-  text-align: right;
+	text-align: right;
 }
 
 .kakao-link {
-  text-decoration: none;
-  color: #2d5be3;
-  font-size: 14px;
+	text-decoration: none;
+	color: #2d5be3;
+	font-size: 14px;
 }
 
 .account-info {
-  color: black;
-  font-size: 14px;
-  margin-top: 5px;
+	color: black;
+	font-size: 14px;
+	margin-top: 5px;
 }
 
 
@@ -445,75 +445,75 @@ empty-message{
 
 /* 팝업 스타일 */
 .popup {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 1000;
 }
 
 .popup-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 30px;
-    border-radius: 10px;
-    max-width: 80%;
-    max-height: 80%;
-    overflow-y: auto;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: white;
+	padding: 30px;
+	border-radius: 10px;
+	max-width: 80%;
+	max-height: 80%;
+	overflow-y: auto;
 }
 
 /* 닫기 버튼 스타일 */
 .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
-    cursor: pointer;
-    background: none;
-    border: none;
-    color: #333;
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	font-size: 24px;
+	cursor: pointer;
+	background: none;
+	border: none;
+	color: #333;
 }
 
 .close-btn:hover {
-    color: #000;
+	color: #000;
 }
 
 /* 노선 선택 스타일 */
 .jr, .tokyometro {
-    margin: 20px 0;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
+	margin: 20px 0;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
 }
 
 .jr-logo, .tokyometro-logo {
-    width: 50px;
-    height: auto;
-    margin-right: 10px;
+	width: 50px;
+	height: auto;
+	margin-right: 10px;
 }
 
 /* 노선 버튼 스타일 */
 .line {
-    padding: 10px 15px;
-    margin: 5px;
-    border-radius: 8px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    display: inline-block;
-    text-align: center;
-    transition: transform 0.2s;
+	padding: 10px 15px;
+	margin: 5px;
+	border-radius: 8px;
+	color: white;
+	font-weight: bold;
+	cursor: pointer;
+	display: inline-block;
+	text-align: center;
+	transition: transform 0.2s;
 }
 
 .line:hover {
-    transform: scale(1.1);
+	transform: scale(1.1);
 }
 
 /* 노선 색상 */

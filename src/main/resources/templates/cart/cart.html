@@ -17,7 +17,7 @@
 <main>
     <h1>장바구니</h1>
     <p>바로 예약해보세요.</p>
-    
+
     <!-- 장바구니가 비어있을 경우 메시지 표시 -->
     <div th:if="${#lists.isEmpty(properties)}" class="empty-message">
         장바구니에 담긴 매물이 없습니다.
@@ -91,17 +91,17 @@
 <script th:inline="javascript">
     function submitSelectedProperties() {
         const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-        
+
         if (checkboxes.length === 0) {
             alert('상담을 원하는 매물을 선택해주세요.');
             return;
         }
-        
+
         const form = document.getElementById('consultForm');
-        
+
         // 기존 입력 필드 제거
         form.innerHTML = '';
-        
+
         // 선택된 매물 ID를 폼에 추가
         checkboxes.forEach(checkbox => {
             const input = document.createElement('input');
@@ -110,7 +110,7 @@
             input.value = checkbox.value;
             form.appendChild(input);
         });
-        
+
         // 폼 제출
         form.submit();
     }

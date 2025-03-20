@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 차트 데이터 초기화
     const reservationChartElement = document.querySelector("#reservationChart");
     const monthlyStats = JSON.parse(reservationChartElement.dataset.monthlyStats || '[]');
-    
+
     const reservationChartOptions = {
         series: [{
             name: '예약 건수',
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 매물 등록 현황 차트 (도넛 차트)
     const propertyChartElement = document.querySelector("#propertyChart");
     const propertyStats = JSON.parse(propertyChartElement.dataset.propertyStats || '{"completed": 0, "pending": 0, "rejected": 0}');
-    
+
     const propertyChartOptions = {
         series: [propertyStats.completed, propertyStats.pending, propertyStats.rejected],
         chart: {
@@ -72,18 +72,18 @@ function initializeCalendar() {
     currentDate = today.getDate();
     currentMonth = today.getMonth();
     currentYear = today.getFullYear();
-    
+
     // 달력 요소
     const calendarDays = document.querySelector('.calendar-days');
     const dateDisplay = document.querySelector('.calendar-header h6');
-    
+
     // 달력 업데이트
     updateCalendar();
-    
+
     // 이전/다음 달 버튼 이벤트
     const prevMonthBtn = document.querySelector('.calendar-nav button:first-child');
     const nextMonthBtn = document.querySelector('.calendar-nav button:last-child');
-    
+
     prevMonthBtn.addEventListener('click', function() {
         currentMonth--;
         if (currentMonth < 0) {
@@ -92,7 +92,7 @@ function initializeCalendar() {
         }
         updateCalendar();
     });
-    
+
     nextMonthBtn.addEventListener('click', function() {
         currentMonth++;
         if (currentMonth > 11) {
@@ -107,10 +107,10 @@ function initializeCalendar() {
 function updateCalendar() {
     const calendarDays = document.querySelector('.calendar-days');
     const dateDisplay = document.querySelector('.calendar-header h6');
-    
+
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
-    
+
     // 달력 HTML 생성
     let daysHtml = `
         <div class="row text-center">
@@ -124,24 +124,24 @@ function updateCalendar() {
         </div>
         <div class="row text-center mt-2">
     `;
-    
+
     // 이전 달의 날짜들
     const prevMonthLastDate = new Date(currentYear, currentMonth, 0).getDate();
     for (let i = 0; i < firstDay; i++) {
         const prevDate = prevMonthLastDate - firstDay + i + 1;
         daysHtml += `<div class="col prev-month">${prevDate}</div>`;
     }
-    
+
     // 현재 달의 날짜들
     for (let i = 1; i <= lastDate; i++) {
         const isToday = i === currentDate && currentMonth === new Date().getMonth() && currentYear === new Date().getFullYear();
         daysHtml += `<div class="col${isToday ? ' current-day' : ''}">${i}</div>`;
-        
+
         if ((i + firstDay) % 7 === 0 && i !== lastDate) {
             daysHtml += '</div><div class="row text-center mt-2">';
         }
     }
-    
+
     // 다음 달의 날짜들
     const remainingDays = 7 - ((lastDate + firstDay) % 7);
     if (remainingDays < 7) {
@@ -149,14 +149,14 @@ function updateCalendar() {
             daysHtml += `<div class="col next-month">${i}</div>`;
         }
     }
-    
+
     daysHtml += '</div>';
     calendarDays.innerHTML = daysHtml;
-    
+
     // 날짜 표시 업데이트
     const currentDisplayDate = new Date(currentYear, currentMonth, currentDate);
     updateDateDisplay(currentDisplayDate);
-    
+
     // 날짜 클릭 이벤트 추가
     const allDays = document.querySelectorAll('.calendar-days .col');
     allDays.forEach(day => {
@@ -164,7 +164,7 @@ function updateCalendar() {
             day.addEventListener('click', function() {
                 allDays.forEach(d => d.classList.remove('current-day'));
                 this.classList.add('current-day');
-                
+
                 let selectedDate;
                 if (this.classList.contains('prev-month')) {
                     selectedDate = new Date(currentYear, currentMonth - 1, parseInt(this.textContent));
@@ -173,7 +173,7 @@ function updateCalendar() {
                 } else {
                     selectedDate = new Date(currentYear, currentMonth, parseInt(this.textContent));
                 }
-                
+
                 // 선택된 날짜로 페이지 이동
                 const formattedDate = formatDateForUrl(selectedDate);
                 window.location.href = `/dashboard?date=${formattedDate}`;
@@ -217,7 +217,7 @@ async function fetchReservationCount() {
         if (!response.ok) {
             throw new Error('예약 건수를 불러오는데 실패했습니다.');
         }
-        
+
         const data = await response.json();
         return data.count || 0;
     } catch (error) {

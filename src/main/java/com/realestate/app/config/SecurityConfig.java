@@ -41,7 +41,7 @@ public class SecurityConfig {
         return new SimpleUrlAuthenticationSuccessHandler() {
             @Override
             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                    Authentication authentication) throws IOException, ServletException {
+                                                Authentication authentication) throws IOException, ServletException {
                 var authorities = authentication.getAuthorities();
                 boolean isAdmin = authorities.stream()
                         .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
