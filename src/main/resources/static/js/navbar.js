@@ -52,11 +52,20 @@ function checkLoginStatus() {
                     <div class="nav-links">
                         <a href="/cart" class="nav-link">🛒 Cart</a>
                         <a href="/mypage/chat.html" class="nav-link" id="chat-link">채팅</a>
-                        <a href="/mypage/mypage.html" class="nav-link">마이페이지</a>
+                        <a href="/mypage/mypage.html" class="nav-link" id="mypage-link">마이페이지</a>
                         <button class="logout-btn">LOGOUT</button>
                     </div>
                 `;
                 
+				// 마이페이지 링크 클릭 이벤트 추가
+				const mypageLink = document.getElementById("mypage-link");
+				if (mypageLink) {
+					mypageLink.addEventListener("click", function(event) {
+						event.preventDefault(); // 기본 링크 동작 방지
+						window.location.href = "/mypage/mypage.html"; // 마이페이지로 이동
+					});
+				}
+
 				// 관리자 채팅 기능을 위한 이벤트 리스너 추가
 				const chatLink = document.getElementById("chat-link");
 				if (chatLink) {
