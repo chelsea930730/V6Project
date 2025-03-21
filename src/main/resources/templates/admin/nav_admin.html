@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/nav_admin.css}">
+</head>
+<body>
+<!-- 관리자 네비게이션 바 -->
+<nav th:fragment="nav" class="admin-sidebar">
+    <div class="sidebar-header">
+        <h2>LION</h2>
+    </div>
+    <ul class="nav-links">
+        <li>
+            <a href="/admin/dashboard">
+                <i class="fas fa-home"></i>
+                대시보드
+            </a>
+        </li>
+        <li>
+            <a href="/admin/addproperty">
+                <i class="fas fa-building"></i>
+                매물 관리
+            </a>
+        </li>
+        <li>
+            <a href="/admin/consulting">
+                <i class="fas fa-users"></i>
+                상담 관리
+            </a>
+        </li>
+        <li>
+            <a href="/admin/chatManage">
+                <i class="fas fa-comments"></i>
+                <span>채팅 관리</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+</body>
+</html> 
