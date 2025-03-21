@@ -25,29 +25,29 @@ const stations = {
 
 // 한글-일본어 매핑
 const japaneseToKorean = {
-	'足立区': '아다치구',
-	'葛飾区': '가쓰시카구',
-	'江戸川区': '에도가와구',
-	'江東区': '고토구',
-	'墨田区': '스미다구',
-	'荒川区': '아라카와구',
-	'台東区': '다이토구',
-	'北区': '기타구',
-	'文京区': '분쿄구',
-	'豊島区': '도시마구',
-	'板橋区': '이타바시구',
-	'練馬区': '네리마구',
-	'杉並区': '스기나미구',
-	'中野区': '나카노구',
-	'新宿区': '신주쿠구',
-	'千代田区': '지요다구',
-	'中央区': '주오구',
-	'渋谷区': '시부야구',
-	'世田谷区': '세타가야구',
-	'港区': '미나토구',
-	'目黒区': '메구로구',
-	'品川区': '시나가와구',
-	'大田区': '오타구'
+	'足立区': '아다치',
+	'葛飾区': '카츠시카',
+	'江戸川区': '에도가와',
+	'江東区': '고토',
+	'墨田区': '스미다',
+	'荒川区': '아라카와',
+	'台東区': '다이토',
+	'北区': '키타',
+	'文京区': '분쿄',
+	'豊島区': '도시마',
+	'板橋区': '이타바시',
+	'練馬区': '네리마',
+	'杉並区': '스기나미',
+	'中野区': '나카노',
+	'新宿区': '신주쿠',
+	'千代田区': '치요다',
+	'中央区': '추오',
+	'渋谷区': '시부야',
+	'世田谷区': '세타가야',
+	'港区': '미나토',
+	'目黒区': '메구로',
+	'品川区': '시나가와',
+	'大田区': '오타'
 };
 
 // 페이지 로드 시 초기화
@@ -210,6 +210,23 @@ function updateFilterMessage() {
 
 // 필터링 함수
 function filterProperties() {
+	let keyword = document.getElementById('searchInput')?.value || '';
+	const savedKeyword = keyword;
+
+	// 한글 구 이름을 일본어로 변환
+	const koreanToJapanese = {};
+	for (const [japanese, korean] of Object.entries(japaneseToKorean)) {
+		koreanToJapanese[korean] = japanese;
+	}
+
+	// 입력된 키워드가 한글 구 이름인 경우 일본어로 변환
+	if (koreanToJapanese[keyword]) {
+		keyword = koreanToJapanese[keyword];
+	}
+	if (koreanToJapanese[savedKeyword]) {
+		keyword = koreanToJapanese[savedKeyword];
+	}
+
 	const filterData = {
 		minPrice: Number(document.getElementById('minPrice').value),
 		maxPrice: Number(document.getElementById('maxPrice').value),
@@ -218,8 +235,9 @@ function filterProperties() {
 		roomTypes: Array.from(document.querySelectorAll('input[name="room"]:checked'))
 			.map(cb => cb.value),
 		buildingYear: document.getElementById('building-year').value,
-		station: selectedStation,
-		keyword: document.getElementById('searchInput')?.value || ''
+		station: selectedStation, //선택된 노선 정보
+		line: selectedLine,  // 선택된 역 정보
+		keyword: keyword // 정확히 검색한 키워드
 	};
 
 	fetch('/property/filter', {
@@ -232,6 +250,13 @@ function filterProperties() {
 		.then(response => response.json())
 		.then(data => {
 			updatePropertyList(data);
+			updateFilterMessage();
+
+			// 검색어 유지
+			const searchInput = document.getElementById('searchInput');
+			if (searchInput && savedKeyword) {
+				searchInput.value = savedKeyword;
+			}
 		})
 		.catch(error => {
 			console.error('필터링 오류:', error);
