@@ -1,12 +1,13 @@
 /* 기본 스타일 */
+html, body {
+	overflow-x: hidden; /* ✅ 가로 스크롤바 제거 */
+}
 /* 전체 페이지 기본 설정 */
 body {
 	font-family: "Cafe24 Ssurround air OTF Light";
 	margin: 0;
 	padding: 0;
-	
 }
-
 
 
 /* '//////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -102,6 +103,8 @@ body {
 }
 
 
+/* ////////////////////////////////////////////////*/
+
 /* 필터 컨테이너 */
 .filter-container {
 	display: flex;
@@ -112,20 +115,32 @@ body {
 	position: relative;
 	min-height: calc(100vh - 70px);
 	justify-content: flex-start;
+	align-items: flex-start;
+	height: 100%;
 }
 
 /* 필터 박스 */
 .filter-box {
 	position: sticky;
-	top: 20px;
+	top: 100px;
 	width: 300px;
 	background: #fff;
 	padding: 20px;
 	border-radius: 10px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	display: flex;
+	flex-direction: column;
 	font-family: 'Cafe24 Ssurround air OTF Light';
 	height: fit-content;
-	flex-shrink: 0;
+	/* ✅ 기존 height 속성 수정 */
+	max-height: calc(100vh - 150px); /* 화면 높이에 맞춰 최대 높이 제한 */
+	overflow-y: auto;
+	overflow-x: hidden;
+	direction: rtl;
+}
+
+.filter-box * {
+	direction: ltr; /* 내부 요소는 다시 왼쪽에서 오른쪽으로 */
 }
 
 .filter-box h2 {
@@ -155,6 +170,25 @@ body {
 
 }
 
+
+/* 스크롤바 스타일 (왼쪽 배치) */
+.filter-box::-webkit-scrollbar {
+	width: 8px;
+}
+
+.filter-box::-webkit-scrollbar-track {
+	background: #f1f1f1;
+	border-radius: 4px;
+}
+
+.filter-box::-webkit-scrollbar-thumb {
+	background: #888;
+	border-radius: 4px;
+}
+
+.filter-box::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
 label {
 	font-weight: bold;
 	display: block;
@@ -222,14 +256,29 @@ select {
 	/* 터치 & 마우스 클릭 가능 영역 확장 */
 	pointer-events: all;
 }
-.slider-value {
+.slider-value1 {
 	position: absolute;
 	background: rgb(137, 161, 206);
 	color: white;
-	padding: 5px 10px;
+	padding: 4px 8px;
 	border-radius: 12px;
 	font-size: 12px;
 	transform: translateY(-40px);
+}
+
+.slider-value2 {
+	position: absolute;
+	background: rgb(137, 161, 206);
+	color: white;
+	padding: 4px 8px;
+	border-radius: 12px;
+	font-size: 12px;
+	transform: translate(-50px, -40px);
+	right: 0;
+	white-space: nowrap;
+	min-width: fit-content;
+	display: inline-block;
+	text-align: center;
 }
 
 
@@ -239,30 +288,48 @@ select {
 /* 매물 리스트 */
 .property-list {
 	flex: 1;
+	min-width: 800px;
+	width: 100%;
+	background: #fff;
+	padding: 0;
+	border-radius: 10px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 	display: flex;
 	flex-direction: column;
-	align-items: center; /* 가운데 정렬 */
-	justify-content: center; /* 중앙 정렬 */
-	min-height: 400px; /* 최소 높이 추가 */
+	min-height: calc(100vh - 140px);
+	height: 100%;
 }
 /* 매물 리스트 내부 h1 스타일 */
 .property-list h1 {
-	margin-top: 0;
-	margin-bottom: 20px;
+	margin: 20px 0;
+	font-size: 24px;
+	font-weight: bold;
+}
+
+/* 매물 리스트 제목과 정렬 옵션 컨테이너 */
+.property-list h1,
+.sort-options {
+	padding: 0 20px;
 }
 
 .property-item {
-	border: 1px solid #e0e0e0;
+	border-top: 1px solid #e0e0e0;
+	border-bottom: 1px solid #e0e0e0;
 	margin-bottom: 20px;
 	background-color: white;
-	border-radius: 8px; /* 둥글게 */
-	overflow: hidden;
+	border-radius: 8px;
+}
+
+
+/* 숨김 처리된 폼 */
+#cartForm {
+	display: none;
 }
 
 .property-header {
 	background-color: #355c86;;
 	color: white;
-	padding: 15px;
+	padding: 15px 20px;
 	font-size: 1.1em;
 	display: flex;
 	justify-content: space-between;
@@ -294,25 +361,42 @@ select {
 
 /* 매물이 없을 경우*/
 empty-message{
-	padding: 20px;
-	text-align: center; /* 가운데 정렬 */
-	color: #666;
-	font-style: italic;
 	width: 100%;
-	background: #fff;
+	padding: 40px 20px;
+	text-align: center;
+	background-color: #f8f9fa;
+	border: 1px solid #e0e0e0;
 	border-radius: 8px;
+	color: #666;
 	font-size: 18px;
 	font-weight: bold;
+	margin: 20px 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	min-height: 200px; /* 높이 추가 */
+	/*min-height: 150px;*/
+	min-height: calc(100vh - 300px);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 /* 정렬 옵션 스타일 */
 .sort-options {
 	text-align: right;
-	margin: 20px;
+	/*margin: 20px;*/
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	margin-bottom: 20px;
+	gap: 15px;
+}
+
+/* 정렬 셀렉트 박스 */
+.sort-options select {
+	width: 200px;
+	padding: 8px;
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+	font-family: "Cafe24 Ssurround air OTF Light";
 }
 
 /* 체크박스 영역 스타일 */
@@ -535,11 +619,10 @@ empty-message{
 .property-info-table {
 	width: 100%;
 	border-collapse: collapse;
-	margin-top: 10px;
 }
 
 .property-info-table th {
-	background-color: #6a99cd;
+	background-color: #f8f6f6;
 	padding: 10px;
 	text-align: center;
 	border: 1px solid #dee2e6;
@@ -547,14 +630,14 @@ empty-message{
 }
 
 .property-info-table td {
-	padding: 15px;
+	padding: 15px 20px;
 	text-align: center;
 	border: 1px solid #dee2e6;
 }
 
 /* 주소 정보 스타일 */
 .address-info {
-	padding: 10px 15px;
+	padding: 10px 20px;
 	color: #666;
 	font-size: 0.9em;
 	border-top: 1px solid #e0e0e0;
@@ -584,6 +667,7 @@ empty-message{
 	display: inline-block;
 	text-decoration: none;
 	font-family: "Cafe24 Ssurround air OTF Light";
+	white-space: nowrap;
 }
 
 .add-cart-button:hover {

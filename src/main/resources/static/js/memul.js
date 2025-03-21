@@ -50,6 +50,8 @@ const japaneseToKorean = {
 	'大田区': '오타'
 };
 
+
+
 // 페이지 로드 시 초기화
 document.addEventListener("DOMContentLoaded", function() {
 	// URL에서 district 파라미터 확인
@@ -121,7 +123,28 @@ function setupEventListeners() {
 		filterProperties();
 	});
 
-	// 체크박스 이벤트
+	// 건물 타입 체크박스 이벤트
+	document.querySelectorAll('input[name="type"]').forEach(checkbox => {
+		checkbox.addEventListener('change', function() {
+			filterProperties();
+		});
+	});
+
+	// 방 타입 체크박스 이벤트
+	document.querySelectorAll('input[name="room"]').forEach(checkbox => {
+		checkbox.addEventListener('change', function() {
+			filterProperties();
+		});
+	});
+
+	// 상세조건 체크박스 이벤트
+	document.querySelectorAll('input[name="detail"]').forEach(checkbox => {
+		checkbox.addEventListener('change', function() {
+			filterProperties();
+		});
+	});
+
+	// 매물 선택 체크박스 이벤트 (장바구니용)
 	document.querySelectorAll('.property-item input[type="checkbox"]').forEach(checkbox => {
 		checkbox.addEventListener('change', function(event) {
 			event.stopPropagation(); // 이벤트 버블링 방지
@@ -135,6 +158,14 @@ function setupEventListeners() {
 	const searchInput = document.getElementById('searchInput');
 	if (searchInput) {
 		searchInput.addEventListener('input', debounce(filterProperties, 300));
+	}
+
+	// 정렬 옵션 이벤트 리스너 추가
+	const sortSelect = document.querySelector('.sort-options select');
+	if (sortSelect) {
+		sortSelect.addEventListener('change', function() {
+			sortProperties(this.value);
+		});
 	}
 }
 
@@ -227,6 +258,7 @@ function updateFilterMessage() {
 function filterProperties() {
 	let keyword = document.getElementById('searchInput')?.value || '';
 	const savedKeyword = keyword;
+	const currentSortValue = document.querySelector('.sort-options')?.value || 'newest';
 
 	// 한글 구 이름을 일본어로 변환
 	const koreanToJapanese = {};
@@ -266,6 +298,16 @@ function filterProperties() {
 		.then(data => {
 			updatePropertyList(data);
 			updateFilterMessage();
+			currentProperties = data;
+
+			// 필터링 결과에 현재 정렬 상태 적용
+			if (currentSortValue && currentProperties.length > 0) {
+				sortProperties(currentSortValue);
+			} else {
+				updatePropertyList(currentProperties);
+			}
+
+			updateFilterMessage();
 
 			// 검색어 유지
 			const searchInput = document.getElementById('searchInput');
@@ -283,6 +325,22 @@ function filterProperties() {
 // 매물 목록 업데이트
 function updatePropertyList(properties) {
 	const propertyList = document.querySelector('.property-list');
+	const currentSortValue = document.querySelector('.sort-options select')?.value || 'newest';
+
+	// properties가 비어있지 않다면 현재 정렬 상태에 따라 정렬
+	if (properties && properties.length > 0) {
+		switch (currentSortValue) {
+			case 'price-low':
+				properties.sort((a, b) => a.monthlyPrice - b.monthlyPrice);
+				break;
+			case 'price-high':
+				properties.sort((a, b) => b.monthlyPrice - a.monthlyPrice);
+				break;
+			case 'newest':
+				properties.sort((a, b) => b.propertyId - a.propertyId);
+				break;
+		}
+	}
 
 	if (!properties || properties.length === 0) {
 		propertyList.innerHTML = `
@@ -290,9 +348,9 @@ function updatePropertyList(properties) {
             <!-- 정렬 옵션 -->
             <div class="sort-options">
                 <select class="form-select" style="width: 200px; display: inline-block;">
-                    <option value="newest">최신순</option>
-                    <option value="price-low">가격 낮은순</option>
-                    <option value="price-high">가격 높은순</option>
+                    <option value="newest" ${currentSortValue === 'newest' ? 'selected' : ''}>최신순</option>
+                    <option value="price-low" ${currentSortValue === 'price-low' ? 'selected' : ''}>가격 낮은순</option>
+                    <option value="price-high" ${currentSortValue === 'price-high' ? 'selected' : ''}>가격 높은순</option>
                 </select>
                 <!-- 장바구니 버튼 -->
                 <button onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
@@ -310,9 +368,9 @@ function updatePropertyList(properties) {
         <!-- 정렬 옵션 -->
         <div class="sort-options">
             <select class="form-select" style="width: 200px; display: inline-block;">
-                <option value="newest">최신순</option>
-                <option value="price-low">가격 낮은순</option>
-                <option value="price-high">가격 높은순</option>
+                <option value="newest" ${currentSortValue === 'newest' ? 'selected' : ''}>최신순</option>
+                <option value="price-low" ${currentSortValue === 'price-low' ? 'selected' : ''}>가격 낮은순</option>
+                <option value="price-high" ${currentSortValue === 'price-high' ? 'selected' : ''}>가격 높은순</option>
             </select>
             <!-- 장바구니 버튼 -->
             <button onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
@@ -322,6 +380,7 @@ function updatePropertyList(properties) {
         <!-- 폼 -->
         <form id="cartForm" action="/cart/add" method="post" style="display: none;"></form>
     `;
+
 
 	html += properties.map(property => `
         <div class="property-item">
@@ -368,6 +427,14 @@ function updatePropertyList(properties) {
     `).join('');
 
 	propertyList.innerHTML = html;
+
+	// 정렬 이벤트 리스너 다시 설정
+	const sortSelect = document.querySelector('.sort-options select');
+	if (sortSelect) {
+		sortSelect.addEventListener('change', function() {
+			sortProperties(this.value);
+		});
+	}
 }
 
 // 디바운스 함수
@@ -377,6 +444,29 @@ function debounce(func, wait) {
 		clearTimeout(timeout);
 		timeout = setTimeout(() => func.apply(this, args), wait);
 	};
+}
+
+// 매물 정렬 함수
+function sortProperties(sortType) {
+	if (!currentProperties || currentProperties.length === 0) return;
+
+	const sortedProperties = [...currentProperties];
+
+	switch (sortType) {
+		case 'newest':
+			// propertyId가 높을수록 최신 매물이라고 가정
+			sortedProperties.sort((a, b) => b.propertyId - a.propertyId);
+			break;
+		case 'price-low':
+			sortedProperties.sort((a, b) => a.monthlyPrice - b.monthlyPrice);
+			break;
+		case 'price-high':
+			sortedProperties.sort((a, b) => b.monthlyPrice - a.monthlyPrice);
+			break;
+	}
+	// 정렬된 결과를 currentProperties에 저장
+	currentProperties = sortedProperties;
+	updatePropertyList(sortedProperties);
 }
 
 
