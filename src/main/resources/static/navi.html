@@ -11,32 +11,10 @@
 	<nav>
 		<strong><a href="/">LION</a></strong>
 		<div id="nav-menu" class="nav-container">
-			<!-- ✅ 로그인 상태일 때만 보이도록 설정 -->
-			<th:block th:if="${isLoggedIn}">
-				<div class="nav-links">
-					<a href="/mypage/cart.html" class="nav-link">🛒 Cart</a>
-					<a href="/mypage/alarm.html" class="nav-link">알림</a>
-					<a href="/mypage/mypage.html" class="nav-link">마이페이지</a>
-					<form th:action="@{/user/logout}" method="post">
-						<button type="submit" class="logout-btn">LOGOUT</button>
-					</form>
-				</div>
-			</th:block>
-
-			<!-- ✅ 로그아웃 상태일 때만 보이도록 설정 -->
-			<th:block th:unless="${isLoggedIn}">
-				<div class="auth-buttons">
-					<a href="/user/login" class="login-btn">LOGIN</a>
-				</div>
-			</th:block>
+			<!-- nav-menu의 내용은 JavaScript에서 동적으로 처리됩니다 -->
 		</div>
 	</nav>
 </header>
-
-
-
-
-
 
 <!-- 푸터 -->
 <footer class="footer">
@@ -65,7 +43,7 @@
 		position: fixed;
 		top: 0;
 		left: 0;
-		width: 95%;
+		width: 100%;
 		background-color: white;  /* 배경색 추가 */
 		display: flex;
 		justify-content: space-between;
@@ -75,8 +53,6 @@
 		z-index: 1000; /* 다른 요소보다 위에 표시 */
 		height: 70px;
 	}
-
-
 
 	/* 푸터 */
 
@@ -129,7 +105,6 @@
 		margin-top: 5px;
 	}
 
-
 	/* 네비 */
 	nav {
 		display: flex;
@@ -152,8 +127,6 @@
 		gap: 15px;
 		min-width: 350px; /* 로그인 여부에 관계없이 최소 크기 유지 */
 	}
-
-
 
 	/* ✅ 네비 링크 정렬 */
 	.nav-links {
@@ -205,6 +178,28 @@
 
 	.nav-link:hover {
 		color: #6a99cd;
+	}
+
+	/* 알림 아이콘 스타일 */
+	.notification-badge {
+		position: relative;
+		display: inline-flex;
+	}
+
+	.notification-badge .badge {
+		position: absolute;
+		top: -5px;
+		right: -5px;
+		width: 15px;
+		height: 15px;
+		background-color: #e74c3c;
+		color: white;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 10px;
+		font-weight: bold;
 	}
 </style>
 </body>

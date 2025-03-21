@@ -3,145 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>상담 예약 상세보기</title>
-    <!-- Bootstrap CSS -->
-    <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
-    <!-- Bootstrap JS -->
-    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
-    <link th:href="@{/css/baguni.css}" rel="stylesheet" />
-    <script th:src="@{/js/navbar.js}" defer></script>
-    <script th:src="@{/js/baguni.js}" defer></script>
+    <title>장바구니</title>
+    <!-- Bootstrap CSS - CDN으로 변경 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap JS - CDN으로 변경 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link th:href="@{/css/cart.css}" rel="stylesheet" />
 </head>
 <body>
+
 <div id="navbar-placeholder"></div>
 
 <main>
-    <h1>장바구니</h1>
-    <p>바로 예약해보세요.</p>
+    <div class="cart-header">
+        <div class="cart-title">
+        <h1>장바구니</h1>
+        <p>바로 예약해보세요.</p>
+        </div>
+        <button class="delete-cart-btn">장바구니의 매물 삭제</button>
+    </div>
 
-    <div class="property-info">
+    <!-- 장바구니가 비어있을 경우 메시지 표시 -->
+    <div th:if="${#lists.isEmpty(properties)}" class="empty-message">
+        장바구니에 담긴 매물이 없습니다.
+    </div>
+
+    <!-- 장바구니 매물 목록 표시 -->
+    <div th:each="property, status : ${properties}" class="property-info">
         <div class="property-header">
-                <span class="property-number">
-                    NO.000001
-                    <input type="checkbox" id="property-checkbox-1" />
-                </span>
-            <h2 class="property-title">세이부 이케부쿠로선 네리마 역 인접, 4층, 건축 7년</h2>
+<span class="property-number">
+    <input type="checkbox" th:id="'property-checkbox-' + ${status.index}" th:value="${property.propertyId}" />
+    <span>NO.</span>
+    <span th:text="${property.propertyId}">1</span>
+</span>
+            <h2 class="property-title" th:text="${property.title}">세이부 이케부쿠로선 네리마 역 인접, 4층, 건축 7년</h2>
         </div>
         <div class="property-content">
             <div class="property-grid">
                 <div class="grid-item">
-                    <img th:src="@{/img/nakono.jpg}" alt="매물 이미지" />
+                    <!-- 이미지가 없으면 기본 이미지 표시 -->
+                    <img th:src="@{${propertyImages.get(property.propertyId)}}" alt="매물 이미지" />
                 </div>
                 <div class="grid-item">
                     <span class="label">월세/관리비</span>
-                    <span class="value">9.7만원 / 1,000엔</span>
+                    <span class="value">
+                        <span th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA')}">9.7만</span>원 /
+                        <span th:text="${#numbers.formatInteger(property.managementFee, 0, 'COMMA')}">1,000</span>엔
+                    </span>
                 </div>
                 <div class="grid-item">
                     <span class="label">시키킹/레이킹</span>
-                    <span class="value">1/0</span>
+                    <span class="value">
+                        <span th:text="${property.shikikin}">1</span>/<span th:text="${property.reikin}">0</span>
+                    </span>
                 </div>
                 <div class="grid-item">
                     <span class="label">방 타입/면적</span>
-                    <span class="value">2K / 25.92㎡</span>
+                    <span class="value">
+                        <span th:text="${property.roomType}">2K</span> /
+                        <span th:text="${property.area}">25.92</span>㎡
+                    </span>
                 </div>
                 <div class="grid-item">
                     <span class="label">건축년도</span>
-                    <span class="value">2018년</span>
+                    <span class="value" th:text="${property.builtYear}">2018년</span>
                 </div>
                 <div class="grid-item">
                     <span class="label">예약</span>
-                    <span class="value">예약가능</span>
+                    <span class="value" th:text="${property.status}">예약가능</span>
                 </div>
             </div>
-            <button class="detail-btn">상세보기</button>
+            <a th:href="@{/property/{id}(id=${property.propertyId})}" class="detail-btn">상세보기</a>
         </div>
     </div>
 
-    <div class="property-info">
-        <div class="property-header">
-                <span class="property-number">
-                    NO.000002
-                    <input type="checkbox" id="property-checkbox-2" />
-                </span>
-            <h2 class="property-title">세이부 이케부쿠로선 네리마 역 인접, 4층, 건축 7년</h2>
-        </div>
-        <div class="property-content">
-            <div class="property-grid">
-                <div class="grid-item">
-                    <img th:src="@{/img/nakono.jpg}" alt="매물 이미지" />
-                </div>
-                <div class="grid-item">
-                    <span class="label">월세/관리비</span>
-                    <span class="value">9.7만원 / 1,000엔</span>
-                </div>
-                <div class="grid-item">
-                    <span class="label">시키킹/레이킹</span>
-                    <span class="value">1/0</span>
-                </div>
-                <div class="grid-item">
-                    <span class="label">방 타입/면적</span>
-                    <span class="value">2K / 25.92㎡</span>
-                </div>
-                <div class="grid-item">
-                    <span class="label">건축년도</span>
-                    <span class="value">2018년</span>
-                </div>
-                <div class="grid-item">
-                    <span class="label">예약</span>
-                    <span class="value">예약가능</span>
-                </div>
-            </div>
-            <button class="detail-btn">상세보기</button>
-        </div>
+    <!-- 장바구니가 비어있지 않을 때만 상담 버튼 표시 -->
+    <div th:if="${not #lists.isEmpty(properties)}">
+        <form th:action="@{/consult/request}" method="post" id="consultForm">
+            <button type="button" onclick="submitSelectedProperties()" class="consult-btn">체크한 매물 상담 바로 가기</button>
+        </form>
     </div>
-
-    <div class="property-info">
-        <div class="property-header">
-                <span class="property-number">
-                    NO.000003
-                    <input type="checkbox" id="property-checkbox-3" />
-                </span>
-            <h2 class="property-title">세이부 이케부쿠로선 네리마 역 인접, 4층, 건축 7년</h2>
-        </div>
-        <div class="property-content">
-            <div class="property-grid">
-                <div class="grid-item">
-                    <img th:src="@{/img/nakono.jpg}" alt="매물 이미지" />
-                </div>
-                <div class="grid-item">
-                    <span class="label">월세/관리비</span>
-                    <span class="value">9.7만원 / 1,000엔</span>
-                </div>
-                <div class="grid-item">
-                    <span class="label">시키킹/레이킹</span>
-                    <span class="value">1/0</span>
-                </div>
-                <div class="grid-item">
-                    <span class="label">방 타입/면적</span>
-                    <span class="value">2K / 25.92㎡</span>
-                </div>
-                <div class="grid-item">
-                    <span class="label">건축년도</span>
-                    <span class="value">2018년</span>
-                </div>
-                <div class="grid-item">
-                    <span class="label">예약</span>
-                    <span class="value">예약가능</span>
-                </div>
-            </div>
-            <button class="detail-btn">상세보기</button>
-        </div>
-    </div>
-
-    <button class="consult-btn">체크한 매물 상담 바로 가기</button>
 </main>
 
-<div id="footer-placeholder"></div>
+
 
 <!-- 모달 추가 -->
 <div id="imageModal" class="modal">
     <span class="close">&times;</span>
     <img class="modal-content" id="modalImage">
 </div>
+
+<!-- 자바스크립트 추가 -->
+<script th:inline="javascript">
+    function submitSelectedProperties() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+
+        if (checkboxes.length === 0) {
+            alert('상담을 원하는 매물을 선택해주세요.');
+            return;
+        }
+
+        const form = document.getElementById('consultForm');
+
+        // 기존 입력 필드 제거
+        form.innerHTML = '';
+
+        // 선택된 매물 ID를 폼에 추가
+        checkboxes.forEach(checkbox => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'propertyIds';
+            input.value = checkbox.value;
+            form.appendChild(input);
+        });
+
+        // 폼 제출
+        form.submit();
+    }
+</script>
+<script th:src="@{/js/cart.js}"></script>
+<script th:src="@{/js/navbar.js}"></script>
 </body>
 </html>

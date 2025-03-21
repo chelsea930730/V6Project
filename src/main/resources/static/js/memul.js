@@ -107,8 +107,10 @@ function setupEventListeners() {
 	});
 
 	// 체크박스 이벤트
-	document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-		checkbox.addEventListener('change', filterProperties);
+	document.querySelectorAll('.property-item input[type="checkbox"]').forEach(checkbox => {
+		checkbox.addEventListener('change', function(event) {
+			event.stopPropagation(); // 이벤트 버블링 방지
+		});
 	});
 
 	// 건축년도 선택 이벤트
@@ -243,11 +245,45 @@ function updatePropertyList(properties) {
 	const propertyList = document.querySelector('.property-list');
 
 	if (!properties || properties.length === 0) {
-		propertyList.innerHTML = '<div class="empty-message">검색 결과가 없습니다.</div>';
+		propertyList.innerHTML = `
+            <h1>매물 리스트</h1>
+            <!-- 정렬 옵션 -->
+            <div class="sort-options">
+                <select class="form-select" style="width: 200px; display: inline-block;">
+                    <option value="newest">최신순</option>
+                    <option value="price-low">가격 낮은순</option>
+                    <option value="price-high">가격 높은순</option>
+                </select>
+                <!-- 장바구니 버튼 -->
+                <button onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
+                    선택한 매물 장바구니에 담기
+                </button>
+            </div>
+            <!-- 폼 -->
+            <form id="cartForm" action="/cart/add" method="post" style="display: none;"></form>
+            <div class="empty-message">검색 결과가 없습니다.</div>`;
 		return;
 	}
 
-	const html = properties.map(property => `
+	let html = `
+        <h1>매물 리스트</h1>
+        <!-- 정렬 옵션 -->
+        <div class="sort-options">
+            <select class="form-select" style="width: 200px; display: inline-block;">
+                <option value="newest">최신순</option>
+                <option value="price-low">가격 낮은순</option>
+                <option value="price-high">가격 높은순</option>
+            </select>
+            <!-- 장바구니 버튼 -->
+            <button onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
+                선택한 매물 장바구니에 담기
+            </button>
+        </div>
+        <!-- 폼 -->
+        <form id="cartForm" action="/cart/add" method="post" style="display: none;"></form>
+    `;
+
+	html += properties.map(property => `
         <div class="property-item">
             <div class="property-header">
                 <div class="header-left">
@@ -303,3 +339,40 @@ function debounce(func, wait) {
 	};
 }
 
+
+
+//카트 함수
+console.log("서버에서 받은 매물 수:", serverProperties.length);
+
+// JavaScript 필터링 비활성화 (서버 필터링 사용)
+window.useServerFilter = true;
+
+function addSelectedToCart() {
+	// 체크된 체크박스 찾기
+	const checkboxes = document.querySelectorAll('.property-item input[type="checkbox"]:checked');
+
+	if (checkboxes.length === 0) {
+		alert('장바구니에 담을 매물을 선택해주세요.');
+		return;
+	}
+
+	// form 요소 가져오기
+	const form = document.getElementById('cartForm');
+
+	// 기존 input 요소들 제거
+	form.innerHTML = '';
+
+	// 선택된 체크박스의 값을 폼에 추가
+	checkboxes.forEach(checkbox => {
+		const input = document.createElement('input');
+		input.type = 'hidden';
+		input.name = 'propertyIds';
+		input.value = checkbox.value;
+		form.appendChild(input);
+	});
+
+
+
+	// 폼 제출
+	form.submit();
+}

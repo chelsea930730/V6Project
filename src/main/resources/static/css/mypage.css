@@ -1,0 +1,117 @@
+.mypage-container {
+    max-width: 1400px;
+    margin: 120px auto 80px;
+    padding: 0 20px;
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #333;
+    margin-top: 40px;
+}
+
+.sub-heading {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.reservation-section, .history-section {
+    margin-bottom: 50px;
+}
+
+h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    padding: 15px 20px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #6a99cd;
+    color: white;
+    font-weight: normal;
+    border-right: none;
+}
+
+/* 진행상태 칸의 배경색 제거 */
+th:nth-child(4) {
+    background-color: #6a99cd;
+    color: white;
+}
+
+/* 테이블 헤더 사이의 경계선 추가 (선택사항) */
+th:nth-child(4) {
+    border-right: none;
+}
+
+th:last-child {
+    border-right: none;
+}
+
+.detail-btn, .view-btn {
+    background-color: #6a99cd;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cancel-btn, .delete-btn {
+    background-color: #6a99cd;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    margin: 20px auto;
+}
+
+input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
+
+tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* 채팅 버튼 스타일 추가 */
+.chat-btn {
+    background-color: #6a99cd;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.chat-btn:hover {
+    background-color: #355c86;
+}
+
+/* 채팅로그 버튼 스타일 */
+.log-btn {
+    background-color: #6a99cd;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.log-btn:hover {
+    background-color: #355c86;
+}

@@ -1,0 +1,270 @@
+#navbar-placeholder {
+  height: 70px; /* 네비게이션 높이와 동일하게 설정 */
+  display: block;
+}
+
+
+html, body {
+
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* 가로 스크롤 방지 */
+}
+
+body {
+  font-family: 'Cafe24 Ssurround air OTF Light';
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;  /* 본문이 중앙 정렬되도록 함 */
+  padding-top: 70px;  /* 네비 높이만큼 패딩 추가 */
+  box-sizing: border-box;
+}
+
+main {
+  width: 100%;
+  max-width: 1200px; /* 너무 넓어지는 걸 방지 */
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+h1 {
+  text-align: left;
+  margin: 40px 0 10px 30px;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+main p {
+  text-align: left;
+  margin-left: 30px;
+  margin-bottom: 20px;
+}
+
+
+/*////////////////////////////////////////////////////////////*/
+
+/* 삭제 버튼 */
+.cart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.cart-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 왼쪽 정렬 */
+}
+
+.delete-cart-btn {
+  background-color: #ef6973;
+  color: white;
+  border: none;
+  padding: 8px 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.delete-cart-btn:hover {
+  background-color: #c5584d;
+}
+
+
+.property-info {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin: 20px 0;
+  width: 100%;
+}
+
+
+  .property-header {
+    display: flex;
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    align-items: center;
+    background-color: #6a99cd;
+    padding: 15px 30px;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 0;
+    gap: 30px; /* No.1과 텍스트 사이 3cm(약 30px) 간격 조정 */
+  }
+
+
+.property-number {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* 체크박스와 텍스트 사이 간격 조절 */
+  color: white;
+}
+
+.property-title {
+  font-size: 16px;
+  color: white;
+  margin: 0;
+}
+
+.property-content {
+  padding: 0;
+  position: relative;
+  min-height: 400px;
+}
+
+.property-grid {
+  display: grid;
+  grid-template-columns: 400px repeat(5, 1fr);
+  gap: 20px;
+  margin: 30px 0;
+  align-items: start;
+  position: relative;
+  padding: 5px 0 20px 15px;
+  min-height: 300px;
+}
+
+.property-grid::after {
+  display: none;
+}
+
+.grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  position: relative;
+}
+
+.grid-item:not(:first-child)::before {
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: -25px;
+  height: 400px;
+  width: 1px;
+  background-color: #eee;
+}
+
+.grid-item:first-child {
+  align-items: center;
+  padding-left: 0;
+  margin-top: 0;
+  gap: 0;
+  margin-left: -15px;
+}
+
+.grid-item .label {
+  font-size: 13px;
+  color: #666;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+}
+
+.grid-item .value {
+  font-size: 14px;
+  color: #333;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+}
+
+.grid-item img {
+  width: 400px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.detail-btn {
+  background-color: #6a99cd;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  position: absolute;
+  right: 8px;
+  bottom: 30px;
+}
+
+.consult-btn {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 30px auto;
+  background-color: #6a99cd;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.detail-btn:hover, .consult-btn:hover {
+  background-color: #355c86;
+}
+
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin: 0 10px 0 0;
+  vertical-align: middle;
+}
+
+label {
+  font-size: 14px;
+}
+
+/* 모달 스타일 */
+.modal {
+  opacity: 0;
+  visibility: hidden;
+  position: fixed;
+  z-index: 1000;
+  padding-top: 50px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  transition: opacity 0.3s ease;
+}
+
+.grid-item:hover .modal {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  margin: auto;
+  display: block;
+  max-width: 90%;
+  max-height: 90vh;
+  object-fit: contain;
+}
+
+.close {
+  position: absolute;
+  right: 35px;
+  top: 15px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #bbb;
+}
