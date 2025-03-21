@@ -41,7 +41,7 @@ public class SecurityConfig {
         return new SimpleUrlAuthenticationSuccessHandler() {
             @Override
             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                    Authentication authentication) throws IOException, ServletException {
+                                                Authentication authentication) throws IOException, ServletException {
                 var authorities = authentication.getAuthorities();
                 boolean isAdmin = authorities.stream()
                         .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
@@ -66,7 +66,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/user/login", "/user/register", "/error","/property/**",
                                 "/css/**", "/js/**", "/img/**", "/static/**", "/navi.html",
                                 "/webjars/**", "/fonts/**", "/images/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/dashboard", "/admin/addproperty", "/admin/create", "/admin/create/**", "/admin/consulting").hasRole("ADMIN")
                         .requestMatchers("/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )

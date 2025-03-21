@@ -69,6 +69,15 @@ public class Property {
     @Column(name = "nearby_facilities", columnDefinition = "TEXT")
     private String nearbyFacilities;
 
+    @Column(name = "station")
+    private String station;  // 역 정보
+
+    @Column(name = "floor")
+    private String floor;    // 층수 정보
+
+    @Column(name = "thumbnail_image")
+    private String thumbnailImage;  // 썸네일 이미지 URL
+
     @PrePersist
     public void prePersist() {
         if (this.createdAt == null) {

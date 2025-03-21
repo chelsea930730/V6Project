@@ -10,21 +10,24 @@ document.addEventListener('DOMContentLoaded', function() {
 			buildingAgeSelect.appendChild(option);
 	}
 
-	// 체크박스 단일 선택 처리
-	const checkboxGroups = document.querySelectorAll('.checkbox-area');
-	
-	checkboxGroups.forEach(group => {
-			const checkboxes = group.querySelectorAll('input[type="checkbox"]');
-			
-			checkboxes.forEach(checkbox => {
-					checkbox.addEventListener('change', function() {
-							if (this.checked) {
-									checkboxes.forEach(cb => {
-											if (cb !== this) cb.checked = false;
-									});
-							}
+	// 체크박스 단일 선택 처리 (상세조건 제외)
+	const buildingTypeArea = document.querySelector('.checkbox-area:nth-child(3)');
+	const roomTypeArea = document.querySelector('.checkbox-area:nth-child(4)');
+
+	[buildingTypeArea, roomTypeArea].forEach(area => {
+			if (area) {
+					const checkboxes = area.querySelectorAll('input[type="checkbox"]');
+
+					checkboxes.forEach(checkbox => {
+							checkbox.addEventListener('change', function() {
+									if (this.checked) {
+											checkboxes.forEach(cb => {
+													if (cb !== this) cb.checked = false;
+											});
+									}
+							});
 					});
-			});
+			}
 	});
 
 	// URL에서 매물 ID 가져오기

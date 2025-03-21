@@ -25,29 +25,29 @@ const stations = {
 
 // 한글-일본어 매핑
 const japaneseToKorean = {
-	'足立区': '아다치구',
-	'葛飾区': '가쓰시카구',
-	'江戸川区': '에도가와구',
-	'江東区': '고토구',
-	'墨田区': '스미다구',
-	'荒川区': '아라카와구',
-	'台東区': '다이토구',
-	'北区': '기타구',
-	'文京区': '분쿄구',
-	'豊島区': '도시마구',
-	'板橋区': '이타바시구',
-	'練馬区': '네리마구',
-	'杉並区': '스기나미구',
-	'中野区': '나카노구',
-	'新宿区': '신주쿠구',
-	'千代田区': '지요다구',
-	'中央区': '주오구',
-	'渋谷区': '시부야구',
-	'世田谷区': '세타가야구',
-	'港区': '미나토구',
-	'目黒区': '메구로구',
-	'品川区': '시나가와구',
-	'大田区': '오타구'
+	'足立区': '아다치',
+	'葛飾区': '카츠시카',
+	'江戸川区': '에도가와',
+	'江東区': '고토',
+	'墨田区': '스미다',
+	'荒川区': '아라카와',
+	'台東区': '다이토',
+	'北区': '키타',
+	'文京区': '분쿄',
+	'豊島区': '도시마',
+	'板橋区': '이타바시',
+	'練馬区': '네리마',
+	'杉並区': '스기나미',
+	'中野区': '나카노',
+	'新宿区': '신주쿠',
+	'千代田区': '치요다',
+	'中央区': '추오',
+	'渋谷区': '시부야',
+	'世田谷区': '세타가야',
+	'港区': '미나토',
+	'目黒区': '메구로',
+	'品川区': '시나가와',
+	'大田区': '오타'
 };
 
 // 페이지 로드 시 초기화
@@ -107,8 +107,10 @@ function setupEventListeners() {
 	});
 
 	// 체크박스 이벤트
-	document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-		checkbox.addEventListener('change', filterProperties);
+	document.querySelectorAll('.property-item input[type="checkbox"]').forEach(checkbox => {
+		checkbox.addEventListener('change', function(event) {
+			event.stopPropagation(); // 이벤트 버블링 방지
+		});
 	});
 
 	// 건축년도 선택 이벤트
@@ -208,6 +210,23 @@ function updateFilterMessage() {
 
 // 필터링 함수
 function filterProperties() {
+	let keyword = document.getElementById('searchInput')?.value || '';
+	const savedKeyword = keyword;
+
+	// 한글 구 이름을 일본어로 변환
+	const koreanToJapanese = {};
+	for (const [japanese, korean] of Object.entries(japaneseToKorean)) {
+		koreanToJapanese[korean] = japanese;
+	}
+
+	// 입력된 키워드가 한글 구 이름인 경우 일본어로 변환
+	if (koreanToJapanese[keyword]) {
+		keyword = koreanToJapanese[keyword];
+	}
+	if (koreanToJapanese[savedKeyword]) {
+		keyword = koreanToJapanese[savedKeyword];
+	}
+
 	const filterData = {
 		minPrice: Number(document.getElementById('minPrice').value),
 		maxPrice: Number(document.getElementById('maxPrice').value),
@@ -216,8 +235,9 @@ function filterProperties() {
 		roomTypes: Array.from(document.querySelectorAll('input[name="room"]:checked'))
 			.map(cb => cb.value),
 		buildingYear: document.getElementById('building-year').value,
-		station: selectedStation,
-		keyword: document.getElementById('searchInput')?.value || ''
+		station: selectedStation, //선택된 노선 정보
+		line: selectedLine,  // 선택된 역 정보
+		keyword: keyword // 정확히 검색한 키워드
 	};
 
 	fetch('/property/filter', {
@@ -230,6 +250,13 @@ function filterProperties() {
 		.then(response => response.json())
 		.then(data => {
 			updatePropertyList(data);
+			updateFilterMessage();
+
+			// 검색어 유지
+			const searchInput = document.getElementById('searchInput');
+			if (searchInput && savedKeyword) {
+				searchInput.value = savedKeyword;
+			}
 		})
 		.catch(error => {
 			console.error('필터링 오류:', error);
@@ -243,11 +270,45 @@ function updatePropertyList(properties) {
 	const propertyList = document.querySelector('.property-list');
 
 	if (!properties || properties.length === 0) {
-		propertyList.innerHTML = '<div class="empty-message">검색 결과가 없습니다.</div>';
+		propertyList.innerHTML = `
+            <h1>매물 리스트</h1>
+            <!-- 정렬 옵션 -->
+            <div class="sort-options">
+                <select class="form-select" style="width: 200px; display: inline-block;">
+                    <option value="newest">최신순</option>
+                    <option value="price-low">가격 낮은순</option>
+                    <option value="price-high">가격 높은순</option>
+                </select>
+                <!-- 장바구니 버튼 -->
+                <button onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
+                    선택한 매물 장바구니에 담기
+                </button>
+            </div>
+            <!-- 폼 -->
+            <form id="cartForm" action="/cart/add" method="post" style="display: none;"></form>
+            <div class="empty-message">검색 결과가 없습니다.</div>`;
 		return;
 	}
 
-	const html = properties.map(property => `
+	let html = `
+        <h1>매물 리스트</h1>
+        <!-- 정렬 옵션 -->
+        <div class="sort-options">
+            <select class="form-select" style="width: 200px; display: inline-block;">
+                <option value="newest">최신순</option>
+                <option value="price-low">가격 낮은순</option>
+                <option value="price-high">가격 높은순</option>
+            </select>
+            <!-- 장바구니 버튼 -->
+            <button onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
+                선택한 매물 장바구니에 담기
+            </button>
+        </div>
+        <!-- 폼 -->
+        <form id="cartForm" action="/cart/add" method="post" style="display: none;"></form>
+    `;
+
+	html += properties.map(property => `
         <div class="property-item">
             <div class="property-header">
                 <div class="header-left">
@@ -303,3 +364,40 @@ function debounce(func, wait) {
 	};
 }
 
+
+
+//카트 함수
+console.log("서버에서 받은 매물 수:", serverProperties.length);
+
+// JavaScript 필터링 비활성화 (서버 필터링 사용)
+window.useServerFilter = true;
+
+function addSelectedToCart() {
+	// 체크된 체크박스 찾기
+	const checkboxes = document.querySelectorAll('.property-item input[type="checkbox"]:checked');
+
+	if (checkboxes.length === 0) {
+		alert('장바구니에 담을 매물을 선택해주세요.');
+		return;
+	}
+
+	// form 요소 가져오기
+	const form = document.getElementById('cartForm');
+
+	// 기존 input 요소들 제거
+	form.innerHTML = '';
+
+	// 선택된 체크박스의 값을 폼에 추가
+	checkboxes.forEach(checkbox => {
+		const input = document.createElement('input');
+		input.type = 'hidden';
+		input.name = 'propertyIds';
+		input.value = checkbox.value;
+		form.appendChild(input);
+	});
+
+
+
+	// 폼 제출
+	form.submit();
+}
