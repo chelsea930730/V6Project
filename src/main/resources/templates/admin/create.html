@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>매물 게시글 작성 및 수정</title>
-    <link rel="stylesheet" href="/css/create.css" />
-    <script src="/js/navibar.js" defer></script>
-    <script src="/js/create.js" defer></script>
+    <link rel="stylesheet" th:href="@{/css/create.css}" />
+    <script th:src="@{/js/navibar.js}" defer></script>
+    <script th:src="@{/js/create.js}" defer></script>
   </head>
   <body>
     <main class="create-container">
@@ -29,24 +29,24 @@
               <h3>건물 타입</h3>
               <div class="checkbox-list">
                 <label
-                  ><input type="checkbox" name="building-type" value="빌딩" required />
-                  빌딩</label
+                  ><input type="radio" name="building-type" value="맨션" required />
+                  맨션</label
                 >
                 <label
-                  ><input type="checkbox" name="building-type" value="아파트" />
+                  ><input type="radio" name="building-type" value="아파트" />
                   아파트</label
                 >
                 <label
-                  ><input
-                    type="checkbox"
-                    name="building-type"
-                    value="LH 주택"
-                  />
-                  LH 주택</label
+                  ><input type="radio" name="building-type" value="타운하우스" />
+                  타운하우스</label
                 >
                 <label
-                  ><input type="checkbox" name="building-type" value="기타" />
-                  기타</label
+                  ><input type="radio" name="building-type" value="오피스텔" />
+                  오피스텔</label
+                >
+                <label
+                  ><input type="radio" name="building-type" value="셰어하우스" />
+                  셰어하우스</label
                 >
               </div>
             </div>
@@ -55,31 +55,31 @@
               <h3>방 타입</h3>
               <div class="checkbox-list">
                 <label
-                  ><input type="checkbox" name="room-type" value="1R" required />
+                  ><input type="radio" name="room-type" value="1R" required />
                   1R</label
                 >
                 <label
-                  ><input type="checkbox" name="room-type" value="1R+LOFT" />
+                  ><input type="radio" name="room-type" value="1R+LOFT" />
                   1R+LOFT</label
                 >
                 <label
-                  ><input type="checkbox" name="room-type" value="1K" />
+                  ><input type="radio" name="room-type" value="1K" />
                   1K</label
                 >
                 <label
-                  ><input type="checkbox" name="room-type" value="1K+LOFT" />
+                  ><input type="radio" name="room-type" value="1K+LOFT" />
                   1K+LOFT</label
                 >
                 <label
-                  ><input type="checkbox" name="room-type" value="1DK" />
+                  ><input type="radio" name="room-type" value="1DK" />
                   1DK</label
                 >
                 <label
-                  ><input type="checkbox" name="room-type" value="1LDK" />
+                  ><input type="radio" name="room-type" value="1LDK" />
                   1LDK</label
                 >
                 <label
-                  ><input type="checkbox" name="room-type" value="2K이상" />
+                  ><input type="radio" name="room-type" value="2K이상" />
                   2K이상</label
                 >
               </div>

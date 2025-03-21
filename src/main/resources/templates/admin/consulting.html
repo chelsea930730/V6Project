@@ -16,13 +16,16 @@
     <link rel="stylesheet" th:href="@{/css/consulting.css}" />
   </head>
   <body>
+    <!-- 네비게이션바 include -->
+    <div th:replace="admin/nav_admin :: nav"></div>
+
     <div class="container-fluid">
       <div class="row">
         <!-- 네비게이션바가 로드될 위치 -->
         <div id="nav-placeholder"></div>
 
         <!-- 메인 컨텐츠 -->
-        <main class="col-md-10 ms-sm-auto px-4">
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
           <div
             class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3"
           >

@@ -5,14 +5,30 @@ nav{
 
 
 /* 사이드바 기본 스타일 */
-.sidebar {
-    min-height: 100vh;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    background-color: #4682B4;
+.admin-sidebar {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 100;
+    width: 250px;
+    height: 100vh;
+    background-color: #6a99cd;
+    color: white;
+    padding: 20px 0;
+}
+
+.sidebar-header {
+    padding: 0 20px;
+    margin-bottom: 30px;
+}
+
+.sidebar-header h2 {
+    color: white;
+    margin: 0;
+    font-size: 24px;
+}
+
+.nav-links {
+    list-style: none;
     padding: 0;
 }
 
@@ -25,37 +41,35 @@ nav{
 .sidebar .logo-area h5 {
     color: #ffffff;
     margin: 0;
-    font-weight: 600;
-    font-size: 1.25rem;
 }
 
-/* 네비게이션 링크 스타일 */
-.sidebar .nav-link {
-    padding: 0.8rem 1.5rem;
-    color: rgba(255,255,255,0.8);
-    font-size: 0.95rem;
-    border-radius: 4px;
-    margin: 0.2rem 1rem;
-    transition: all 0.3s ease;
+.nav-links li {
+    margin-bottom: 5px;
 }
 
-.sidebar .nav-link:hover {
-    background-color: rgba(255,255,255,0.1);
-    color: #ffffff;
-    transform: translateX(5px);
+.nav-links a {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s;
 }
 
-.sidebar .nav-link.active {
-    background-color: rgba(255,255,255,0.2);
-    color: #ffffff;
-    font-weight: 500;
+.nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* 아이콘 스타일 (아이콘 사용시) */
-.sidebar .nav-link i {
-    margin-right: 0.5rem;
+.nav-links i {
+    margin-right: 10px;
     width: 20px;
     text-align: center;
+}
+
+/* 메인 컨텐츠 영역 조정 */
+.admin-content {
+    margin-left: 250px;
+    padding: 20px;
 }
 
 /* 반응형 스타일 */
@@ -70,3 +84,9 @@ nav{
         margin: 0.2rem 0.5rem;
     }
 } 
+
+/* 메인 컨텐츠 영역 조정 */
+main {
+    margin-left: 16.666667%; /* col-md-2의 너비 */
+    padding-top: 1.5rem;
+}

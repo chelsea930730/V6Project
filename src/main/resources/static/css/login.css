@@ -58,7 +58,16 @@ body {
   margin-top: 15px;
   width: 100%;
   font-family: 'Cafe24 Ssurround air OTF Light';
+
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
 }
+
+
+
+
 
 .login-btn:hover {
   background-color: #355c86;

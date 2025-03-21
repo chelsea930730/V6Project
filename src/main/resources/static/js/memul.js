@@ -52,6 +52,22 @@ const japaneseToKorean = {
 
 // 페이지 로드 시 초기화
 document.addEventListener("DOMContentLoaded", function() {
+	// URL에서 district 파라미터 확인
+	const urlParams = new URLSearchParams(window.location.search);
+	const district = urlParams.get('district');
+
+	// 일본어 구 이름을 한글로 변환
+	if (district) {
+		const koreanDistrict = japaneseToKorean[district];
+		if (koreanDistrict) {
+			const searchInput = document.getElementById('searchInput');
+			if (searchInput) {
+				searchInput.value = koreanDistrict;
+				filterProperties(); // 초기 필터링 실행
+			}
+		}
+	}
+
 	// 서버에서 받은 초기 데이터 사용
 	if (typeof serverProperties !== 'undefined' && serverProperties) {
 		currentProperties = serverProperties;
@@ -63,7 +79,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	setupEventListeners();
 	setupLinePopup();
 });
-
 // 매물 데이터 가져오기
 function fetchProperties() {
 	fetch('/property/list')
@@ -235,9 +250,9 @@ function filterProperties() {
 		roomTypes: Array.from(document.querySelectorAll('input[name="room"]:checked'))
 			.map(cb => cb.value),
 		buildingYear: document.getElementById('building-year').value,
-		station: selectedStation, //선택된 노선 정보
-		line: selectedLine,  // 선택된 역 정보
-		keyword: keyword // 정확히 검색한 키워드
+		station: selectedStation || '', // 선택된 역 정보
+		line: selectedLine || '', // 선택된 노선 정보
+		keyword: keyword || ''
 	};
 
 	fetch('/property/filter', {
@@ -377,10 +392,35 @@ function addSelectedToCart() {
 	const checkboxes = document.querySelectorAll('.property-item input[type="checkbox"]:checked');
 
 	if (checkboxes.length === 0) {
-		alert('장바구니에 담을 매물을 선택해주세요.');
+		// 팝업창 생성
+		const popup = document.createElement('div');
+		popup.className = 'custom-popup';
+		popup.innerHTML = `
+            <div class="popup-content">
+                <p>장바구니에 담을 매물을 선택해주세요.</p>
+                <button class="close-popup-btn">닫기</button>
+            </div>
+        `;
+
+
+		// 팝업을 body에 추가
+		document.body.appendChild(popup);
+
+		// 닫기 버튼 클릭 이벤트
+		const closeBtn = popup.querySelector('.close-popup-btn');
+		closeBtn.addEventListener('click', () => {
+			document.body.removeChild(popup);
+		});
+
+		// 팝업 외부 클릭 시 닫기
+		popup.addEventListener('click', (event) => {
+			if (event.target === popup) {
+				document.body.removeChild(popup);
+			}
+		});
+
 		return;
 	}
-
 	// form 요소 가져오기
 	const form = document.getElementById('cartForm');
 
