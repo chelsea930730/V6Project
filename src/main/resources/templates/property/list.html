@@ -170,7 +170,7 @@
             </select>
 
             <!-- 장바구니 버튼 추가 (detail-button 클래스 사용) -->
-            <button onclick="addSelectedToCart()" class="detail-button" style="margin-left: 15px;">
+            <button onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
                 선택한 매물 장바구니에 담기
             </button>
         </div>
@@ -197,95 +197,69 @@
                     </div>
                 </div>
 
-                <!-- 매물 정보 테이블 -->
-                <table class="property-info-table">
-                    <tr>
-                        <th>사진</th>
-                        <th>월세/관리비</th>
-                        <th>시키킹/레이킹</th>
-                        <th>방 타입/면적</th>
-                        <th>건축년도</th>
-                        <th>예약상태</th>
-                        <th>상세보기</th>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="no-image-container"
-                                 style="width: 150px; height: 100px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
-                                <span>이미지 준비중</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA') + '円'}">9.7만円</div>
-                            <div th:text="${#numbers.formatInteger(property.managementFee, 0, 'COMMA') + '円'}">10000円</div>
-                        </td>
-                        <td>
-                            <div th:text="${#numbers.formatInteger(property.shikikin, 0, 'COMMA') + ' / ' +
+            <!-- 매물 정보 테이블 -->
+            <table class="property-info-table">
+                <tr>
+                    <th>사진</th>
+                    <th>월세/관리비</th>
+                    <th>시키킹/레이킹</th>
+                    <th>방 타입/면적</th>
+                    <th>건축년도</th>
+                    <th>예약상태</th>
+                    <th>상세보기</th>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="no-image-container"
+                             style="width: 150px; height: 100px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                            <span>이미지 준비중</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA') + '円'}">9.7만円</div>
+                        <div th:text="${#numbers.formatInteger(property.managementFee, 0, 'COMMA') + '円'}">10000円</div>
+                    </td>
+                    <td>
+                        <div th:text="${#numbers.formatInteger(property.shikikin, 0, 'COMMA') + ' / ' +
                                       #numbers.formatInteger(property.reikin, 0, 'COMMA') }">1/1</div>
-                        </td>
-                        <td>
-                            <div th:text="${property.roomType}">1K</div>
-                            <div th:text="${property.area + 'm²'}">25.92m²</div>
-                            <div th:text="${property.buildingType}">아파트</div>
-                        </td>
-                        <td th:text="${property.builtYear}">2018년</td>
-                        <td>
-                            <div class="status-available" th:text="${property.status}">예약가능</div>
-                        </td>
-                        <td>
-                            <a th:href="@{/property/{id}(id=${property.propertyId})}" class="detail-button">상세보기</a>
-                        </td>
-                    </tr>
-                </table>
+                    </td>
+                    <td>
+                        <div th:text="${property.roomType}">1K</div>
+                        <div th:text="${property.area + 'm²'}">25.92m²</div>
+                        <div th:text="${property.buildingType}">아파트</div>
+                    </td>
+                    <td th:text="${property.builtYear}">2018년</td>
+                    <td>
+                        <div class="status-available" th:text="${property.status}">예약가능</div>
+                    </td>
+                    <td>
+                        <a th:href="@{/property/{id}(id=${property.propertyId})}" class="detail-button">상세보기</a>
+                    </td>
+                </tr>
+            </table>
 
-                <!-- 주소 정보 -->
-                <div class="address-info">
-                    <div th:text="${property.location}">도쿄도 세타가야구 상마4쵸메</div>
-                    <div th:text="${property.subwayLine}">오다큐선 / 키타센주역 도보 7분</div>
-                </div>
+            <!-- 주소 정보 -->
+            <div class="address-info">
+                <div th:text="${property.location}">도쿄도 세타가야구 상마4쵸메</div>
+                <div th:text="${property.subwayLine}">오다큐선 / 키타센주역 도보 7분</div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 </div>
 
 
 <script th:inline="javascript">
     // 서버에서 받은 데이터를 전역 변수로 설정
     const serverProperties = /*[[${properties}]]*/ [];
-    console.log("서버에서 받은 매물 수:", serverProperties.length);
-
-    // JavaScript 필터링 비활성화 (서버 필터링 사용)
-    window.useServerFilter = true;
-
-    function addSelectedToCart() {
-        // 체크된 체크박스 찾기
-        const checkboxes = document.querySelectorAll('.property-item input[type="checkbox"]:checked');
-
-        if (checkboxes.length === 0) {
-            alert('장바구니에 담을 매물을 선택해주세요.');
-            return;
-        }
-
-        // form 요소 가져오기
-        const form = document.getElementById('cartForm');
-
-        // 기존 input 요소들 제거
-        form.innerHTML = '';
-
-        // 선택된 체크박스의 값을 폼에 추가
-        checkboxes.forEach(checkbox => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'propertyIds';
-            input.value = checkbox.value;
-            form.appendChild(input);
-        });
-
-        // 폼 제출
-        form.submit();
-    }
 </script>
 <script th:src="@{/js/memul.js}"></script>
 <script th:src="@{/js/navbar.js}"></script>
 </body>
 </html>
+
+
+
+
+
+

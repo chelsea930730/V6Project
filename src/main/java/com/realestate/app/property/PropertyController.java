@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -94,9 +95,16 @@ public class PropertyController {
     }
     // 매물 상세 조회 
     @GetMapping("/{id}")
-    public String getPropertyDetail(@PathVariable Long id, Model model) {
+    public String getPropertyDetail(@PathVariable Long id, Model model, Authentication authentication) {
+        // 기존 코드: 매물 정보 조회
         Property property = propertyService.getPropertyById(id);
         model.addAttribute("property", property);
+        
+        // 인증 상태 확인 및 모델에 추가
+        boolean isLoggedIn = authentication != null && authentication.isAuthenticated() 
+                && !authentication.getPrincipal().equals("anonymousUser");
+        model.addAttribute("isLoggedIn", isLoggedIn);
+        
         return "property/detail";
     }
 

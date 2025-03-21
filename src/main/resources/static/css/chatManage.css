@@ -1,0 +1,112 @@
+/* 테이블 스타일 */
+.table {
+    font-size: 0.95rem;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    font-weight: 500;
+    border-bottom: 1px solid #dee2e6;
+    color: #495057;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid #dee2e6;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* 체크박스 스타일 */
+.form-check-input {
+    cursor: pointer;
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+.form-check-input:checked {
+    background-color: #4682B4;
+    border-color: #4682B4;
+}
+
+/* 상태 배지 스타일 */
+.status-badge {
+    padding: 0.35rem 0.65rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.status-badge.상담_진행_중 {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.status-badge.상담_완료 {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.status-badge.예약_취소 {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* 채팅 버튼 스타일 */
+.chat-btn {
+    position: relative;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    background-color: #4682B4;
+    border-color: #4682B4;
+}
+
+.chat-btn:hover {
+    background-color: #355c86;
+    border-color: #355c86;
+}
+
+/* NEW 배지 스타일 */
+.new-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #dc3545;
+    color: white;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+/* 카드 스타일 */
+.card {
+    border: none;
+    box-shadow: 0 0 15px rgba(0,0,0,0.05);
+    border-radius: 10px;
+}
+
+/* 페이지네이션 스타일 */
+.pagination {
+    margin: 1rem 0;
+}
+
+.pagination .page-link {
+    color: #4682B4;
+    border-color: #dee2e6;
+    padding: 0.5rem 0.75rem;
+    margin: 0 2px;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #4682B4;
+    border-color: #4682B4;
+    color: white;
+}
+
+.pagination .page-link:hover {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    color: #2c5282;
+} 

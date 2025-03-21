@@ -11,8 +11,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.realestate.app.property.PropertyImageRepository;
 import java.util.Map;
 import java.util.HashMap;
-
 import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 @Controller
 @RequiredArgsConstructor
@@ -97,6 +98,31 @@ public class CartController {
         cartService.clearCart(userId);
         redirectAttributes.addFlashAttribute("message", "장바구니가 비워졌습니다.");
         return "redirect:/cart";
+    }
+
+    /**
+     * 선택한 매물 삭제 (AJAX)
+     */
+    @PostMapping("/remove-selected")
+    @ResponseBody
+    public ResponseEntity<?> removeSelectedFromCart(@AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+                                                    @RequestBody Map<String, List<Long>> request) {
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        Long userId = getUserIdFromAuthenticatedUser(authenticatedUser);
+        List<Long> propertyIds = request.get("propertyIds");
+        
+        if (propertyIds == null || propertyIds.isEmpty()) {
+            return ResponseEntity.badRequest().body("선택된 매물이 없습니다.");
+        }
+        
+        for (Long propertyId : propertyIds) {
+            cartService.removeFromCart(userId, propertyId);
+        }
+        
+        return ResponseEntity.ok().build();
     }
     
     /**

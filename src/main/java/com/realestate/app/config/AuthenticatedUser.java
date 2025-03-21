@@ -37,8 +37,8 @@ public class AuthenticatedUser implements UserDetails, OAuth2User {
     // 조건 : GrantedAuthority 타입을 상속받은 객체면 누구나 들어올 수 있다.
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        //.name은 enum을 string타입으로 변환시켜줌
-        authorities.add(new SimpleGrantedAuthority(user.getRole().name()));
+        // "ROLE_" 접두사 추가
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
         return authorities;
     }
     // 사용자의 패스워드 정보를 리턴한다.

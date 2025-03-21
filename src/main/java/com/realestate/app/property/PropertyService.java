@@ -3,6 +3,8 @@ package com.realestate.app.property;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.realestate.app.geocoding.GeocodingService;
 
@@ -39,7 +41,7 @@ public class PropertyService {
 
     public Property getPropertyById(Long id) {
         return propertyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("매물을 찾을 수 없습니다: " + id));
+            .orElseThrow(() -> new RuntimeException("매물을 찾을 수 없습니다: " + id));
     }
 
     @Transactional
@@ -165,5 +167,8 @@ public class PropertyService {
             log.error("필터링 중 오류 발생: ", e);
             return getAllProperties();
         }
+    }
+    public Page<Property> getAllPropertiesWithPaging(Pageable pageable) {
+        return propertyRepository.findAll(pageable);
     }
 }

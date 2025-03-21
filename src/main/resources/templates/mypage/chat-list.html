@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>채팅 목록</title>
+    <link rel="stylesheet" href="/css/chat.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        /* 읽지 않은 채팅 스타일 - 페이스북 메신저 스타일 */
+        .unread-chat {
+            background-color: #e6f2ff !important; /* 더 밝은 파란색 배경 */
+            border-left: 4px solid #4080ff !important; /* 파란색 왼쪽 테두리 추가 */
+        }
+
+        .unread-chat .user-email,
+        .unread-chat .last-message {
+            font-weight: bold !important;
+            color: #1c1e21 !important; /* 더 진한 검정색 */
+        }
+
+        /* 기존 읽지 않은 메시지 알림 스타일 제거 */
+        .unread-indicator {
+            display: none !important; /* 완전히 숨김 */
+        }
+
+        .user-name-container {
+            display: flex;
+            align-items: center;
+        }
+
+        /* 채팅 항목 스타일 개선 */
+        .chat-user-item {
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .chat-user-item:hover {
+            background-color: #f7f8fa !important;
+        }
+        
+        /* 삭제 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            text-align: center;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .confirm-btn, .cancel-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .confirm-btn {
+            background-color: #e53935;
+            color: white;
+        }
+        
+        .cancel-btn {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <h1>채팅 요청 목록</h1>
+    <div id="chat-users-container">
+        <div id="user-selection" class="user-selection"></div>
+    </div>
+
+    <!-- 삭제 확인 모달 -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h3>채팅방 삭제</h3>
+            <p>정말로 이 채팅방을 삭제하시겠습니까?</p>
+            <div class="modal-buttons">
+                <button id="confirmDelete" class="confirm-btn">예</button>
+                <button id="cancelDelete" class="cancel-btn">아니오</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="currentUserEmail" th:value="${currentUserEmail}" />
+
+    <script src="/js/navbar.js" defer></script>
+    <script>
+        var currentUserEmail = "";
+        var selectedUserToDelete = ""; // 삭제할 사용자 이메일 저장 변수
+        
+        // 페이지 로드 시 채팅 목록 불러오기
+        document.addEventListener("DOMContentLoaded", function() {
+            // 이메일 가져오기
+            var emailInput = document.getElementById('currentUserEmail');
+            if (emailInput && emailInput.value) {
+                currentUserEmail = emailInput.value;
+            }
+            
+            // 관리자 확인
+            if (currentUserEmail === "admin@realestate.com") {
+                loadChatUsers();
+            } else {
+                // 관리자가 아니면 접근 제한
+                window.location.href = "/mypage/chat.html";
+            }
+
+            // 모달 관련 요소 이벤트 설정
+            const deleteModal = document.getElementById('deleteModal');
+            const confirmDelete = document.getElementById('confirmDelete');
+            const cancelDelete = document.getElementById('cancelDelete');
+
+            // 취소 버튼 클릭 시 모달 닫기
+            if (cancelDelete) {
+                cancelDelete.addEventListener('click', function() {
+                    deleteModal.style.display = 'none';
+                });
+            }
+
+            // 확인 버튼 클릭 시 채팅방 삭제
+            if (confirmDelete) {
+                confirmDelete.addEventListener('click', function() {
+                    if (selectedUserToDelete) {
+                        // 삭제 중임을 표시
+                        confirmDelete.disabled = true;
+                        confirmDelete.textContent = "삭제 중...";
+                        
+                        // 채팅방 삭제 API 호출
+                        fetch(`/api/chat/delete?partner=${selectedUserToDelete}`, {
+                            method: 'DELETE'
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                // 삭제 성공 시 목록 새로고침
+                                loadChatUsers();
+                                deleteModal.style.display = 'none';
+                            } else {
+                                // 응답이 OK가 아닌 경우 에러 메시지 파싱 시도
+                                return response.json().then(data => {
+                                    throw new Error(data.error || '채팅방 삭제에 실패했습니다.');
+                                }).catch(e => {
+                                    if (e instanceof SyntaxError) {
+                                        throw new Error('채팅방 삭제에 실패했습니다.');
+                                    }
+                                    throw e;
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error deleting chat room:', error);
+                            alert(error.message || '채팅방 삭제 중 오류가 발생했습니다.');
+                        })
+                        .finally(() => {
+                            // 버튼 상태 복원
+                            confirmDelete.disabled = false;
+                            confirmDelete.textContent = "예";
+                            deleteModal.style.display = 'none';
+                        });
+                    }
+                });
+            }
+
+            // 모달 외부 클릭 시 닫기
+            window.addEventListener('click', function(event) {
+                if (event.target === deleteModal) {
+                    deleteModal.style.display = 'none';
+                }
+            });
+        });
+        
+        // 채팅 요청한 사용자 목록 불러오기
+        function loadChatUsers() {
+            fetch('/api/chat/active-users')
+                .then(response => response.json())
+                .then(users => {
+                    const userSelectionDiv = document.getElementById('user-selection');
+                    userSelectionDiv.innerHTML = ''; // 기존 내용 초기화
+                    
+                    if (users.length === 0) {
+                        userSelectionDiv.innerHTML = '<p>현재 채팅 요청이 없습니다.</p>';
+                        return;
+                    }
+                    
+                    users.forEach(user => {
+                        // 임의의 읽지 않은 메시지 표시 (서버에서 제공하는 경우 해당 값 사용)
+                        // 실제 구현에서는 서버 API에서 읽지 않은 메시지 수를 받아와야 함
+                        const unreadCount = Math.floor(Math.random() * 5); // 임의의 값 (0-4)
+                        
+                        const chatItem = document.createElement('div');
+                        chatItem.className = 'chat-user-item';
+                        
+                        let unreadBadge = '';
+                        if (unreadCount > 0) {
+                            unreadBadge = `<span class="unread-indicator">${unreadCount}</span>`;
+                        }
+                        
+                        chatItem.innerHTML = `
+                            <div class="user-info">
+                                <div>
+                                    <span class="user-email">${user.email}</span>
+                                    ${unreadBadge}
+                                </div>
+                                <span class="last-message-time">${new Date(user.lastMessageTime).toLocaleString()}</span>
+                            </div>
+                            <div class="last-message">${user.lastMessage || '새로운 채팅'}</div>
+                            <div class="buttons-container">
+                                <button class="start-chat-btn" onclick="startChat('${user.email}')">채팅하기</button>
+                                <button class="delete-chat-btn" onclick="showDeleteConfirm('${user.email}')">삭제하기</button>
+                            </div>
+                        `;
+                        userSelectionDiv.appendChild(chatItem);
+                    });
+                })
+                .catch(error => console.error("Error fetching chat users:", error));
+        }
+        
+        // 채팅 시작
+        function startChat(userEmail) {
+            window.location.href = `/mypage/chat.html?user=${userEmail}`;
+        }
+
+        // 삭제 확인 모달 표시
+        function showDeleteConfirm(userEmail) {
+            selectedUserToDelete = userEmail;
+            const deleteModal = document.getElementById('deleteModal');
+            deleteModal.style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
