@@ -7,6 +7,7 @@
     <link rel="stylesheet" th:href="@{/css/create.css}" />
     <script th:src="@{/js/navibar.js}" defer></script>
     <script th:src="@{/js/create.js}" defer></script>
+    <script th:src="@{/js/station-select.js}" defer></script>
   </head>
   <body>
     <main class="create-container">
@@ -137,8 +138,44 @@
           <!-- 우측 입력 영역 -->
           <div class="input-section">
             <div class="button-group">
-              <button type="button" class="btn-normal">노선 변경</button>
-              <button type="button" class="btn-primary">역 변경</button>
+              <button type="button" class="btn-primary" id="station-select-btn">역 선택</button>
+            </div>
+
+            <div class="form-group">
+              <label>선택된 노선</label>
+              <input type="text" id="selected-line" name="line" readonly />
+            </div>
+
+            <div class="form-group">
+              <label>선택된 역</label>
+              <input type="text" id="selected-station" name="station" readonly />
+            </div>
+
+            <!-- 역 선택 모달 -->
+            <div id="station-modal" class="modal">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h3>역 선택</h3>
+                  <button type="button" class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                  <div class="step-container">
+                    <div class="step step-1">
+                      <h4>노선 선택</h4>
+                      <div class="line-list">
+                        <!-- JavaScript로 노선 목록이 여기에 추가됩니다 -->
+                      </div>
+                    </div>
+                    <div class="step step-2" style="display: none;">
+                      <button type="button" class="back-btn">← 노선 선택으로 돌아가기</button>
+                      <h4>역 선택</h4>
+                      <div class="station-list">
+                        <!-- JavaScript로 역 목록이 여기에 추가됩니다 -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="form-group">
