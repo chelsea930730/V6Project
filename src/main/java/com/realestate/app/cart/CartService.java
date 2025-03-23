@@ -7,6 +7,8 @@ import com.realestate.app.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.realestate.app.user.Role;
+import com.realestate.app.user.Provider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,8 +106,8 @@ public class CartService {
      */
     @Transactional(readOnly = true)
     public Long getUserIdByEmail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email));
-        return user.getUserId();
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email))
+            .getUserId();
     }
 }

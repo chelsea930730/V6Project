@@ -8,161 +8,89 @@
     <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
     <!-- Bootstrap JS -->
     <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
-    <link th:href="@{/css/sangdam.css}" rel="stylesheet" />
+    <link th:href="@{/css/reservation.css}" rel="stylesheet" />
     <script th:src="@{/js/navbar.js}" defer></script>
     <script th:src="@{/js/sangdam.js}" defer></script>
 </head>
 <body>
     <div id="navbar-placeholder"></div>
 
-    <main class="sangdam-container"><!DOCTYPE html>
-        <html xmlns:th="http://www.thymeleaf.org">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>상담 예약</title>
-            <!-- Bootstrap CSS -->
-            <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
-            <!-- Bootstrap JS -->
-            <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
-            <link th:href="@{/css/sangdam.css}" rel="stylesheet" />
-            <script th:src="@{/js/navbar.js}" defer></script>
-            <script th:src="@{/js/sangdam.js}" defer></script>
-        </head>
-        <body>
-        <div id="navbar-placeholder"></div>
-
-        <main class="sangdam-container">
-            <div class="form-section">
-                <h1>상담 예약 진행하기</h1>
-                <p class="sub-heading">Subheading for description or instructions</p>
-
-                <form id="sangdamForm" class="sangdam-form">
-                    <div class="form-group">
-                        <label for="name">성명</label>
-                        <input type="text" id="name" name="name" placeholder="Jane" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email">이메일</label>
-                        <input type="email" id="email" name="email" placeholder="email@somefakedomain.net" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="phone">연락 가능한 전화번호</label>
-                        <input type="tel" id="phone" name="phone" placeholder="010-1234-5678" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="date">상담 날짜</label>
-                        <input type="date" id="date" name="date" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="message">기타 문의 사항</label>
-                        <textarea id="message" name="message" placeholder="Enter your question or message"></textarea>
-                    </div>
-
-                    <button type="submit" class="submit-btn">제출</button>
-                </form>
+    <main class="sangdam-container">
+        <!-- 성공/에러 메시지 표시 영역 -->
+        <div class="message-container">
+            <div th:if="${success}" class="alert alert-success">
+                <span th:text="${success}"></span>
             </div>
-
-            <div class="image-section">
-                <!-- 이미지는 여기에 추가될 예정 -->
+            <div th:if="${error}" class="alert alert-danger">
+                <span th:text="${error}"></span>
             </div>
+        </div>
 
-            <div class="property-list">
-                <h2>상담 하실 물건</h2>
-                <table>
-                    <thead>
-                    <tr>
-                        <th>게시번호</th>
-                        <th>건물명</th>
-                        <th>월세+관리비</th>
-                        <th>시키킹/레이킹</th>
-                        <th>방타입</th>
-                        <th>건축년도</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>NO.000001</td>
-                        <td>리버사이드 오오지</td>
-                        <td>9.7</td>
-                        <td>1/1</td>
-                        <td>1K</td>
-                        <td>2020년</td>
-                    </tr>
-                    <!-- 추가 행들... -->
-                    </tbody>
-                </table>
-            </div>
-        </main>
-
-        <div id="footer-placeholder"></div>
-        </body>
-        </html>
         <div class="form-section">
             <h1>상담 예약 진행하기</h1>
-            <p class="sub-heading">Subheading for description or instructions</p>
+            <p class="sub-heading">매물에 대한 상담 예약을 진행합니다</p>
             
-            <form id="sangdamForm" class="sangdam-form">
+            <!-- POST 방식 폼 제출 -->
+            <form id="sangdamForm" class="sangdam-form" th:action="@{/reservation}" method="post" th:object="${reservation}">
+                <!-- CSRF 토큰이 존재할 경우에만 추가 -->
+                <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                
                 <div class="form-group">
                     <label for="name">성명</label>
-                    <input type="text" id="name" name="name" placeholder="Jane" required>
+                    <input type="text" id="name" th:field="*{name}" placeholder="이름을 입력하세요" required>
                 </div>
 
                 <div class="form-group">
                     <label for="email">이메일</label>
-                    <input type="email" id="email" name="email" placeholder="email@somefakedomain.net" required>
+                    <input type="email" id="email" th:field="*{email}" placeholder="이메일을 입력하세요" required>
                 </div>
 
                 <div class="form-group">
                     <label for="phone">연락 가능한 전화번호</label>
-                    <input type="tel" id="phone" name="phone" placeholder="010-1234-5678" required>
+                    <input type="tel" id="phone" th:field="*{phone}" placeholder="전화번호를 입력하세요" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="date">상담 날짜</label>
-                    <input type="date" id="date" name="date" required>
+                    <label for="reservedDate">상담 날짜</label>
+                    <input type="date" id="reservedDate" th:field="*{reservedDate}" required>
                 </div>
 
                 <div class="form-group">
                     <label for="message">기타 문의 사항</label>
-                    <textarea id="message" name="message" placeholder="Enter your question or message"></textarea>
+                    <textarea id="message" th:field="*{message}" placeholder="문의사항을 입력하세요"></textarea>
+                </div>
+                
+                <!-- 선택된 매물 ID를 hidden으로 전송 -->
+                <div th:if="${properties != null}">
+                    <div th:each="property : ${properties}">
+                        <input type="hidden" name="propertyIds" th:value="${property.propertyId}">
+                    </div>
                 </div>
 
-                <button type="submit" class="submit-btn">제출</button>
+                <button type="submit" class="submit-btn">상담 예약하기</button>
             </form>
         </div>
-        
-        <div class="image-section">
-            <!-- 이미지는 여기에 추가될 예정 -->
-        </div>
-
-        <div class="property-list">
-            <h2>상담 하실 물건</h2>
+        <!-- 선택된 매물 목록 표시 -->
+        <div class="property-list" th:if="${properties != null and !properties.isEmpty()}">
+            <h2>상담 하실 매물</h2>
             <table>
                 <thead>
                     <tr>
                         <th>게시번호</th>
                         <th>건물명</th>
                         <th>월세+관리비</th>
-                        <th>시키킹/레이킹</th>
                         <th>방타입</th>
                         <th>건축년도</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>NO.000001</td>
-                        <td>리버사이드 오오지</td>
-                        <td>9.7</td>
-                        <td>1/1</td>
-                        <td>1K</td>
-                        <td>2020년</td>
+                    <tr th:each="property : ${properties}">
+                        <td th:text="${'NO.' + property.propertyId}">NO.000001</td>
+                        <td th:text="${property.title}">건물명</td>
+                        <td th:text="${#numbers.formatInteger(property.monthlyPrice,0,'COMMA') + '엔'}">9.7</td>
+                        <td th:text="${property.roomType}">1K</td>
+                        <td th:text="${property.builtYear}">2020년</td>
                     </tr>
-                    <!-- 추가 행들... -->
                 </tbody>
             </table>
         </div>

@@ -173,6 +173,10 @@ public class PropertyController {
             @SuppressWarnings("unchecked")
             List<String> roomTypes = (List<String>) filters.get("roomTypes");
 
+            // 상세 조건 필터
+            @SuppressWarnings("unchecked")
+            List<String> detailTypes = (List<String>) filters.get("detailTypes");
+
             String buildingYear = (String) filters.get("buildingYear");
             String station = (String) filters.get("station");
 
@@ -183,7 +187,8 @@ public class PropertyController {
                     roomTypes,
                     buildingYear,
                     station,
-                    keyword
+                    keyword,
+                    detailTypes  // 상세 조건 추가
             );
 
             log.info("필터링된 매물 수: {}", filteredProperties.size());
