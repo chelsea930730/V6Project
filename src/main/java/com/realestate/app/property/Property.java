@@ -65,7 +65,7 @@ public class Property {
 
     @Column(name = "initial_cost", columnDefinition = "TEXT")
     private String initialCost;
-    
+
     @Column(name = "nearby_facilities", columnDefinition = "TEXT")
     private String nearbyFacilities;
 

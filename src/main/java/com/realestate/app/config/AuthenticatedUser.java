@@ -25,6 +25,10 @@ public class AuthenticatedUser implements UserDetails, OAuth2User {
         this.attributes = attributes;
     }
 
+    // User 객체를 반환하는 메서드 추가
+    public User getUser() {
+        return this.user;
+    }
 
     // 사용자의 권한 정보를 리턴한다.
     @Override
@@ -33,6 +37,7 @@ public class AuthenticatedUser implements UserDetails, OAuth2User {
     // 조건 : GrantedAuthority 타입을 상속받은 객체면 누구나 들어올 수 있다.
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
+        // "ROLE_" 접두사 추가
         authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
         return authorities;
     }

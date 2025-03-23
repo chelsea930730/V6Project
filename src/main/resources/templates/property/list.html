@@ -13,26 +13,18 @@
 </head>
 <body>
 
-<!-- 헤더 -->
-<header class="navbar">
-    <div class="nav-left">
-        <a th:href="@{/}" class="logo">LION</a>
-    </div>
-    <div class="nav-right" id="nav-menu">
-        <!-- JavaScript에서 로그인 여부에 따라 내용 변경 -->
-    </div>
-</header>
+<div id="navbar-placeholder"></div>
 
 
 <!-- 배경 섹션 -->
 <section class="hero">
     <h1>매물 리스트</h1>
     <div th:if="${filterType != null}">
-        <p th:if="${filterType == 'district' && filterValueKorean != null}" 
+        <p th:if="${filterType == 'district' && filterValueKorean != null}"
            th:text="${filterValue} + ' (' + ${filterValueKorean} + ') 지역 매물을 보고 계십니다'"></p>
-        <p th:if="${filterType == 'district' && filterValueKorean == null}" 
+        <p th:if="${filterType == 'district' && filterValueKorean == null}"
            th:text="${filterValue} + ' 지역 매물을 보고 계십니다'"></p>
-        <p th:if="${filterType == 'line'}" 
+        <p th:if="${filterType == 'line'}"
            th:text="${filterValue} + ' 노선 매물을 보고 계십니다'"></p>
     </div>
     <br>
@@ -78,7 +70,7 @@
         <!-- 기존 필터들 -->
         <div class="building-type">
             <label>건물 타입</label>
-            <label><input type="checkbox" name="type" value="원룸"> 원룸</label>
+            <label><input type="checkbox" name="type" value="맨션"> 맨션</label>
             <label><input type="checkbox" name="type" value="아파트"> 아파트</label>
             <label><input type="checkbox" name="type" value="LDK 주택"> LDK 주택</label>
             <label><input type="checkbox" name="type" value="기타"> 기타</label>
@@ -165,42 +157,45 @@
     </div>
 
 
-   <!-- 매물 리스트 -->
-   <section class="property-list">
-    <h1>매물 리스트</h1>
-    
-    <!-- 정렬 옵션 -->
-    <div class="sort-options">
-        <select class="form-select" style="width: 200px; display: inline-block;">
-            <option value="Featured">Featured</option>
-            <option value="newest">최신순</option>
-            <option value="price-low">가격 낮은순</option>
-            <option value="price-high">가격 높은순</option>
-        </select>
-        <button class="btn btn-outline-secondary ms-2">
-            <i class="bi bi-grid"></i>
-        </button>
-        <button class="btn btn-outline-secondary">
-            <i class="bi bi-list"></i>
-        </button>
-    </div>
-    
-    <!-- 매물이 없을 경우 -->
-    <div th:if="${#lists.isEmpty(properties)}" class="empty-message">
-        등록된 매물이 없습니다.
-    </div>
-    
-    <!-- 매물 목록 -->
-    <div class="property-list">
-        <div th:each="property : ${properties}" class="property-item">
-            <!-- 매물 헤더 -->
-            <div class="property-header">
-                <div class="header-left">
-                    <input type="checkbox" th:value="${property.propertyId}">
-                    <span class="property-no" th:text="'NO.' + ${property.propertyId}">NO.0000001</span>
-                    <span th:text="${property.title}">매물 제목</span>
+    <!-- 매물 리스트 -->
+    <section class="property-list">
+        <h1>매물 리스트</h1>
+
+        <!-- 정렬 옵션 -->
+        <div class="sort-options">
+            <select class="form-select" style="width: 200px; display: inline-block;">
+                <option value="newest">최신순</option>
+                <option value="price-low">가격 낮은순</option>
+                <option value="price-high">가격 높은순</option>
+            </select>
+
+            <!-- 장바구니 버튼 추가 (detail-button 클래스 사용) -->
+            <button onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
+                선택한 매물 장바구니에 담기
+            </button>
+        </div>
+
+        <!-- 폼은 숨김 처리 -->
+        <form id="cartForm" th:action="@{/cart/add}" method="post" style="display: none;">
+            <!-- 선택된 매물 ID들이 여기에 동적으로 추가됨 -->
+        </form>
+
+        <!-- 매물이 없을 경우 -->
+        <div th:if="${#lists.isEmpty(properties)}" class="empty-message">
+            등록된 매물이 없습니다.
+        </div>
+
+        <!-- 매물 목록 -->
+        <div class="property-list">
+            <div th:each="property : ${properties}" class="property-item">
+                <!-- 매물 헤더 -->
+                <div class="property-header">
+                    <div class="header-left">
+                        <input type="checkbox" th:value="${property.propertyId}">
+                        <span class="property-no" th:text="'NO.' + ${property.propertyId}">NO.0000001</span>
+                        <span th:text="${property.title}">매물 제목</span>
+                    </div>
                 </div>
-            </div>
 
             <!-- 매물 정보 테이블 -->
             <table class="property-info-table">
@@ -215,15 +210,17 @@
                 </tr>
                 <tr>
                     <td>
-                        <img th:src="@{/img/property-placeholder.jpg}" class="property-image" alt="매물 이미지" 
-                             style="width: 150px; height: 100px; object-fit: cover;">
+                        <div class="no-image-container"
+                             style="width: 150px; height: 100px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                            <span>이미지 준비중</span>
+                        </div>
                     </td>
                     <td>
                         <div th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA') + '円'}">9.7만円</div>
                         <div th:text="${#numbers.formatInteger(property.managementFee, 0, 'COMMA') + '円'}">10000円</div>
                     </td>
                     <td>
-                        <div th:text="${#numbers.formatInteger(property.shikikin, 0, 'COMMA') + ' / ' + 
+                        <div th:text="${#numbers.formatInteger(property.shikikin, 0, 'COMMA') + ' / ' +
                                       #numbers.formatInteger(property.reikin, 0, 'COMMA') }">1/1</div>
                     </td>
                     <td>
@@ -251,30 +248,13 @@
 </section>
 </div>
 
-<!-- 푸터 -->
-<footer class="footer">
-    <div class="footer-container">
-        <div class="footer-left">
-            <a href="/index.html" class="footer-logo">LION</a>
-        </div>
-        <div class="footer-right">
-            <a href="/*" class="kakao-link"
-            >상담원 카카오톡 문의</a
-            >
-            <p class="account">비니니: BBBBB</p>
-        </div>
-    </div>
-</footer>
 
 <script th:inline="javascript">
-    // 서버에서 받은 데이터 사용
+    // 서버에서 받은 데이터를 전역 변수로 설정
     const serverProperties = /*[[${properties}]]*/ [];
-    console.log("서버에서 받은 매물 수:", serverProperties.length);
-    
-    // JavaScript 필터링 비활성화 (서버 필터링 사용)
-    window.useServerFilter = true;
 </script>
 <script th:src="@{/js/memul.js}"></script>
+<script th:src="@{/js/navbar.js}"></script>
 </body>
 </html>
 

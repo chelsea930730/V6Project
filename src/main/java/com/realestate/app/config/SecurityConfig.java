@@ -41,11 +41,11 @@ public class SecurityConfig {
         return new SimpleUrlAuthenticationSuccessHandler() {
             @Override
             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                    Authentication authentication) throws IOException, ServletException {
+                                                Authentication authentication) throws IOException, ServletException {
                 var authorities = authentication.getAuthorities();
                 boolean isAdmin = authorities.stream()
                         .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-                
+
                 if (isAdmin) {
                     getRedirectStrategy().sendRedirect(request, response, "/admin/dashboard");
                 } else {
@@ -64,7 +64,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/user/login", "/user/register", "/error","/property/**",
-                                "/css/**", "/js/**", "/img/**", "/static/**", "/navi.html", 
+                                "/css/**", "/js/**", "/img/**", "/static/**", "/navi.html",
                                 "/webjars/**", "/fonts/**", "/images/**").permitAll()
                         .requestMatchers("/admin/dashboard", "/admin/addproperty", "/admin/create", "/admin/create/**", "/admin/consulting").hasRole("ADMIN")
                         .requestMatchers("/oauth2/**").permitAll()
@@ -94,11 +94,14 @@ public class SecurityConfig {
         return http.authenticationProvider(customAuthenticationProvider()).build();
     }
 
+
+    // ✅ PasswordEncoder를 반드시 @Bean으로 등록해야 함
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // ✅ CustomAuthenticationProvider를 @Bean으로 등록
     @Bean
     public AuthenticationProvider customAuthenticationProvider() {
         return new CustomAuthenticationProvider(userDetailsService, passwordEncoder());

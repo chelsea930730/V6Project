@@ -6,18 +6,15 @@
 	<title>Navigation</title>
 </head>
 <body>
+
 <header>
 	<nav>
-		<strong><a th:href="@{/}">LION</a></strong>
+		<strong><a href="/">LION</a></strong>
+		<div id="nav-menu" class="nav-container">
+			<!-- nav-menu의 내용은 JavaScript에서 동적으로 처리됩니다 -->
+		</div>
 	</nav>
-
-	<!-- 네비 로그인 시 변경 -->
-	<div id="nav-menu">
-		<a th:href="@{/user/login}" class="nav-link login-btn">LOGIN</a>
-	</div>
 </header>
-
-
 
 <!-- 푸터 -->
 <footer class="footer">
@@ -39,13 +36,14 @@
 		flex-direction: column;
 		margin: 0;
 		padding: 0;
+		padding-top: 80px;
 	}
 
 	header {
 		position: fixed;
 		top: 0;
 		left: 0;
-		width: 95%;
+		width: 100%;
 		background-color: white;  /* 배경색 추가 */
 		display: flex;
 		justify-content: space-between;
@@ -53,9 +51,8 @@
 		padding: 15px 50px;
 		border-bottom: 1px solid #ddd;
 		z-index: 1000; /* 다른 요소보다 위에 표시 */
+		height: 70px;
 	}
-
-
 
 	/* 푸터 */
 
@@ -110,6 +107,40 @@
 
 
 	/* 네비 */
+	nav {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 15px 10px;
+		/*border-bottom: 1px solid #ddd;*/
+		background-color: white;
+		height: 70px; /* 네비게이션 높이 고정 */
+		box-sizing: border-box;
+	}
+
+	.nav-container {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 15px;
+		min-width: 350px; /* 로그인 여부에 관계없이 최소 크기 유지 */
+	}
+
+	/* ✅ 네비 링크 정렬 */
+	.nav-links {
+		display: flex;
+		align-items: center;
+		gap: 15px;
+	}
+
+	/* ✅ 로그인/로그아웃 버튼 정렬 */
+	.auth-buttons {
+		display: flex;
+		align-items: center;
+	}
 
 	nav a {
 		text-decoration: none;
@@ -118,27 +149,58 @@
 		font-family: 'Cafe24 Ssurround air OTF Light';
 	}
 
-	.login-btn {
+	.login-btn, .logout-btn {
 		background-color: #6a99cd;
 		color: white;
 		border: none;
-		padding: 15px 35px;
-		border-radius: 25px;
-		font-size: 20px;
+		padding: 10px 20px;
+		border-radius: 15px;
+		font-size: 14px;
+		font-weight: bold;
 		cursor: pointer;
-		font-family: 'Cafe24 Ssurround air OTF Light';
+		transition: 0.3s;
 	}
 
 	.login-btn:hover, .logout-btn:hover {
 		background-color: #355c86;
 	}
 
-	.nav-link{
+	/* ✅ 아이콘 및 링크 스타일 */
+	.nav-link {
 		text-decoration: none;
 		color: #355c86;
 		font-size: 16px;
-		margin-right: 10px;
-		font-family: 'Cafe24 Ssurround air OTF Light';
+		font-weight: bold;
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		transition: 0.3s;
+	}
+
+	.nav-link:hover {
+		color: #6a99cd;
+	}
+
+	/* 알림 아이콘 스타일 */
+	.notification-badge {
+		position: relative;
+		display: inline-flex;
+	}
+
+	.notification-badge .badge {
+		position: absolute;
+		top: -5px;
+		right: -5px;
+		width: 15px;
+		height: 15px;
+		background-color: #e74c3c;
+		color: white;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 10px;
+		font-weight: bold;
 	}
 </style>
 </body>

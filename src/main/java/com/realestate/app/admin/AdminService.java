@@ -33,7 +33,7 @@ public class AdminService {
                 .role(Role.ADMIN)
                 .provider(Provider.LOCAL)
                 .build();
-        
+
         userRepository.save(adminUser);
     }
 }

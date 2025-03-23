@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	[buildingTypeArea, roomTypeArea].forEach(area => {
 			if (area) {
 					const checkboxes = area.querySelectorAll('input[type="checkbox"]');
-					
+
 					checkboxes.forEach(checkbox => {
 							checkbox.addEventListener('change', function() {
 									if (this.checked) {

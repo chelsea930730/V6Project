@@ -1,14 +1,15 @@
 package com.realestate.app.property;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/property")
 @RequiredArgsConstructor
+@Slf4j
 public class PropertyController {
     private final PropertyService propertyService;
 
@@ -93,9 +95,16 @@ public class PropertyController {
     }
     // 매물 상세 조회 
     @GetMapping("/{id}")
-    public String getPropertyDetail(@PathVariable Long id, Model model) {
+    public String getPropertyDetail(@PathVariable Long id, Model model, Authentication authentication) {
+        // 기존 코드: 매물 정보 조회
         Property property = propertyService.getPropertyById(id);
         model.addAttribute("property", property);
+        
+        // 인증 상태 확인 및 모델에 추가
+        boolean isLoggedIn = authentication != null && authentication.isAuthenticated() 
+                && !authentication.getPrincipal().equals("anonymousUser");
+        model.addAttribute("isLoggedIn", isLoggedIn);
+        
         return "property/detail";
     }
 
@@ -137,5 +146,52 @@ public class PropertyController {
         result.put("sampleProperties", sampleProperties);
         
         return result;
+    }
+
+    @PostMapping("/filter")
+    @ResponseBody
+    public ResponseEntity<List<Property>> filterProperties(@RequestBody Map<String, Object> filters) {
+        try {
+            log.info("받은 필터 데이터: {}", filters);
+
+            // 필수값 처리
+            BigDecimal minPrice = null;
+            BigDecimal maxPrice = null;
+            if (filters.get("minPrice") != null) {
+                minPrice = new BigDecimal(filters.get("minPrice").toString());
+            }
+            if (filters.get("maxPrice") != null) {
+                maxPrice = new BigDecimal(filters.get("maxPrice").toString());
+            }
+
+            // 선택적 필터값 처리
+            String keyword = (String) filters.get("keyword");
+
+            @SuppressWarnings("unchecked")
+            List<String> buildingTypes = (List<String>) filters.get("buildingTypes");
+
+            @SuppressWarnings("unchecked")
+            List<String> roomTypes = (List<String>) filters.get("roomTypes");
+
+            String buildingYear = (String) filters.get("buildingYear");
+            String station = (String) filters.get("station");
+
+            List<Property> filteredProperties = propertyService.filterProperties(
+                    minPrice,
+                    maxPrice,
+                    buildingTypes,
+                    roomTypes,
+                    buildingYear,
+                    station,
+                    keyword
+            );
+
+            log.info("필터링된 매물 수: {}", filteredProperties.size());
+            return ResponseEntity.ok(filteredProperties);
+
+        } catch (Exception e) {
+            log.error("필터링 중 오류 발생: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 }

@@ -44,24 +44,50 @@ function checkLoginStatus() {
 		.then(response => response.json())
 		.then(data => {
 			const navMenu = document.getElementById("nav-menu"); // 네비게이션 메뉴 영역
+			const isAdmin = data.email === "admin@realestate.com";
 
 			if (data.isLoggedIn) {
 				// ✅ 로그인된 경우
 				navMenu.innerHTML = `
-                    <a href="/cart/cart.html" class="nav-link">🛒 Cart</a>
-                    <a href="/mypage/alarm.html" class="nav-link">알림</a>
-                    <a href="/mypage/mypage.html" class="nav-link">마이페이지</a>
-                    <button class="logout-btn">LOGOUT</button>
+                    <div class="nav-links">
+                        <a href="/cart" class="nav-link">🛒 Cart</a>
+                        <a href="/mypage/chat.html" class="nav-link" id="chat-link">채팅</a>
+                        <a href="/mypage/mypage.html" class="nav-link">마이페이지</a>
+                        <button class="logout-btn">LOGOUT</button>
+                    </div>
                 `;
 
+				// 관리자 채팅 기능을 위한 이벤트 리스너 추가
+				const chatLink = document.getElementById("chat-link");
+				if (chatLink) {
+					chatLink.addEventListener("click", function(event) {
+						if (isAdmin) {
+							event.preventDefault();
+							window.location.href = "/mypage/chat-list.html";
+						}
+					});
+				}
 			} else {
-				// ✅ 로그아웃 상태
+				// ✅ 로그아웃 상태일 때는 로그인 버튼만 표시
 				navMenu.innerHTML = `
-                    <a href="/user/login" class="nav-link login-btn">LOGIN</a>
+                    <div class="auth-buttons">
+                        <a href="/user/login" class="login-btn">LOGIN</a>
+                    </div>
                 `;
 			}
 		})
-		.catch(error => console.error("❌ 로그인 상태 확인 실패:", error));
+		.catch(error => {
+			console.error("❌ 로그인 상태 확인 실패:", error);
+			// 에러 발생 시 기본적으로 로그인 버튼을 표시
+			const navMenu = document.getElementById("nav-menu");
+			if (navMenu) {
+				navMenu.innerHTML = `
+                    <div class="auth-buttons">
+                        <a href="/user/login" class="login-btn">LOGIN</a>
+                    </div>
+                `;
+			}
+		});
 }
 
 // 로그아웃 처리 함수

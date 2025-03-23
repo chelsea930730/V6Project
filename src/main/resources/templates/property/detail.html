@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,8 +16,8 @@
     <link rel="stylesheet" th:href="@{/css/detail.css}" />
     <style>
           #map{
-                width: 400px;
-                height: 400px;
+                width: 600px;
+                height: 600px;
             }
             </style>
 <script th:inline="javascript">
@@ -42,10 +43,43 @@
                   title: "매물 위치"
             });
       }
+
+      function addToCart() {
+            // 현재 매물 ID 가져오기
+            const propertyId = [[${property.propertyId}]];
+            
+            // CSRF 토큰 가져오기 (Spring Security 사용 시 필요)
+            const token = document.querySelector("meta[name='_csrf']")?.getAttribute("content");
+            const header = document.querySelector("meta[name='_csrf_header']")?.getAttribute("content");
+            
+            // 요청 보내기
+            fetch('/cart/add', {
+                  method: 'POST',
+                  headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        ...(token && header ? { [header]: token } : {})
+                  },
+                  body: `propertyIds=${propertyId}`
+            })
+            .then(response => {
+                  if (response.ok) {
+                        alert('매물이 장바구니에 추가되었습니다.');
+                  } else {
+                        throw new Error('매물을 장바구니에 추가하는데 실패했습니다.');
+                  }
+            })
+            .catch(error => {
+                  console.error('에러:', error);
+                  alert('장바구니 추가 실패: ' + error.message);
+            });
+      }
 </script>
       <script async defer
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDAqy6z-ttqo5AzxjzeO05vLev6rahKO2Q&callback=initMap">
       </script>
+    <!-- CSRF 토큰 (Spring Security 사용 시) -->
+    <meta name="_csrf" th:content="${_csrf?.token}" />
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}" />
 </head>
   <style>
     body {
@@ -78,8 +112,8 @@
                             <div class="stat-value" th:text="${property.buildingType}"></div>
                       </div>
                       <div class="stat-item">
-                            <div class="stat-label">층수</div>
-                            <div class="stat-value">-</div>
+                            <div class="stat-label">방타입</div>
+                            <div class="stat-value" th:text="${property.roomType}">-</div>
                       </div>
                       <div class="stat-item">
                             <div class="stat-label">건축년도</div>
@@ -88,7 +122,7 @@
                       <div class="stat-item">
                          <div class="stat-label">월세</div>
                          <div class="stat-value">
-                            <span th:text="${property.monthlyPrice}">0</span>엔
+                            <span th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA') + '円'}">0</span>
                          </div>
                    </div>
                    <div class="stat-item">
@@ -98,12 +132,17 @@
 
                 </div>
         
-                <!-- 카트에 추가하는 버튼 -->
-        <div class="add-to-cart">
-            <button class="cart-button">Add to cart</button>
+                <!-- 로그인한 사용자에게만 표시 -->
+                <div class="add-to-cart" th:if="${isLoggedIn}">
+                    <button class="cart-button" onclick="addToCart()">Add to cart</button>
+                </div>
+
+                <!-- 로그인하지 않은 사용자에게 표시 -->
+                <div class="add-to-cart" th:unless="${isLoggedIn}">
+                    <a href="/user/login" class="login-message">로그인 후 장바구니에 추가할 수 있습니다</a>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
 <!-- 추가 사진 섹션 -->
 <section class="building-photos2">
@@ -126,16 +165,16 @@
           </tr>
           <tr>
                 <th>등록일</th>
-                <td colspan="3" id="registDate"></td>
+                <td colspan="3" id="registDate" th:text="${#temporals.format(property.createdAt, 'yyyy년 M월 d일')}"></td>
           </tr>
           <tr>
                 <th>초기비용</th>
-                <td colspan="3" id="costDetail"></td>
+                <td colspan="3" id="costDetail" th:text="${property.initialCost}"></td>
           </tr>
 
           <tr>
                 <th>비고</th>
-                <td colspan="3" id="notes"></td>
+                <td colspan="3" id="notes" th:text="${property.nearbyFacilities}"></td>
           </tr>
     </table>
 </div>

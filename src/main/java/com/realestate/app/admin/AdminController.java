@@ -19,7 +19,7 @@ import java.util.stream.IntStream;
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminController {
-    
+
     private final PropertyService propertyService;
 
     @GetMapping("/dashboard")
@@ -38,18 +38,18 @@ public class AdminController {
         model.addAttribute("properties", propertyPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", propertyPage.getTotalPages());
-        
+
         // 페이지 번호 목록 생성 (최대 10개)
         int totalPages = propertyPage.getTotalPages();
         if (totalPages > 0) {
             // 현재 페이지 그룹의 시작과 끝 계산
             int start = Math.max(1, ((page - 1) / 10) * 10 + 1);
             int end = Math.min(totalPages, start + 9);
-            
+
             List<Integer> pageNumbers = IntStream.rangeClosed(start, end)
                     .boxed()
                     .collect(Collectors.toList());
-            
+
             model.addAttribute("pageNumbers", pageNumbers);
             model.addAttribute("startPage", start);
             model.addAttribute("endPage", end);

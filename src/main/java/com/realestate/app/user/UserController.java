@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -75,6 +76,11 @@ public class UserController {
             }
         }
         return ResponseEntity.ok(Map.of("isLoggedIn", false));
+    }
+    @GetMapping("/api/users")
+    @ResponseBody
+    public List<User> getAllUsers() {
+        return userService.getAllUsers(); // 모든 사용자 반환
     }
 
 }
