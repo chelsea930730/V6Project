@@ -37,6 +37,3 @@ public class Reservation {
     private Property property;
 }
 
-enum ReservationStatus {
-    PENDING, CONFIRMED, CANCELLED
-}

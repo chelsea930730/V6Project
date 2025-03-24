@@ -54,14 +54,20 @@
         <label for="minPrice">월세</label>
         <br>
         <div class="slider-container">
+            <!-- 통합된 가격 라벨 -->
+            <div id="priceLabel" class="price-label">50,000円 ~ 150,000円</div>
+
             <div class="range-bar"></div>
             <div class="slider">
-
                 <input type="range" id="minPrice" min="50000" max="150000" step="1000" value="50000">
-                <input type="range" id="maxPrice" min="50000" max="150000" step="1000" value="80000">
+                <input type="range" id="maxPrice" min="50000" max="150000" step="1000" value="150000">
             </div>
-            <span id="minValue" class="slider-value" style="left: 0%;">50,000</span>
-            <span id="maxValue" class="slider-value" style="left: 100%;">150,000</span>
+
+            <!-- 최소/최대 표시 (선택사항) -->
+            <div class="min-max-labels">
+                <span>최소</span>
+                <span>최대</span>
+            </div>
         </div>
 
 
@@ -242,6 +248,7 @@
             <div class="address-info">
                 <div th:text="${property.location}">도쿄도 세타가야구 상마4쵸메</div>
                 <div th:text="${property.subwayLine}">오다큐선 / 키타센주역 도보 7분</div>
+                <div th:if="${property.description != null}" th:text="${property.description}"></div>
             </div>
         </div>
     </div>

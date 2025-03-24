@@ -40,6 +40,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	implementation 'io.github.cdimascio:dotenv-java:2.3.0'
 
 	// 📌 OAuth2 & JWT 로그인 인증
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'

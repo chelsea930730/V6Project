@@ -15,7 +15,7 @@ const stations = {
 	"한조몬": ["시부야", "오모테산도", "아오야마잇초메","나카타쵸", "한조몬", "쿠단시타", "진보초", "오테마치", "미츠코시마에", "스이텐구마에", "키요스미시라카와", "스미요시", "킨시초", "오시아게"],
 	"마루노우치": ["오기쿠보","미나미아사가야","신코엔지","히가시코엔지","신나카노","나카노사카우에","니시신주쿠", "신주쿠","신주쿠산초메","신주쿠교엔마에","요츠야산초메", "요츠야", "아카사카미츠케","콧카이기지도마에","카스미가세키","긴자","도쿄","오테마치","아와지초","오차노미즈","혼고산초메","코라쿠엔", "묘가다니","신오츠카","이케부쿠로로"],
 	"히비야": ["나카메구로", "에비스", "히로오", "롯폰기", "카미야쵸", "토라노몬힐즈", "카스미가세키", "히비야", "긴자", "히가시긴자", "츠키지", "핫쵸보리", "카야바쵸", "닌교초", "코덴마쵸", "아키하바라", "나카오카치마치", "우에노", "이리야", "미노와", "미나미센주", "키타센주"],
-	"치요다": ["요요기우에하라", "요요기코엔", "메이지진구마에", "오모테산도", "노기자카", "아카사카", "콧카이기지도마에", "카스미가세키", "히비야", "니주바시마에", "오테마치", "신오차노미즈", "유시마", "네즈", "센다기", "니시닛포리", "마치야", "키타센주", "아야세", "키타아야세"],
+	"치요다": ["요요기우에하라", "요요기코엔", "메이지진구마에", "오모테산도", "노기자카", "아카사카", "콧카이기지도마에", "카스미가세키", "히비야", "니주바시마에", "오테마치", "신오차노미즈", "유시마", "네즈", "센다기", "니시닛포리", "마치야", "키타센주", "아야세", "키타야세"],
 	"후쿠토신": ["치카테츠나리마스", "치카테츠아카츠카", "헤이와다이","히카와다이", "코타케무카이하라", "센카와", "카나메초", "이케부쿠로", "조시가야","니시와세다","히가시신주쿠","신주쿠산초메", "키타산도", "메이지진구마에","시부야"],
 	"긴자": ["시부야", "오모테산도","가이엔마에", "아오야마잇초메", "아카사카미츠케", "타메이케산노", "토라노몬", "신바시", "긴자", "쿄바시", "니혼바시", "미츠코시마에", "칸다", "스에히로쵸", "우에노히로코지", "우에노", "이나리초", "타와라마치", "아사쿠사"],
 	"난보쿠": ["메구로", "시로카네다이", "시로카네타카나와", "아자주부반", "롯폰기잇초메", "타메이케산노", "나가타쵸", "요츠야","이치가야", "이다바시", "코라쿠엔", "토다이마에", "혼코마고메", "코마고메", "니시가하라", "오지", "오지카미야", "시모", "아카바네이와부치"],
@@ -50,8 +50,26 @@ const japaneseToKorean = {
 	'大田区': '오타'
 };
 
+
+
 // 페이지 로드 시 초기화
 document.addEventListener("DOMContentLoaded", function() {
+	// URL에서 district 파라미터 확인
+	const urlParams = new URLSearchParams(window.location.search);
+	const district = urlParams.get('district');
+
+	// 일본어 구 이름을 한글로 변환
+	if (district) {
+		const koreanDistrict = japaneseToKorean[district];
+		if (koreanDistrict) {
+			const searchInput = document.getElementById('searchInput');
+			if (searchInput) {
+				searchInput.value = koreanDistrict;
+				filterProperties(); // 초기 필터링 실행
+			}
+		}
+	}
+
 	// 서버에서 받은 초기 데이터 사용
 	if (typeof serverProperties !== 'undefined' && serverProperties) {
 		currentProperties = serverProperties;
@@ -80,12 +98,38 @@ function fetchProperties() {
 function initializePriceSliders() {
 	const minPrice = document.getElementById("minPrice");
 	const maxPrice = document.getElementById("maxPrice");
-	const minValue = document.getElementById("minValue");
-	const maxValue = document.getElementById("maxValue");
+	const priceLabel = document.getElementById("priceLabel");
 
 	// 초기값 설정
-	minValue.textContent = Number(minPrice.value).toLocaleString() + "円";
-	maxValue.textContent = Number(maxPrice.value).toLocaleString() + "円";
+	updatePriceLabel(minPrice.value, maxPrice.value);
+
+	// 라벨 위치 업데이트 (슬라이더 범위의 중앙에 위치하도록)
+	updateLabelPosition(minPrice.value, maxPrice.value);
+}
+
+// 가격 라벨 업데이트 함수
+function updatePriceLabel(min, max) {
+	const priceLabel = document.getElementById("priceLabel");
+	priceLabel.textContent = `${Number(min).toLocaleString()}円 ~ ${Number(max).toLocaleString()}円`;
+}
+
+// 라벨 위치 업데이트 함수
+function updateLabelPosition(min, max) {
+	const priceLabel = document.getElementById("priceLabel");
+	const minPrice = document.getElementById("minPrice");
+
+	const minVal = parseInt(min);
+	const maxVal = parseInt(max);
+	const minRange = parseInt(minPrice.min);
+	const maxRange = parseInt(minPrice.max);
+
+	// 슬라이더 범위에서의 상대적 위치 계산
+	const minPercent = ((minVal - minRange) / (maxRange - minRange)) * 100;
+	const maxPercent = ((maxVal - minRange) / (maxRange - minRange)) * 100;
+
+	// 라벨 위치를 두 슬라이더 사이의 중앙에 배치
+	const labelPos = (minPercent + maxPercent) / 2;
+	priceLabel.style.left = `${labelPos}%`;
 }
 
 // 이벤트 리스너 설정
@@ -97,16 +141,47 @@ function setupEventListeners() {
 	const maxValue = document.getElementById("maxValue");
 
 	minPrice.addEventListener("input", function() {
-		minValue.textContent = Number(this.value).toLocaleString() + "円";
+		// 최소값이 최대값을 넘지 않도록
+		if(parseInt(minPrice.value) > parseInt(maxPrice.value)) {
+			minPrice.value = maxPrice.value;
+		}
+		updatePriceLabel(minPrice.value, maxPrice.value);
+		updateLabelPosition(minPrice.value, maxPrice.value);
 		filterProperties();
 	});
 
 	maxPrice.addEventListener("input", function() {
-		maxValue.textContent = Number(this.value).toLocaleString() + "円";
+		// 최대값이 최소값보다 작지 않도록
+		if(parseInt(maxPrice.value) < parseInt(minPrice.value)) {
+			maxPrice.value = minPrice.value;
+		}
+		updatePriceLabel(minPrice.value, maxPrice.value);
+		updateLabelPosition(minPrice.value, maxPrice.value);
 		filterProperties();
 	});
 
-	// 체크박스 이벤트
+	// 건물 타입 체크박스 이벤트
+	document.querySelectorAll('input[name="type"]').forEach(checkbox => {
+		checkbox.addEventListener('change', function() {
+			filterProperties();
+		});
+	});
+
+	// 방 타입 체크박스 이벤트
+	document.querySelectorAll('input[name="room"]').forEach(checkbox => {
+		checkbox.addEventListener('change', function() {
+			filterProperties();
+		});
+	});
+
+	// 상세조건 체크박스 이벤트
+	document.querySelectorAll('input[name="detail"]').forEach(checkbox => {
+		checkbox.addEventListener('change', function() {
+			filterProperties();
+		});
+	});
+
+	// 매물 선택 체크박스 이벤트 (장바구니용)
 	document.querySelectorAll('.property-item input[type="checkbox"]').forEach(checkbox => {
 		checkbox.addEventListener('change', function(event) {
 			event.stopPropagation(); // 이벤트 버블링 방지
@@ -120,6 +195,14 @@ function setupEventListeners() {
 	const searchInput = document.getElementById('searchInput');
 	if (searchInput) {
 		searchInput.addEventListener('input', debounce(filterProperties, 300));
+	}
+
+	// 정렬 옵션 이벤트 리스너 추가
+	const sortSelect = document.querySelector('.sort-options select');
+	if (sortSelect) {
+		sortSelect.addEventListener('change', function() {
+			sortProperties(this.value);
+		});
 	}
 }
 
@@ -212,6 +295,7 @@ function updateFilterMessage() {
 function filterProperties() {
 	let keyword = document.getElementById('searchInput')?.value || '';
 	const savedKeyword = keyword;
+	const currentSortValue = document.querySelector('.sort-options select')?.value || 'newest';
 
 	// 한글 구 이름을 일본어로 변환
 	const koreanToJapanese = {};
@@ -235,9 +319,12 @@ function filterProperties() {
 		roomTypes: Array.from(document.querySelectorAll('input[name="room"]:checked'))
 			.map(cb => cb.value),
 		buildingYear: document.getElementById('building-year').value,
-		station: selectedStation, //선택된 노선 정보
-		line: selectedLine,  // 선택된 역 정보
-		keyword: keyword // 정확히 검색한 키워드
+		station: selectedStation || '',
+		line: selectedLine || '',
+		keyword: keyword || '',
+		// 상세 조건 필터 추가
+		detailTypes: Array.from(document.querySelectorAll('input[name="detail"]:checked'))
+			.map(cb => cb.value)
 	};
 
 	fetch('/property/filter', {
@@ -250,6 +337,16 @@ function filterProperties() {
 		.then(response => response.json())
 		.then(data => {
 			updatePropertyList(data);
+			updateFilterMessage();
+			currentProperties = data;
+
+			// 필터링 결과에 현재 정렬 상태 적용
+			if (currentSortValue && currentProperties.length > 0) {
+				sortProperties(currentSortValue);
+			} else {
+				updatePropertyList(currentProperties);
+			}
+
 			updateFilterMessage();
 
 			// 검색어 유지
@@ -268,6 +365,22 @@ function filterProperties() {
 // 매물 목록 업데이트
 function updatePropertyList(properties) {
 	const propertyList = document.querySelector('.property-list');
+	const currentSortValue = document.querySelector('.sort-options select')?.value || 'newest';
+
+	// properties가 비어있지 않다면 현재 정렬 상태에 따라 정렬
+	if (properties && properties.length > 0) {
+		switch (currentSortValue) {
+			case 'price-low':
+				properties.sort((a, b) => a.monthlyPrice - b.monthlyPrice);
+				break;
+			case 'price-high':
+				properties.sort((a, b) => b.monthlyPrice - a.monthlyPrice);
+				break;
+			case 'newest':
+				properties.sort((a, b) => b.propertyId - a.propertyId);
+				break;
+		}
+	}
 
 	if (!properties || properties.length === 0) {
 		propertyList.innerHTML = `
@@ -275,9 +388,9 @@ function updatePropertyList(properties) {
             <!-- 정렬 옵션 -->
             <div class="sort-options">
                 <select class="form-select" style="width: 200px; display: inline-block;">
-                    <option value="newest">최신순</option>
-                    <option value="price-low">가격 낮은순</option>
-                    <option value="price-high">가격 높은순</option>
+                    <option value="newest" ${currentSortValue === 'newest' ? 'selected' : ''}>최신순</option>
+                    <option value="price-low" ${currentSortValue === 'price-low' ? 'selected' : ''}>가격 낮은순</option>
+                    <option value="price-high" ${currentSortValue === 'price-high' ? 'selected' : ''}>가격 높은순</option>
                 </select>
                 <!-- 장바구니 버튼 -->
                 <button onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
@@ -295,9 +408,9 @@ function updatePropertyList(properties) {
         <!-- 정렬 옵션 -->
         <div class="sort-options">
             <select class="form-select" style="width: 200px; display: inline-block;">
-                <option value="newest">최신순</option>
-                <option value="price-low">가격 낮은순</option>
-                <option value="price-high">가격 높은순</option>
+                <option value="newest" ${currentSortValue === 'newest' ? 'selected' : ''}>최신순</option>
+                <option value="price-low" ${currentSortValue === 'price-low' ? 'selected' : ''}>가격 낮은순</option>
+                <option value="price-high" ${currentSortValue === 'price-high' ? 'selected' : ''}>가격 높은순</option>
             </select>
             <!-- 장바구니 버튼 -->
             <button onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
@@ -307,6 +420,7 @@ function updatePropertyList(properties) {
         <!-- 폼 -->
         <form id="cartForm" action="/cart/add" method="post" style="display: none;"></form>
     `;
+
 
 	html += properties.map(property => `
         <div class="property-item">
@@ -348,11 +462,20 @@ function updatePropertyList(properties) {
             <div class="address-info">
                 <div>${property.location}</div>
                 <div>${property.subwayLine}</div>
+                ${property.description ? `<div>${property.description}</div>` : ''}
             </div>
         </div>
     `).join('');
 
 	propertyList.innerHTML = html;
+
+	// 정렬 이벤트 리스너 다시 설정
+	const sortSelect = document.querySelector('.sort-options select');
+	if (sortSelect) {
+		sortSelect.addEventListener('change', function() {
+			sortProperties(this.value);
+		});
+	}
 }
 
 // 디바운스 함수
@@ -362,6 +485,29 @@ function debounce(func, wait) {
 		clearTimeout(timeout);
 		timeout = setTimeout(() => func.apply(this, args), wait);
 	};
+}
+
+// 매물 정렬 함수
+function sortProperties(sortType) {
+	if (!currentProperties || currentProperties.length === 0) return;
+
+	const sortedProperties = [...currentProperties];
+
+	switch (sortType) {
+		case 'newest':
+			// propertyId가 높을수록 최신 매물이라고 가정
+			sortedProperties.sort((a, b) => b.propertyId - a.propertyId);
+			break;
+		case 'price-low':
+			sortedProperties.sort((a, b) => a.monthlyPrice - b.monthlyPrice);
+			break;
+		case 'price-high':
+			sortedProperties.sort((a, b) => b.monthlyPrice - a.monthlyPrice);
+			break;
+	}
+	// 정렬된 결과를 currentProperties에 저장
+	currentProperties = sortedProperties;
+	updatePropertyList(sortedProperties);
 }
 
 
@@ -377,7 +523,33 @@ function addSelectedToCart() {
 	const checkboxes = document.querySelectorAll('.property-item input[type="checkbox"]:checked');
 
 	if (checkboxes.length === 0) {
-		alert('장바구니에 담을 매물을 선택해주세요.');
+		// 팝업창 생성
+		const popup = document.createElement('div');
+		popup.className = 'custom-popup';
+		popup.innerHTML = `
+            <div class="popup-content">
+                <p>장바구니에 담을 매물을 선택해주세요.</p>
+                <button class="close-popup-btn">닫기</button>
+            </div>
+        `;
+
+
+		// 팝업을 body에 추가
+		document.body.appendChild(popup);
+
+		// 닫기 버튼 클릭 이벤트
+		const closeBtn = popup.querySelector('.close-popup-btn');
+		closeBtn.addEventListener('click', () => {
+			document.body.removeChild(popup);
+		});
+
+		// 팝업 외부 클릭 시 닫기
+		popup.addEventListener('click', (event) => {
+			if (event.target === popup) {
+				document.body.removeChild(popup);
+			}
+		});
+
 		return;
 	}
 

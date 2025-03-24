@@ -12,21 +12,6 @@ public interface PropertyImageRepository extends JpaRepository<PropertyImage, Pr
   @Query(value = "SELECT p.image_url FROM property_image p WHERE p.property_id = :propertyId ORDER BY p.image_url LIMIT 1", nativeQuery = true)
   String findFirstImageUrlByPropertyId(@Param("propertyId") Long propertyId);
   
-  // 이미지 타입별 조회
-  List<PropertyImage> findByPropertyPropertyIdAndImageType(Long propertyId, PropertyImage.ImageType imageType);
-  
-  // 평면도 이미지 조회
-  default List<PropertyImage> findFloorplanImages(Long propertyId) {
-    return findByPropertyPropertyIdAndImageType(propertyId, PropertyImage.ImageType.FLOORPLAN);
-  }
-  
-  // 건물 이미지 조회
-  default List<PropertyImage> findBuildingImages(Long propertyId) {
-    return findByPropertyPropertyIdAndImageType(propertyId, PropertyImage.ImageType.BUILDING);
-  }
-  
-  // 내부 이미지 조회
-  default List<PropertyImage> findInteriorImages(Long propertyId) {
-    return findByPropertyPropertyIdAndImageType(propertyId, PropertyImage.ImageType.INTERIOR);
-  }
+  // 또는 Spring Data JPA 네이밍 규칙 사용
+  // String findTopByPropertyPropertyIdOrderByImageUrl(Long propertyId);
 }
