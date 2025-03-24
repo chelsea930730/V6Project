@@ -1,5 +1,5 @@
 // 전역 변수 설정
-let selectedStation = "";
+let selectedStations = [];
 let selectedLine = "";
 let currentProperties = [];
 
@@ -212,30 +212,92 @@ function setupLinePopup() {
 	});
 }
 
-// 역 목록 HTML 생성
 function generateStationListHTML(lineName, stations, lineClass) {
 	return `
-        <h3>${lineName} 노선 역 선택</h3>
-        <div class="station-list">
-            ${stations.map(station => `
-                <span class="station ${lineClass}">${station}</span>
-            `).join('')}
-        </div>
-    `;
+    <h3>${lineName} 노선의 역 선택</h3>
+    <div class="station-list-inner">
+      ${stations.map(station => `<span class="station ${lineClass}">${station}</span>`).join('')}
+    </div>
+    <div style="margin-top: 15px;">
+      <button id="selectAllStationsBtn" class="station-search-btn">전체 선택</button>
+      <button id="searchStationsBtn" class="station-search-btn2">검색</button>
+      <button id="resetStationsBtn" class="station-search-btn">초기화</button>
+    </div>
+  `;
 }
 
-// 역 클릭 이벤트 설정
 function setupStationClickEvents(popup) {
-	document.querySelectorAll('.station').forEach(station => {
-		station.addEventListener('click', function() {
-			selectedStation = this.textContent;
-			updateFilterMessage();
-			filterProperties();
-			popup.style.display = "none";
-			document.body.style.overflow = "auto";
+	const stationElements = document.querySelectorAll('.station');
+	selectedStations = []; // 초기화
+
+	stationElements.forEach(stationEl => {
+		stationEl.addEventListener('click', function () {
+			const stationName = this.textContent;
+
+			// 선택/해제 toggle
+			if (selectedStations.includes(stationName)) {
+				selectedStations = selectedStations.filter(s => s !== stationName);
+				this.classList.remove('selected');
+			} else {
+				selectedStations.push(stationName);
+				this.classList.add('selected');
+			}
 		});
 	});
+
+	// ✅ 전체 선택 버튼
+	const selectAllBtn = document.getElementById("selectAllStationsBtn");
+	if (selectAllBtn) {
+		selectAllBtn.addEventListener('click', () => {
+			selectedStations = [];
+			stationElements.forEach(el => {
+				const name = el.textContent;
+				if (!selectedStations.includes(name)) {
+					selectedStations.push(name);
+					el.classList.add('selected');
+				}
+			});
+		});
+	}
+
+	// ✅ 초기화 버튼
+	const resetBtn = document.getElementById("resetStationsBtn");
+	if (resetBtn) {
+		resetBtn.addEventListener('click', () => {
+			selectedStations = [];
+			stationElements.forEach(el => el.classList.remove('selected'));
+		});
+	}
+
+	// ✅ 검색 버튼
+	const searchBtn = document.getElementById("searchStationsBtn");
+	searchBtn.addEventListener('click', () => {
+		popup.style.display = "none";
+		document.body.style.overflow = "auto";
+
+		updateFilterMessage();
+		filterProperties(); // 필터 실행
+	});
 }
+
+
+// // 역 클릭 이벤트 설정
+// function setupStationClickEvents(popup) {
+// 	document.querySelectorAll('.station').forEach(station => {
+// 		station.addEventListener('click', function() {
+// 			selectedStation = this.textContent;
+// 			updateFilterMessage();
+// 			filterProperties();
+// 			popup.style.display = "none";
+// 			document.body.style.overflow = "auto";
+// 		});
+// 	});
+// }
+
+document.getElementById("resetStationsBtn").addEventListener('click', () => {
+	selectedStations = [];
+	document.querySelectorAll('.station.selected').forEach(el => el.classList.remove('selected'));
+});
 
 // 필터 메시지 업데이트 함수
 function updateFilterMessage() {
@@ -243,15 +305,12 @@ function updateFilterMessage() {
 	if (!filterMessageContainer) return;
 
 	let message = '';
-	if (selectedStation) {
-		message = `<p>${selectedLine} ${selectedStation}역 매물을 보고 계십니다</p>`;
+	if (selectedLine && selectedStations.length > 0) {
+		message = `<p>${selectedLine} 노선의 ${selectedStations.join(', ')} 역 매물을 보고 계십니다</p>`;
 	} else if (selectedLine) {
 		message = `<p>${selectedLine} 노선 매물을 보고 계십니다</p>`;
 	}
-
-	if (message) {
-		filterMessageContainer.innerHTML = message;
-	}
+	filterMessageContainer.innerHTML = message;
 }
 
 // 필터링 함수
@@ -282,7 +341,7 @@ function filterProperties() {
 		roomTypes: Array.from(document.querySelectorAll('input[name="room"]:checked'))
 			.map(cb => cb.value),
 		buildingYear: document.getElementById('building-year').value,
-		station: selectedStation || '', // 선택된 역 정보
+		stations: selectedStations || [], // 선택된 역 정보
 		line: selectedLine || '', // 선택된 노선 정보
 		keyword: keyword || ''
 	};

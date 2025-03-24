@@ -87,7 +87,7 @@ public class PropertyService {
             List<String> buildingTypes,
             List<String> roomTypes,
             String buildingYear,
-            String station,
+            List<String> stations,
             String keyword) {
 
         try {
@@ -142,9 +142,9 @@ public class PropertyService {
                         }
 
                         // 역 필터
-                        if (station != null && !station.isEmpty()) {
+                        if (stations != null && !stations.isEmpty()) {
                             if (property.getSubwayLine() == null ||
-                                    !property.getSubwayLine().contains(station)) {
+                                    stations.stream().noneMatch(station -> property.getSubwayLine().contains(station))) {
                                 return false;
                             }
                         }

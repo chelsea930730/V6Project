@@ -166,7 +166,8 @@ public class PropertyController {
             List<String> roomTypes = (List<String>) filters.get("roomTypes");
 
             String buildingYear = (String) filters.get("buildingYear");
-            String station = (String) filters.get("station");
+            @SuppressWarnings("unchecked")
+            List<String> stations = (List<String>) filters.get("stations");
 
             List<Property> filteredProperties = propertyService.filterProperties(
                     minPrice,
@@ -174,12 +175,14 @@ public class PropertyController {
                     buildingTypes,
                     roomTypes,
                     buildingYear,
-                    station,
+                    stations,
                     keyword
             );
 
             log.info("필터링된 매물 수: {}", filteredProperties.size());
             return ResponseEntity.ok(filteredProperties);
+
+
 
         } catch (Exception e) {
             log.error("필터링 중 오류 발생: ", e);

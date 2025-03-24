@@ -66,7 +66,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/user/login", "/user/register", "/error","/property/**",
                                 "/css/**", "/js/**", "/img/**", "/static/**", "/navi.html",
                                 "/webjars/**", "/fonts/**", "/images/**").permitAll()
-                        .requestMatchers("/admin/dashboard", "/admin/addproperty", "/admin/create", "/admin/create/**", "/admin/consulting").hasRole("ADMIN")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )
