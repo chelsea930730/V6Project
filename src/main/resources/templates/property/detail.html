@@ -188,9 +188,16 @@
     <div class="amenities">
        <h2>방의 특징과 설비</h2>
           <div class="amenities-content" id="amenitiesList">
-              <p th:text="${property.nearbyFacilities}"></p>
+              <p th:text="${property.description}"></p>
         <!-- 편의시설 목록이 동적으로 추가됨 -->
       </ul>
+    </div>
+
+    <div class="facilities">
+       <h2>주변 시설</h2>
+          <div class="facilities-content">
+              <p th:text="${property.nearbyFacilities}"></p>
+          </div>
     </div>
 
     <div class="location">

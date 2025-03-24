@@ -24,8 +24,16 @@
               <input type="text" name="managementFee" placeholder="숫자만" required />
             </div>
             <div class="form-group">
-              <label>초기비용(¥)</label>
-              <input type="text" name="initialCost" placeholder="숫자만" required />
+              <label>초기비용</label>
+              <textarea name="initialCost" rows="3" placeholder="초기비용 상세 내역을 입력하세요" required></textarea>
+            </div>
+            <div class="form-group">
+              <label>레이킹</label>
+              <input type="text" name="reikin" placeholder="예: 1개월" required />
+            </div>
+            <div class="form-group">
+              <label>시키킹</label>
+              <input type="text" name="shikikin" placeholder="예: 2개월" required />
             </div>
             <div class="form-group">
               <label>주거 면적(m²)</label>
@@ -98,6 +106,36 @@
             </div>
 
             <div class="form-group">
+              <label>지역구(District)</label>
+              <select name="district" required>
+                <option value="">선택하세요</option>
+                <option value="千代田区">千代田区 (치요다구)</option>
+                <option value="中央区">中央区 (츄오구)</option>
+                <option value="港区">港区 (미나토구)</option>
+                <option value="新宿区">新宿区 (신주쿠구)</option>
+                <option value="文京区">文京区 (분쿄구)</option>
+                <option value="台東区">台東区 (다이토구)</option>
+                <option value="墨田区">墨田区 (스미다구)</option>
+                <option value="江東区">江東区 (코토구)</option>
+                <option value="品川区">品川区 (시나가와구)</option>
+                <option value="目黒区">目黒区 (메구로구)</option>
+                <option value="大田区">大田区 (오타구)</option>
+                <option value="世田谷区">世田谷区 (세타가야구)</option>
+                <option value="渋谷区">渋谷区 (시부야구)</option>
+                <option value="中野区">中野区 (나카노구)</option>
+                <option value="杉並区">杉並区 (스기나미구)</option>
+                <option value="豊島区">豊島区 (토시마구)</option>
+                <option value="北区">北区 (키타구)</option>
+                <option value="荒川区">荒川区 (아라카와구)</option>
+                <option value="板橋区">板橋区 (이타바시구)</option>
+                <option value="練馬区">練馬区 (네리마구)</option>
+                <option value="足立区">足立区 (아다치구)</option>
+                <option value="葛飾区">葛飾区 (카츠시카구)</option>
+                <option value="江戸川区">江戸川区 (에도가와구)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
               <label>게시글 제목</label>
               <input type="text" name="title" placeholder="야마노테선 신주쿠역, 4층, 맨션" required />
             </div>
@@ -122,6 +160,11 @@
             <div class="form-group">
               <label>비고 사항</label>
               <textarea name="description" rows="4" placeholder="추가 정보를 입력하세요"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>주변시설</label>
+              <textarea name="nearbyFacilities" rows="4" placeholder="주변 편의시설, 교통시설 등을 입력하세요"></textarea>
             </div>
 
             <!-- 이미지 업로드 섹션 -->
