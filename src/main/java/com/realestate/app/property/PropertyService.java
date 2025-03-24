@@ -24,7 +24,7 @@ public class PropertyService {
     private static final Logger log = LoggerFactory.getLogger(PropertyService.class);
 
     public List<Property> getAllProperties() {
-        return propertyRepository.findAll();
+        return propertyRepository.findAllByOrderByCreatedAtDesc();
     }
 
     @Transactional
@@ -206,7 +206,7 @@ public class PropertyService {
         }
     }
     public Page<Property> getAllPropertiesWithPaging(Pageable pageable) {
-        return propertyRepository.findAll(pageable);
+        return propertyRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
 
     public List<Property> findByIds(List<Long> propertyIds) {

@@ -225,7 +225,8 @@ document.addEventListener('DOMContentLoaded', function() {
 			})
 			.then(data => {
 					alert('매물이 성공적으로 등록되었습니다.');
-					window.location.href = '/admin/addproperty';
+					window.parent.location.reload(); // 부모 창 새로고침
+					window.frameElement.parentElement.parentElement.querySelector('.btn-close').click(); // 팝업 닫기
 			})
 			.catch(error => {
 					alert(error.message);
