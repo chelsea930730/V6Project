@@ -10,7 +10,6 @@
   </head>
   <body>
     <main class="create-container">
-      <h1>매물 등록</h1>
       
       <form class="create-form" id="propertyForm">
         <div class="form-layout">
@@ -123,6 +122,47 @@
             <div class="form-group">
               <label>비고 사항</label>
               <textarea name="description" rows="4" placeholder="추가 정보를 입력하세요"></textarea>
+            </div>
+
+            <!-- 이미지 업로드 섹션 -->
+            <div class="image-upload-section">
+              <h3>매물 이미지 업로드</h3>
+              
+              <div class="image-upload-group">
+                <label>대표 이미지</label>
+                <div class="file-input-container">
+                  <input type="file" id="thumbnailImage" name="thumbnailImage" accept="image/*">
+                  <div class="preview-container" id="thumbnailPreview"></div>
+                </div>
+                <small class="form-text text-muted">매물 목록에 표시될 대표 이미지입니다.</small>
+              </div>
+              
+              <div class="image-upload-group">
+                <label>평면도</label>
+                <div class="file-input-container">
+                  <input type="file" id="floorplanImages" name="floorplanImages" accept="image/*" multiple>
+                  <div class="preview-container" id="floorplanPreview"></div>
+                </div>
+                <small class="form-text text-muted">매물의 평면도 이미지를 업로드하세요.</small>
+              </div>
+              
+              <div class="image-upload-group">
+                <label>건물사진</label>
+                <div class="file-input-container">
+                  <input type="file" id="buildingImages" name="buildingImages" accept="image/*" multiple>
+                  <div class="preview-container" id="buildingPreview"></div>
+                </div>
+                <small class="form-text text-muted">건물 외관 이미지를 업로드하세요.</small>
+              </div>
+              
+              <div class="image-upload-group">
+                <label>내부사진</label>
+                <div class="file-input-container">
+                  <input type="file" id="interiorImages" name="interiorImages" accept="image/*" multiple>
+                  <div class="preview-container" id="interiorPreview"></div>
+                </div>
+                <small class="form-text text-muted">매물 내부 이미지를 업로드하세요.</small>
+              </div>
             </div>
 
             <button type="submit" class="submit-btn">매물 등록하기</button>

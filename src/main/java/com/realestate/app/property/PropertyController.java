@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PropertyController {
     private final PropertyService propertyService;
+    private final PropertyImageRepository propertyImageRepository;
 
     // 매물 목록 조회
     @GetMapping("/list")
@@ -96,7 +97,7 @@ public class PropertyController {
     // 매물 상세 조회 
     @GetMapping("/{id}")
     public String getPropertyDetail(@PathVariable Long id, Model model, Authentication authentication) {
-        // 기존 코드: 매물 정보 조회
+        // 매물 정보 조회
         Property property = propertyService.getPropertyById(id);
         model.addAttribute("property", property);
         
@@ -104,6 +105,15 @@ public class PropertyController {
         boolean isLoggedIn = authentication != null && authentication.isAuthenticated() 
                 && !authentication.getPrincipal().equals("anonymousUser");
         model.addAttribute("isLoggedIn", isLoggedIn);
+        
+        // 이미지 타입별로 조회하여 모델에 추가
+        List<PropertyImage> floorplanImages = propertyImageRepository.findFloorplanImages(id);
+        List<PropertyImage> buildingImages = propertyImageRepository.findBuildingImages(id);
+        List<PropertyImage> interiorImages = propertyImageRepository.findInteriorImages(id);
+        
+        model.addAttribute("floorplanImages", floorplanImages);
+        model.addAttribute("buildingImages", buildingImages);
+        model.addAttribute("interiorImages", interiorImages);
         
         return "property/detail";
     }

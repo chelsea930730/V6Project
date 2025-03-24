@@ -124,6 +124,69 @@ document.addEventListener('DOMContentLoaded', function() {
 			stationModal.show();
 	});
 
+	// 이미지 미리보기 처리
+	setupImagePreview('thumbnailImage', 'thumbnailPreview', false);
+	setupImagePreview('floorplanImages', 'floorplanPreview', true);
+	setupImagePreview('buildingImages', 'buildingPreview', true);
+	setupImagePreview('interiorImages', 'interiorPreview', true);
+
+	// 이미지 미리보기 설정 함수
+	function setupImagePreview(inputId, previewId, multiple) {
+			const input = document.getElementById(inputId);
+			const preview = document.getElementById(previewId);
+			
+			input.addEventListener('change', function() {
+					// 단일 파일인 경우 이전 미리보기 제거
+					if (!multiple) {
+							preview.innerHTML = '';
+					}
+					
+					// 선택된 파일 처리
+					for (let i = 0; i < this.files.length; i++) {
+							const file = this.files[i];
+							
+							// 이미지 파일인지 확인
+							if (!file.type.startsWith('image/')) {
+									continue;
+							}
+							
+							// 미리보기 요소 생성
+							const previewItem = document.createElement('div');
+							previewItem.className = 'preview-item';
+							
+							// 이미지 요소 생성
+							const img = document.createElement('img');
+							img.file = file;
+							previewItem.appendChild(img);
+							
+							// 파일 정보 저장
+							previewItem.dataset.filename = file.name;
+							
+							// 삭제 버튼 추가
+							const removeBtn = document.createElement('button');
+							removeBtn.className = 'remove-btn';
+							removeBtn.innerHTML = '×';
+							removeBtn.addEventListener('click', function(e) {
+									e.preventDefault();
+									previewItem.remove();
+							});
+							previewItem.appendChild(removeBtn);
+							
+							// 미리보기 컨테이너에 추가
+							preview.appendChild(previewItem);
+							
+							// 파일 리더로 이미지 로드
+							const reader = new FileReader();
+							reader.onload = (function(aImg) {
+									return function(e) {
+											aImg.src = e.target.result;
+									};
+							})(img);
+							reader.readAsDataURL(file);
+					}
+			});
+	}
+
 	// 폼 요소 가져오기
 	const form = document.getElementById('propertyForm');
 
@@ -140,21 +203,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	form.addEventListener('submit', function(e) {
 			e.preventDefault();
 			
-			// 폼 데이터 수집
+			// FormData 객체 생성
 			const formData = new FormData(form);
-			const propertyData = {};
-			
-			formData.forEach((value, key) => {
-					// 체크박스 같은 다중 값은 배열로 처리
-					if (key === 'features') {
-							if (!propertyData[key]) {
-									propertyData[key] = [];
-							}
-							propertyData[key].push(value);
-					} else {
-							propertyData[key] = value;
-					}
-			});
 			
 			// 선택된 역/노선 확인
 			if (!formData.get('line') || !formData.get('station')) {
@@ -163,12 +213,9 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 			
 			// API 요청 (예시)
-			fetch('/api/properties', {
+			fetch('/api/properties' + (propertyId ? '/' + propertyId : ''), {
 					method: propertyId ? 'PUT' : 'POST',
-					headers: {
-							'Content-Type': 'application/json'
-					},
-					body: JSON.stringify(propertyData)
+					body: formData // FormData 그대로 전송 (multipart/form-data)
 			})
 			.then(response => {
 					if (!response.ok) {
@@ -241,9 +288,78 @@ document.addEventListener('DOMContentLoaded', function() {
 									
 									document.querySelector('.selected-station').textContent = data.station;
 							}
+							
+							// 이미지 설정 (서버에서 가져온 이미지 URL로 미리보기 생성)
+							if (data.thumbnailImage) {
+									createImagePreview('thumbnailPreview', data.thumbnailImage);
+							}
+							
+							// 이미지 유형별로 미리보기 생성
+							if (data.images) {
+									data.images.forEach(image => {
+											let previewId = '';
+											switch(image.imageType) {
+													case 'FLOORPLAN':
+															previewId = 'floorplanPreview';
+															break;
+													case 'BUILDING':
+															previewId = 'buildingPreview';
+															break;
+													case 'INTERIOR':
+															previewId = 'interiorPreview';
+															break;
+											}
+											if (previewId) {
+													createImagePreview(previewId, image.imageUrl);
+											}
+									});
+							}
 					})
 					.catch(error => {
 							alert(error.message);
 					});
+	}
+	
+	// 이미지 URL로 미리보기 생성하는 함수
+	function createImagePreview(previewId, imageUrl) {
+			const preview = document.getElementById(previewId);
+			
+			const previewItem = document.createElement('div');
+			previewItem.className = 'preview-item';
+			
+			const img = document.createElement('img');
+			img.src = imageUrl;
+			previewItem.appendChild(img);
+			
+			// 기존 이미지임을 표시
+			previewItem.dataset.existingImage = 'true';
+			previewItem.dataset.imageUrl = imageUrl;
+			
+			// 삭제 버튼 추가
+			const removeBtn = document.createElement('button');
+			removeBtn.className = 'remove-btn';
+			removeBtn.innerHTML = '×';
+			removeBtn.addEventListener('click', function(e) {
+					e.preventDefault();
+					previewItem.remove();
+					
+					// 기존 이미지를 삭제하려면 서버에 추가 요청해야 할 수 있음
+					if (previewItem.dataset.existingImage === 'true') {
+							// 삭제된 이미지 ID를 저장하는 hidden input을 추가할 수 있음
+							const deletedImagesInput = document.getElementById('deletedImages') || document.createElement('input');
+							deletedImagesInput.type = 'hidden';
+							deletedImagesInput.id = 'deletedImages';
+							deletedImagesInput.name = 'deletedImages';
+							if (!deletedImagesInput.value) {
+									deletedImagesInput.value = imageUrl;
+							} else {
+									deletedImagesInput.value += ',' + imageUrl;
+							}
+							form.appendChild(deletedImagesInput);
+					}
+			});
+			previewItem.appendChild(removeBtn);
+			
+			preview.appendChild(previewItem);
 	}
 }); 

@@ -21,4 +21,15 @@ public class PropertyImage {
     @ManyToOne
     @JoinColumn(name = "property_id")
     private Property property;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "image_type")
+    private ImageType imageType;
+    
+    // 이미지 타입 Enum
+    public enum ImageType {
+        FLOORPLAN, // 도면
+        BUILDING,  // 건물 외관
+        INTERIOR   // 내부
+    }
 }
