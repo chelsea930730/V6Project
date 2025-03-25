@@ -102,7 +102,7 @@ public class ChatController {
         if (principal == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        
+
         String currentUser = principal.getName();
         try {
             chatService.deleteChatHistory(currentUser, partner);

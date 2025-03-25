@@ -21,7 +21,7 @@ public class ChatMessage {
 
     @Column(nullable = false) // null을 허용하지 않도록 설정
     private LocalDateTime sentAt; // 메시지 전송 시간
-    
+
     @Column(nullable = true) // 메시지 타입 추가
     private String type; // 메시지 타입 (text, image, url)
 
@@ -44,7 +44,7 @@ public class ChatMessage {
         this.sentAt = sentAt;
         this.type = "text"; // 기본 타입은 텍스트
     }
-    
+
     // 타입이 포함된 생성자
     public ChatMessage(String message, String sender, String recipient, LocalDateTime sentAt, String type) {
         this.message = message;
@@ -94,11 +94,11 @@ public class ChatMessage {
     public void setSentAt(LocalDateTime sentAt) {
         this.sentAt = sentAt;
     }
-    
+
     public String getType() {
         return type;
     }
-    
+
     public void setType(String type) {
         this.type = type;
     }

@@ -1,165 +1,252 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>상담 관리</title>
-  <link
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet"
-  />
-  <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-  />
-  <link rel="stylesheet" th:href="@{/css/nav_admin.css}" />
-  <link rel="stylesheet" th:href="@{/css/consulting.css}" />
-</head>
-<body>
-<div class="container-fluid">
-  <div class="row">
-    <!-- 네비게이션바가 로드될 위치 -->
-    <div id="nav-placeholder"></div>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>상담 관리</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" th:href="@{/css/nav_admin.css}" />
+    <link rel="stylesheet" th:href="@{/css/consulting.css}" />
+    <style>
+      /* 상담 관리 페이지에서 상단 여백 제거 */
+      body {
+        padding-top: 0 !important;
+        margin: 0;
+      }
+      
+      /* 사이드바가 상단에 정확히 붙도록 설정 */
+      .admin-sidebar {
+        top: 0;
+        margin-top: 0;
+        padding-top: 20px;
+      }
+      
+      /* 메인 컨텐츠 영역 조정 */
+      main {
+        margin-left: 250px;
+        padding-top: 0;
+      }
+      
+      .container-fluid {
+        padding-top: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 관리자 네비게이션 포함 -->
+    <div th:replace="admin/nav_admin :: nav"></div>
 
-    <!-- 메인 컨텐츠 -->
-    <main class="col-md-10 ms-sm-auto px-4">
-      <div
-              class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3"
-      >
-        <h2>상담 관리</h2>
-      </div>
-
-      <!-- 상담 목록 테이블 -->
-      <div class="card">
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table">
-              <thead>
-              <tr>
-                <th>
-                  <div class="form-check">
-                    <input
-                            class="form-check-input"
-                            type="checkbox"
-                            id="selectAll"
-                    />
-                    <label class="form-check-label" for="selectAll"
-                    >0 selected</label
-                    >
-                  </div>
-                </th>
-                <th>예약 번호</th>
-                <th>고객명</th>
-                <th>이메일</th>
-                <th>예약 날짜</th>
-                <th>상담 날짜</th>
-                <th>상태</th>
-                <th>등록일</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr th:each="consultation : ${consultations}">
-                <td>
-                  <div class="form-check">
-                    <input
-                            class="form-check-input"
-                            type="checkbox"
-                            th:id="${'check-' + consultation.id}"
-                            th:value="${consultation.id}"
-                    />
-                  </div>
-                </td>
-                <td th:text="${consultation.reservationNumber}">
-                  예약번호
-                </td>
-                <td th:text="${consultation.customerName}">고객명</td>
-                <td th:text="${consultation.email}">이메일</td>
-                <td
-                        th:text="${#temporals.format(consultation.reservationDate, 'yyyy-MM-dd')}"
-                >
-                  예약날짜
-                </td>
-                <td
-                        th:text="${#temporals.format(consultation.consultationDate, 'yyyy-MM-dd')}"
-                >
-                  상담날짜
-                </td>
-                <td>
-                  <button
-                          th:class="'btn btn-sm status-btn ' + ${consultation.statusClass}"
-                          th:text="${consultation.statusText}"
-                          th:data-id="${consultation.id}"
-                          th:data-current-status="${consultation.status}"
-                  >
-                    상태
-                  </button>
-                </td>
-                <td
-                        th:text="${#temporals.format(consultation.createdAt, 'yyyy-MM-dd HH:mm')}"
-                >
-                  등록일
-                </td>
-              </tr>
-              <!-- 데이터가 없을 경우 표시 -->
-              <tr th:if="${#lists.isEmpty(consultations)}">
-                <td colspan="8" class="text-center py-4">
-                  등록된 상담이 없습니다.
-                </td>
-              </tr>
-              </tbody>
-            </table>
+    <div class="container-fluid">
+      <div class="row">
+        <!-- 관리자 사이드바 적용 -->
+        <main class="col-md-10 ms-sm-auto px-4">
+          <div
+            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3"
+          >
+            <h2>상담 관리</h2>
           </div>
 
-          <!-- 페이지네이션 -->
-          <nav
-                  th:if="${!#lists.isEmpty(consultations)}"
-                  aria-label="Page navigation"
-                  class="mt-4"
-          >
-            <ul class="pagination justify-content-center">
-              <li
-                      class="page-item"
-                      th:classappend="${currentPage == 1} ? 'disabled' : ''"
-              >
-                <a
-                        class="page-link"
-                        th:href="@{/consulting(page=${currentPage - 1})}"
-                        tabindex="-1"
-                >이전</a
-                >
-              </li>
-              <li
-                      class="page-item"
-                      th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
-                      th:classappend="${pageNum == currentPage} ? 'active' : ''"
-              >
-                <a
-                        class="page-link"
-                        th:href="@{/consulting(page=${pageNum})}"
-                        th:text="${pageNum}"
-                >1</a
-                >
-              </li>
-              <li
-                      class="page-item"
-                      th:classappend="${currentPage == totalPages} ? 'disabled' : ''"
-              >
-                <a
-                        class="page-link"
-                        th:href="@{/consulting(page=${currentPage + 1})}"
-                >다음</a
-                >
-              </li>
-            </ul>
-          </nav>
+          <!-- 필터링 및 검색 영역 -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-3">
+                  <label for="statusFilter" class="form-label">상태 필터</label>
+                  <select id="statusFilter" class="form-select">
+                    <option selected value="">전체 상태</option>
+                    <option value="pending">대기중</option>
+                    <option value="confirmed">확정</option>
+                    <option value="completed">완료</option>
+                    <option value="cancelled">취소</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label for="dateFilter" class="form-label">날짜 범위</label>
+                  <input type="date" id="dateFilter" class="form-control">
+                </div>
+                <div class="col-md-4">
+                  <label for="searchQuery" class="form-label">검색</label>
+                  <div class="input-group">
+                    <input type="text" id="searchQuery" class="form-control" placeholder="이름 또는 이메일 검색">
+                    <button class="btn btn-outline-primary" type="button">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                  <button class="btn btn-primary w-100">필터 적용</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 상담 목록 테이블 -->
+          <div class="card">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>고객명</th>
+                      <th>이메일</th>
+                      <th>휴대폰</th>
+                      <th>상담 날짜</th>
+                      <th>매물 주소</th>
+                      <th>상태</th>
+                      <th>작업</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- 샘플 데이터 -->
+                    <tr>
+                      <td>1</td>
+                      <td>김철수</td>
+                      <td>user1@example.com</td>
+                      <td>010-1234-5678</td>
+                      <td>2023-06-15 14:00</td>
+                      <td>시가노 마이야 주변 원룸</td>
+                      <td><span class="badge bg-warning text-dark">대기중</span></td>
+                      <td>
+                        <button class="btn btn-sm btn-outline-primary me-1 view-btn" data-id="1">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success me-1 approve-btn" data-id="1">
+                          <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger reject-btn" data-id="1">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>이영희</td>
+                      <td>user2@example.com</td>
+                      <td>010-9876-5432</td>
+                      <td>2023-06-16 10:30</td>
+                      <td>도쿄역 인근 오피스텔</td>
+                      <td><span class="badge bg-success">확정</span></td>
+                      <td>
+                        <button class="btn btn-sm btn-outline-primary me-1 view-btn" data-id="2">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-info me-1 complete-btn" data-id="2">
+                          <i class="fas fa-check-double"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger cancel-btn" data-id="2">
+                          <i class="fas fa-ban"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <td>박민수</td>
+                      <td>user3@example.com</td>
+                      <td>010-5555-7777</td>
+                      <td>2023-06-18 16:00</td>
+                      <td>시부야 중심가 원룸</td>
+                      <td><span class="badge bg-secondary">완료</span></td>
+                      <td>
+                        <button class="btn btn-sm btn-outline-primary view-btn" data-id="3">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 페이징 -->
+          <div class="d-flex justify-content-center mt-4">
+            <nav aria-label="Page navigation">
+              <ul class="pagination">
+                <li class="page-item disabled">
+                  <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                  <a class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- 상담 상세 모달 -->
+    <div class="modal fade" id="consultingModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">상담 상세 정보</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <h6>고객 정보</h6>
+                <p><strong>이름:</strong> <span id="customerName">김철수</span></p>
+                <p><strong>이메일:</strong> <span id="customerEmail">user1@example.com</span></p>
+                <p><strong>연락처:</strong> <span id="customerPhone">010-1234-5678</span></p>
+              </div>
+              <div class="col-md-6">
+                <h6>상담 정보</h6>
+                <p><strong>상담 ID:</strong> <span id="consultingId">1</span></p>
+                <p><strong>예약 날짜:</strong> <span id="consultingDate">2023-06-15 14:00</span></p>
+                <p><strong>상태:</strong> <span id="consultingStatus" class="badge bg-warning text-dark">대기중</span></p>
+              </div>
+            </div>
+            <hr>
+            <h6>매물 요청 정보</h6>
+            <p><strong>희망 지역:</strong> <span id="preferredLocation">시가노 마이야 주변</span></p>
+            <p><strong>매물 타입:</strong> <span id="propertyType">원룸</span></p>
+            <p><strong>예산:</strong> <span id="budget">50만엔 ~ 70만엔</span></p>
+            <p><strong>기타 요청사항:</strong></p>
+            <div id="additionalRequests" class="p-3 bg-light rounded">
+              역에서 도보 15분 이내의 위치를 원합니다. 인터넷이 무료로 제공되고, 보증금이 낮은 매물을 선호합니다.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            <button type="button" class="btn btn-primary">메모 저장</button>
+            <button type="button" class="btn btn-success">상담 확정</button>
+          </div>
         </div>
       </div>
-    </main>
-  </div>
-</div>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/nav_admin.js}"></script>
-<script th:src="@{/js/consulting.js}"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:replace="admin/nav_admin :: nav-script"></script>
+    <script>
+      // 상담 상세보기 모달 표시
+      document.querySelectorAll('.view-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          const consultingId = button.getAttribute('data-id');
+          // API 호출하여 상담 정보 가져오기 (예시)
+          // fetchConsultingDetails(consultingId);
+          
+          // 모달 표시
+          const consultingModal = new bootstrap.Modal(document.getElementById('consultingModal'));
+          consultingModal.show();
+        });
+      });
+    </script>
+  </body>
 </html>

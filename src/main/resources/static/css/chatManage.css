@@ -1,0 +1,83 @@
+/* 채팅 관리 페이지 스타일 */
+.message-preview {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+}
+
+.chat-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80px;
+    height: 38px;
+}
+
+/* 채팅 모달 스타일 */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.chat-input-container {
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input-container .form-control {
+    flex: 1;
+}
+
+.message {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+}
+
+.customer-message {
+    align-self: flex-start;
+}
+
+.admin-message {
+    align-self: flex-end;
+    margin-left: auto;
+}
+
+.message-content {
+    padding: 10px 15px;
+    border-radius: 18px;
+    display: inline-block;
+}
+
+.customer-message .message-content {
+    background-color: #e9ecef;
+    color: #212529;
+}
+
+.admin-message .message-content {
+    background-color: #007bff;
+    color: white;
+}
+
+.message-time {
+    font-size: 0.8em;
+    color: #6c757d;
+    margin-top: 5px;
+    text-align: right;
+}
+
+.customer-message .message-time {
+    text-align: left;
+} 

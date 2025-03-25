@@ -26,4 +26,12 @@ document.addEventListener('DOMContentLoaded', function() {
             form.submit();
         });
     }
+
+    const lionLogo = document.getElementById('lionLogo');
+    if (lionLogo) {
+        lionLogo.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'http://localhost:8080/';
+        });
+    }
 });

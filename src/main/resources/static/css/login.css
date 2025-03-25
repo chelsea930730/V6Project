@@ -58,6 +58,11 @@ body {
   margin-top: 15px;
   width: 100%;
   font-family: 'Cafe24 Ssurround air OTF Light';
+
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
 }
 
 .login-btn:hover {
@@ -78,4 +83,55 @@ body {
 
 .signup-link a:hover {
   text-decoration: underline;
+}
+
+/* Google 로그인 버튼 스타일 */
+.google-btn {
+  background-color: white;
+  color: #757575;
+  border: 1px solid #ddd;
+  padding: 12px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 15px;
+  width: 100%;
+  font-family: 'Cafe24 Ssurround air OTF Light';
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.google-btn:hover {
+  background-color: #f5f5f5;
+}
+
+.google-btn i {
+  color: #4285F4;
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+/* 로그인 옵션 구분선 */
+.login-divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  color: #757575;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
+
+.login-divider span {
+  padding: 0 10px;
+  font-size: 14px;
 }

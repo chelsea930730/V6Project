@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @Slf4j
 @RequestMapping("/user")
@@ -56,31 +59,54 @@ public class UserController {
     }
 
     @GetMapping("/index")
-    public ResponseEntity<Map<String, Object>> checkLoginStatus() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();  // ✅ 인증 정보 가져오기
+    @ResponseBody
+    public Map<String, Object> checkLoginStatus() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("🔍 현재 로그인 상태: {}", authentication);
-
-        if (authentication != null && authentication.isAuthenticated()) {
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("isLoggedIn", authentication != null && authentication.isAuthenticated() && 
+                                   !(authentication instanceof AnonymousAuthenticationToken));
+        
+        if (authentication != null && authentication.isAuthenticated() && 
+            !(authentication instanceof AnonymousAuthenticationToken)) {
+            
             Object principal = authentication.getPrincipal();
             log.info("🔍 principal 객체: {}", principal);
-
-            if (principal instanceof AuthenticatedUser) {
-                AuthenticatedUser user = (AuthenticatedUser) principal;
-                log.info("✅ 로그인 유저 확인: {}", user.getUsername());
-
-                return ResponseEntity.ok(Map.of(
-                        "isLoggedIn", true,
-                        "email", user.getUsername(),
-                        "name", user.getName()
-                ));
+            
+            try {
+                if (principal instanceof AuthenticatedUser) {
+                    AuthenticatedUser user = (AuthenticatedUser) principal;
+                    response.put("email", user.getUsername());
+                    response.put("name", user.getName());
+                    
+                    // 사용자 역할 정보 추가
+                    response.put("role", user.getUser().getRole().name());
+                    log.info("🔍 사용자 역할: {}", user.getUser().getRole().name());
+                    
+                    if (user.isOAuth2User()) {
+                        response.put("loginType", "oauth2");
+                    } else {
+                        response.put("loginType", "form");
+                    }
+                } else {
+                    // 기타 인증 방식
+                    response.put("username", authentication.getName());
+                    response.put("loginType", "other");
+                }
+            } catch (Exception e) {
+                log.error("사용자 정보 처리 중 오류: {}", e.getMessage());
+                response.put("error", "사용자 정보를 처리하는 도중 오류가 발생했습니다.");
             }
         }
-        return ResponseEntity.ok(Map.of("isLoggedIn", false));
+        
+        return response;
     }
     @GetMapping("/api/users")
     @ResponseBody
     public List<User> getAllUsers() {
         return userService.getAllUsers(); // 모든 사용자 반환
     }
+
 
 }

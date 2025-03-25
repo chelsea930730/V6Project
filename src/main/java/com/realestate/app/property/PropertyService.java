@@ -3,6 +3,8 @@ package com.realestate.app.property;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.realestate.app.geocoding.GeocodingService;
 
@@ -88,7 +90,8 @@ public class PropertyService {
             List<String> roomTypes,
             String buildingYear,
             String station,
-            String keyword) {
+            String keyword,
+            List<String> detailTypes) {
 
         try {
             return getAllProperties().stream()
@@ -108,10 +111,29 @@ public class PropertyService {
                             if (!matchesType) return false;
                         }
 
-                        // 방 타입 필터
+                        // 방 타입 필터 - 2K이상 특별 처리
                         if (roomTypes != null && !roomTypes.isEmpty()) {
-                            if (!roomTypes.contains(property.getRoomType())) {
-                                return false;
+                            if (roomTypes.contains("2K이상")) {
+                                // 1R, 1K, 1DK, 1LDK가 아닌 다른 방 타입을 표시하는 로직
+                                boolean isSpecialMatch = !"1R".equals(property.getRoomType()) && 
+                                                        !"1K".equals(property.getRoomType()) && 
+                                                        !"1DK".equals(property.getRoomType()) && 
+                                                        !"1LDK".equals(property.getRoomType());
+                                
+                                // 다른 방 타입 체크박스도 함께 선택되었다면
+                                boolean otherTypeSelected = roomTypes.stream()
+                                        .filter(type -> !"2K이상".equals(type))
+                                        .anyMatch(type -> type.equals(property.getRoomType()));
+                                
+                                // 2K이상 조건에 맞거나, 다른 선택된 타입과 일치하면 통과
+                                if (!(isSpecialMatch || otherTypeSelected)) {
+                                    return false;
+                                }
+                            } else {
+                                // 2K이상이 선택되지 않았다면 일반적인 필터링
+                                if (!roomTypes.contains(property.getRoomType())) {
+                                    return false;
+                                }
                             }
                         }
 
@@ -158,6 +180,23 @@ public class PropertyService {
                                             property.getDistrict().toLowerCase().contains(lowercaseKeyword));
                         }
 
+                        // 상세 조건 필터 추가
+                        if (detailTypes != null && !detailTypes.isEmpty()) {
+                            // 매물의 description이나 다른 필드에서 상세 조건 검색
+                            String description = property.getDescription();
+                            if (description == null) {
+                                return false;
+                            }
+
+                            // 하나라도 포함되면 매칭으로 간주
+                            boolean matchesDetail = detailTypes.stream()
+                                    .anyMatch(detail -> description.contains(detail));
+                            
+                            if (!matchesDetail) {
+                                return false;
+                            }
+                        }
+
                         return true;
                     })
                     .collect(Collectors.toList());
@@ -165,5 +204,12 @@ public class PropertyService {
             log.error("필터링 중 오류 발생: ", e);
             return getAllProperties();
         }
+    }
+    public Page<Property> getAllPropertiesWithPaging(Pageable pageable) {
+        return propertyRepository.findAll(pageable);
+    }
+
+    public List<Property> findByIds(List<Long> propertyIds) {
+        return propertyRepository.findAllById(propertyIds);
     }
 }

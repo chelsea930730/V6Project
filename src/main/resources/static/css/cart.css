@@ -1,13 +1,36 @@
+#navbar-placeholder {
+  height: 70px; /* 네비게이션 높이와 동일하게 설정 */
+  display: block;
+}
+
+
+html, body {
+
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* 가로 스크롤 방지 */
+}
+
 body {
   font-family: 'Cafe24 Ssurround air OTF Light';
   margin: 0;
   padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;  /* 본문이 중앙 정렬되도록 함 */
+  padding-top: 70px;  /* 네비 높이만큼 패딩 추가 */
+  box-sizing: border-box;
 }
 
 main {
-  max-width: 1200px;
-  margin: 80px auto 0;
+  width: 100%;
+  max-width: 1200px; /* 너무 넓어지는 걸 방지 */
+  margin: 0 auto;
   padding: 20px;
+  box-sizing: border-box;
 }
 
 h1 {
@@ -23,6 +46,41 @@ main p {
   margin-bottom: 20px;
 }
 
+
+/*////////////////////////////////////////////////////////////*/
+
+/* 삭제 버튼 */
+.cart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 0;
+}
+
+.cart-title {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.delete-cart-btn {
+  background-color: #ef6973;
+  color: white;
+  border: none;
+  padding: 8px 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.delete-cart-btn:hover {
+  background-color: #c5584d;
+}
+
+
 .property-info {
   background: white;
   border: 1px solid #ddd;
@@ -31,23 +89,24 @@ main p {
   width: 100%;
 }
 
-.property-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #6a99cd;
-  padding: 15px 30px;
-  border-radius: 8px 8px 0 0;
-  margin-bottom: 0;
-}
+
+  .property-header {
+    display: flex;
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    align-items: center;
+    background-color: #6a99cd;
+    padding: 15px 30px;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 0;
+    gap: 30px; /* No.1과 텍스트 사이 3cm(약 30px) 간격 조정 */
+  }
+
 
 .property-number {
-  font-size: 14px;
-  color: white;
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-direction: row-reverse;
+  gap: 5px; /* 체크박스와 텍스트 사이 간격 조절 */
+  color: white;
 }
 
 .property-title {
@@ -172,77 +231,61 @@ label {
 
 /* 모달 스타일 */
 .modal {
-  display: none;
+  opacity: 0;
+  visibility: hidden;
   position: fixed;
-  top: 0;
+  z-index: 1000;
+  padding-top: 50px;
   left: 0;
+  top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1001;
-  justify-content: center;
-  align-items: center;
+  background-color: rgba(0, 0, 0, 0.9);
+  transition: opacity 0.3s ease;
+}
+
+.grid-item:hover .modal {
+  opacity: 1;
+  visibility: visible;
 }
 
 .modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 5px;
-  width: 300px;
-  text-align: center;
+  margin: auto;
+  display: block;
+  max-width: 90%;
+  max-height: 90vh;
+  object-fit: contain;
 }
 
-.modal-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-top: 20px;
-}
-
-.confirm-btn {
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.cancel-btn {
-  background-color: #7f8c8d;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.confirm-btn:hover {
-  background-color: #c0392b;
-}
-
-.cancel-btn:hover {
-  background-color: #6c7a7a;
-}
-
-/* 채팅 헤더 스타일 */
-.chat-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.delete-chat-btn {
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
+.close {
+  position: absolute;
+  right: 35px;
+  top: 15px;
+  color: #f1f1f1;
+  font-size: 40px;
   font-weight: bold;
+  cursor: pointer;
 }
 
-.delete-chat-btn:hover {
-  background-color: #c0392b;
+.close:hover {
+  color: #bbb;
+}
+
+/* 전체 선택 체크박스 스타일 */
+.select-all-container {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.select-all-container input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.select-all-container label {
+    font-size: 14px;
+    cursor: pointer;
 }

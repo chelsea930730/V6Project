@@ -1,7 +1,6 @@
 var stompClient = null;
 var currentUserEmail = "";  // 초기값은 빈 문자열로 설정
 var isAdmin = false; // 관리자 여부 확인 변수
-var selectedImage = null;
 var pendingUrl = null; // 첨부할 URL
 
 // 채팅 목록에서 읽지 않은 메시지 표시를 위한 시뮬레이션 변수
@@ -73,16 +72,6 @@ function subscribeToPrivateChat() {
 function sendMessage() {
     var message = document.getElementById('message').value;
     
-    // 이미지가 있으면 이미지 전송
-    if (selectedImage) {
-        sendImageMessage(selectedImage);
-        selectedImage = null;
-        document.getElementById('imagePreviewContainer').style.display = 'none';
-        document.getElementById('imageInput').value = '';
-        document.getElementById('message').value = '';
-        return;
-    }
-    
     // URL이 있으면 URL 전송
     if (pendingUrl) {
         sendUrlMessage(pendingUrl);
@@ -147,34 +136,6 @@ function sendUrlMessage(url) {
     showMessage(chatMessage);
 }
 
-// 이미지 메시지 전송 함수
-function sendImageMessage(imageData) {
-    console.log('Sending image with sender:', currentUserEmail);
-    
-    // 이미지 데이터가 너무 크면 압축
-    if (imageData.length > 1000000) { // 1MB 이상이면
-        // 이미지를 압축하거나 사이즈를 줄이는 로직을 추가할 수 있습니다
-        console.log("이미지 크기가 큽니다. 압축을 시도합니다.");
-        // 실제 압축 로직은 여기에 추가
-    }
-    
-    var recipient = isAdmin ? getCurrentChatPartner() : "admin@realestate.com";
-    
-    var chatMessage = {
-        message: imageData,
-        sender: currentUserEmail,
-        recipient: recipient,
-        sentAt: new Date().toISOString(),
-        type: "image"
-    };
-
-    // 메시지를 UI에 먼저 추가
-    showMessage(chatMessage);
-
-    // WebSocket을 통해 메시지 전송
-    stompClient.send("/app/private-chat", {}, JSON.stringify(chatMessage));
-}
-
 // 현재 채팅 중인 상대방 이메일 가져오기
 function getCurrentChatPartner() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -197,10 +158,7 @@ function showMessage(chatMessage) {
     // 메시지 타입에 따른 내용 표시
     let messageContent = '';
     
-    if (chatMessage.type === "image") {
-        // 이미지 메시지 처리
-        messageContent = `<img src="${chatMessage.message}" class="message-image" alt="이미지" onclick="showLargeImage(this.src)">`;
-    } else if (chatMessage.type === "url") {
+    if (chatMessage.type === "url") {
         // URL 메시지 처리 - 로컬호스트 URL도 감지
         let url = chatMessage.message;
         if (!url.match(/^https?:\/\//i)) {
@@ -301,65 +259,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
     
-    // 이미지 버튼 이벤트 리스너
-    document.getElementById("imageButton")?.addEventListener("click", function() {
-        if (selectedImage) {
-            // 이미지가 이미 선택된 경우, 미리보기 토글
-            const previewContainer = document.getElementById("imagePreviewContainer");
-            if (previewContainer.style.display === 'block') {
-                previewContainer.style.display = 'none';
-                this.classList.remove('active');
-            } else {
-                previewContainer.style.display = 'block';
-                this.classList.add('active');
-                // URL 입력창 닫기
-                document.getElementById("urlInputContainer").style.display = 'none';
-                document.getElementById("urlButton").classList.remove('active');
-            }
-        } else {
-            // 이미지가 선택되지 않은 경우, 파일 선택 다이얼로그 열기
-            document.getElementById("imageInput").click();
-        }
-    });
-    
-    // 이미지 입력 변경 이벤트
-    document.getElementById("imageInput").addEventListener("change", function(e) {
-        if (e.target.files.length > 0) {
-            const file = e.target.files[0];
-            
-            // 파일 크기 제한 (5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                alert("파일 크기는 5MB 이하여야 합니다.");
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                // 이미지 미리보기 설정
-                selectedImage = event.target.result;
-                document.getElementById("imagePreview").src = selectedImage;
-                document.getElementById("imagePreviewContainer").style.display = 'block';
-                document.getElementById("imageButton").classList.add('active');
-                document.getElementById("message").placeholder = "이미지가 첨부됨 (엔터 키 또는 전송 버튼을 눌러 전송)";
-                
-                // URL 입력창 닫기
-                document.getElementById("urlInputContainer").style.display = 'none';
-                document.getElementById("urlButton").classList.remove('active');
-                pendingUrl = null;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-    
-    // 이미지 미리보기 닫기 버튼
-    document.getElementById("closeImagePreview").addEventListener("click", function() {
-        document.getElementById("imagePreviewContainer").style.display = 'none';
-        document.getElementById("imageButton").classList.remove('active');
-        selectedImage = null;
-        document.getElementById("imageInput").value = '';
-        document.getElementById("message").placeholder = "메시지를 입력하세요...";
-    });
-    
     // URL 버튼 클릭 이벤트
     document.getElementById("urlButton").addEventListener("click", function() {
         const urlContainer = document.getElementById("urlInputContainer");
@@ -370,9 +269,6 @@ document.addEventListener("DOMContentLoaded", function () {
             urlContainer.style.display = 'block';
             document.getElementById("urlInput").focus();
             this.classList.add('active');
-            // 이미지 미리보기 닫기
-            document.getElementById("imagePreviewContainer").style.display = 'none';
-            document.getElementById("imageButton").classList.remove('active');
         }
     });
     
@@ -397,14 +293,18 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("message").placeholder = "메시지를 입력하세요...";
     });
     
-    // 이미지 확대 모달 클릭 이벤트
-    document.getElementById("imageModal").addEventListener("click", function() {
-        this.style.display = "none";
+    // URL 입력 필드에서 엔터키 누르면 URL 추가
+    document.getElementById("urlInput").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("addUrlBtn").click();
+        }
     });
     
-    // 엔터키로 메시지 전송
-    document.getElementById('message').addEventListener('keypress', function (event) {
-        if (event.key === 'Enter') {
+    // 채팅 입력 필드에서 엔터키 누르면 메시지 전송
+    document.getElementById("message").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
             sendMessage();
         }
     });
@@ -694,13 +594,4 @@ function autoDetectLinks(text) {
     return text.replace(urlPattern, function(url) {
         return `<a href="${url}" class="message-url" target="_blank">${url}</a>`;
     });
-}
-
-// 이미지 확대 표시 함수
-function showLargeImage(src) {
-    const imageModal = document.getElementById('imageModal');
-    const imageElement = imageModal.querySelector('img');
-    
-    imageElement.src = src;
-    imageModal.style.display = 'flex';
 }

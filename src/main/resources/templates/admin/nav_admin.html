@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="/css/nav_admin.css">
+    <link rel="stylesheet" th:href="@{/css/nav_admin.css}">
 </head>
 <body>
 <!-- 관리자 네비게이션 바 -->
-<nav class="admin-sidebar">
+<nav th:fragment="nav" class="admin-sidebar">
     <div class="sidebar-header">
-        <h2 id="lionLogo">LION</h2>
+        <h2 id="lionLogo" style="cursor: pointer;">LION</h2>
     </div>
     <ul class="nav-links">
         <li>
-            <a href="/">
+            <a href="/" class="nav-link">
                 <i class="fas fa-house"></i>
                 홈으로
             </a>
@@ -51,8 +51,39 @@
     </ul>
 </nav>
 
-<!-- 네비게이션 스크립트 추가 -->
-<script src="/js/navbar.js"></script>
-<script src="/js/nav_admin.js"></script>
+<script th:fragment="nav-script">
+// 로그아웃 기능
+document.addEventListener('DOMContentLoaded', function() {
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            fetch('/user/logout', { method: 'POST' })
+                .then(() => {
+                    window.location.href = '/';
+                })
+                .catch(error => console.error('로그아웃 실패:', error));
+        });
+    }
+    
+    // 현재 페이지에 해당하는 메뉴 항목에 active 클래스 추가
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.nav-links .nav-link');
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === currentPath) {
+            link.classList.add('active');
+        }
+    });
+    
+    // LION 로고 클릭 시 홈으로 이동
+    const lionLogo = document.getElementById('lionLogo');
+    if (lionLogo) {
+        lionLogo.addEventListener('click', function() {
+            window.location.href = '/';
+        });
+    }
+});
+</script>
 </body>
-</html>
+</html> 

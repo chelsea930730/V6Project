@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>채팅 관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/nav_admin.css}">
+    <link rel="stylesheet" th:href="@{/css/chatManage.css}">
+    <style>
+      /* 채팅 관리 페이지에서 상단 여백 제거 */
+      body {
+        padding-top: 0 !important;
+        margin: 0;
+      }
+      
+      /* 사이드바가 상단에 정확히 붙도록 설정 */
+      .admin-sidebar {
+        top: 0;
+        margin-top: 0;
+        padding-top: 20px;
+      }
+      
+      /* 메인 컨텐츠 영역 조정 */
+      main {
+        margin-left: 250px;
+        padding-top: 0;
+      }
+      
+      .container-fluid {
+        padding-top: 0;
+      }
+    </style>
+</head>
+<body>
+    <!-- 관리자 네비게이션 포함 -->
+    <div th:replace="admin/nav_admin :: nav"></div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 메인 컨텐츠 -->
+            <main class="col-md-10 ms-sm-auto px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+                    <h2>채팅 관리</h2>
+                </div>
+
+                <!-- 채팅 목록 -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>고객명</th>
+                                        <th>이메일</th>
+                                        <th>최근 메시지</th>
+                                        <th>최근 메시지 시간</th>
+                                        <th>읽지 않은 메시지</th>
+                                        <th>상태</th>
+                                        <th>채팅</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 샘플 데이터 -->
+                                    <tr>
+                                        <td>김철수</td>
+                                        <td>user1@example.com</td>
+                                        <td class="message-preview">안녕하세요, 관리자님. 문의 드릴 게 있습니다.</td>
+                                        <td>2023-06-15 14:30</td>
+                                        <td><span class="badge bg-danger">3</span></td>
+                                        <td><span class="badge bg-success">온라인</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary chat-btn" onclick="openChatRoom('chat1', '김철수')">
+                                                채팅하기
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>이영희</td>
+                                        <td>user2@example.com</td>
+                                        <td class="message-preview">방문 예약은 어떻게 하나요?</td>
+                                        <td>2023-06-15 12:15</td>
+                                        <td><span class="badge bg-danger">1</span></td>
+                                        <td><span class="badge bg-secondary">오프라인</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary chat-btn" onclick="openChatRoom('chat2', '이영희')">
+                                                채팅하기
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>박민수</td>
+                                        <td>user3@example.com</td>
+                                        <td class="message-preview">감사합니다, 확인해보겠습니다.</td>
+                                        <td>2023-06-14 18:00</td>
+                                        <td><span class="badge bg-secondary">0</span></td>
+                                        <td><span class="badge bg-secondary">오프라인</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary chat-btn" onclick="openChatRoom('chat3', '박민수')">
+                                                채팅하기
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 페이징 -->
+                <div class="d-flex justify-content-center mt-4">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 채팅 모달 -->
+    <div class="modal fade" id="chatModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">채팅: <span id="chatPartnerName"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="chat-container">
+                        <div id="chatMessages" class="chat-messages">
+                            <!-- 채팅 메시지가 여기에 표시됩니다 -->
+                        </div>
+                        <div class="chat-input-container">
+                            <input type="text" id="chatInput" class="form-control" placeholder="메시지를 입력하세요...">
+                            <button id="sendMessageBtn" class="btn btn-primary">보내기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:replace="admin/nav_admin :: nav-script"></script>
+    <script>
+        // 채팅방 열기
+        function openChatRoom(chatId, customerName) {
+            // 모달 제목 설정
+            document.getElementById('chatPartnerName').textContent = customerName;
+            
+            // 채팅 메시지 로드 (예시 데이터)
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = `
+                <div class="message customer-message">
+                    <div class="message-content">안녕하세요, 관리자님. 문의 드릴 게 있습니다.</div>
+                    <div class="message-time">14:30</div>
+                </div>
+                <div class="message admin-message">
+                    <div class="message-content">안녕하세요, ${customerName}님. 어떤 문의사항이신가요?</div>
+                    <div class="message-time">14:31</div>
+                </div>
+                <div class="message customer-message">
+                    <div class="message-content">시가노마이아 근처 매물 중 주차장이 있는 곳을 알아보고 있습니다.</div>
+                    <div class="message-time">14:32</div>
+                </div>
+                <div class="message admin-message">
+                    <div class="message-content">네, 현재 시가노마이아 5분 거리에 주차장이 포함된 매물이 몇 개 있습니다. 구체적인 예산 범위가 어떻게 되시나요?</div>
+                    <div class="message-time">14:33</div>
+                </div>
+            `;
+            
+            // 모달 표시
+            const chatModal = new bootstrap.Modal(document.getElementById('chatModal'));
+            chatModal.show();
+            
+            // 채팅 입력창에 포커스
+            setTimeout(() => {
+                document.getElementById('chatInput').focus();
+            }, 500);
+        }
+        
+        // 메시지 전송 이벤트 처리
+        document.getElementById('sendMessageBtn').addEventListener('click', sendMessage);
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // 메시지 전송 함수
+        function sendMessage() {
+            const inputField = document.getElementById('chatInput');
+            const message = inputField.value.trim();
+            
+            if (message) {
+                // 메시지 추가
+                const chatMessages = document.getElementById('chatMessages');
+                const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                chatMessages.innerHTML += `
+                    <div class="message admin-message">
+                        <div class="message-content">${message}</div>
+                        <div class="message-time">${currentTime}</div>
+                    </div>
+                `;
+                
+                // 입력 필드 초기화
+                inputField.value = '';
+                
+                // 스크롤을 최신 메시지로 이동
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html> 

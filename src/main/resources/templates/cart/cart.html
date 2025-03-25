@@ -9,14 +9,31 @@
     <!-- Bootstrap JS - CDN으로 변경 -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link th:href="@{/css/cart.css}" rel="stylesheet" />
+    <!-- 네비게이션 스크립트 먼저 로드 -->
+    <script th:src="@{/js/navbar.js}"></script>
+    <!-- 카트 스크립트 나중에 로드 -->
     <script th:src="@{/js/cart.js}" defer></script>
+    <!-- CSRF 토큰 (Spring Security 사용 시) -->
+    <meta name="_csrf" th:content="${_csrf?.token}" />
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}" />
 </head>
 <body>
+<!-- 네비게이션 영역 -->
 <div id="navbar-placeholder"></div>
 
 <main>
-    <h1>장바구니</h1>
-    <p>바로 예약해보세요.</p>
+    <div class="cart-header">
+        <div class="cart-title">
+            <h1>장바구니</h1>
+            <p>바로 예약해보세요.</p>
+        </div>
+        <!-- 전체 선택 체크박스 추가 -->
+        <div class="select-all-container">
+            <input type="checkbox" id="select-all-checkbox" />
+            <label for="select-all-checkbox">전체 선택</label>
+        </div>
+        <button class="delete-cart-btn">장바구니의 매물 삭제</button>
+    </div>
 
     <!-- 장바구니가 비어있을 경우 메시지 표시 -->
     <div th:if="${#lists.isEmpty(properties)}" class="empty-message">
@@ -26,10 +43,11 @@
     <!-- 장바구니 매물 목록 표시 -->
     <div th:each="property, status : ${properties}" class="property-info">
         <div class="property-header">
-            <span class="property-number">
-                NO.<span th:text="${property.propertyId}">000001</span>
-                <input type="checkbox" th:id="'property-checkbox-' + ${status.index}" th:value="${property.propertyId}" />
-            </span>
+<span class="property-number">
+    <input type="checkbox" th:id="'property-checkbox-' + ${status.index}" th:value="${property.propertyId}" />
+    <span>NO.</span>
+    <span th:text="${property.propertyId}">1</span>
+</span>
             <h2 class="property-title" th:text="${property.title}">세이부 이케부쿠로선 네리마 역 인접, 4층, 건축 7년</h2>
         </div>
         <div class="property-content">
@@ -41,7 +59,7 @@
                 <div class="grid-item">
                     <span class="label">월세/관리비</span>
                     <span class="value">
-                        <span th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA')}">9.7만</span>원 / 
+                        <span th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA')}">9.7만</span>원 /
                         <span th:text="${#numbers.formatInteger(property.managementFee, 0, 'COMMA')}">1,000</span>엔
                     </span>
                 </div>
@@ -73,13 +91,11 @@
 
     <!-- 장바구니가 비어있지 않을 때만 상담 버튼 표시 -->
     <div th:if="${not #lists.isEmpty(properties)}">
-        <form th:action="@{/consult/request}" method="post" id="consultForm">
-            <button type="button" onclick="submitSelectedProperties()" class="consult-btn">체크한 매물 상담 바로 가기</button>
+        <form th:action="@{/reservation}" method="get" id="consultForm">
+            <button type="button" onclick="submitSelectedProperties()" class="consult-btn">선택한 매물 상담 예약하기</button>
         </form>
     </div>
 </main>
-
-<div id="footer-placeholder"></div>
 
 <!-- 모달 추가 -->
 <div id="imageModal" class="modal">
@@ -102,13 +118,16 @@
         // 기존 입력 필드 제거
         form.innerHTML = '';
 
-        // 선택된 매물 ID를 폼에 추가
+        // 선택된 매물 ID를 폼에 추가 (전체 선택 체크박스 제외)
         checkboxes.forEach(checkbox => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'propertyIds';
-            input.value = checkbox.value;
-            form.appendChild(input);
+            // 전체 선택 체크박스는 제외
+            if (checkbox.id !== 'select-all-checkbox') {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'propertyIds';
+                input.value = checkbox.value;
+                form.appendChild(input);
+            }
         });
 
         // 폼 제출

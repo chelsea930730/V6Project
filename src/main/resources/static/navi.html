@@ -36,22 +36,23 @@
 		flex-direction: column;
 		margin: 0;
 		padding: 0;
-		padding-top: 80px;
+		padding-top: 80px; /* 고정된 값으로 설정 */
 	}
 
 	header {
 		position: fixed;
 		top: 0;
 		left: 0;
-		width: 95%;
+		width: 100%;
 		background-color: white;  /* 배경색 추가 */
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 15px 50px;
+		padding: 0 50px; /* top/bottom 패딩 제거하고 left/right만 유지 */
 		border-bottom: 1px solid #ddd;
 		z-index: 1000; /* 다른 요소보다 위에 표시 */
-		height: 70px;
+		height: 80px; /* 헤더 높이 고정 */
+		box-sizing: border-box; /* 패딩을 포함한 높이 계산 */
 	}
 
 	/* 푸터 */
@@ -113,10 +114,9 @@
 		width: 100%;
 		max-width: 1200px;
 		margin: 0 auto;
-		padding: 15px 10px;
-		/*border-bottom: 1px solid #ddd;*/
+		padding: 0 10px; /* top/bottom 패딩 제거 */
 		background-color: white;
-		height: 70px; /* 네비게이션 높이 고정 */
+		height: 100%; /* 네비게이션이 헤더 높이를 채우도록 설정 */
 		box-sizing: border-box;
 	}
 
@@ -179,6 +179,31 @@
 	.nav-link:hover {
 		color: #6a99cd;
 	}
+
+	/* 알림 아이콘 스타일 */
+	.notification-badge {
+		position: relative;
+		display: inline-flex;
+	}
+
+	.notification-badge .badge {
+		position: absolute;
+		top: -5px;
+		right: -5px;
+		width: 15px;
+		height: 15px;
+		background-color: #e74c3c;
+		color: white;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 10px;
+		font-weight: bold;
+	}
 </style>
+
+<!-- 네비게이션 스크립트 추가 -->
+<script src="/js/navbar.js"></script>
 </body>
 </html>
