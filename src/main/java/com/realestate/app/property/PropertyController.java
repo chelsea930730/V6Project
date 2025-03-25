@@ -104,7 +104,7 @@ public class PropertyController {
         boolean isLoggedIn = authentication != null && authentication.isAuthenticated() 
                 && !authentication.getPrincipal().equals("anonymousUser");
         model.addAttribute("isLoggedIn", isLoggedIn);
-        
+
         return "property/detail";
     }
 

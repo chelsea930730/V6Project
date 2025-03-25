@@ -84,7 +84,7 @@
                       <td th:text="${property.builtYear}">건축년도</td>
                       <td>
                         <span th:class="'status-badge ' + ${property.status.name().toLowerCase()}"
-                              th:text="${property.status.name() == '예약가능' ? '공실' :
+                              th:text="${property.status.name() == '예약가능' ? '공실' : 
                                       property.status.name() == '예약중' ? '계약 진행중' : '계약 완료'}">상태</span>
                       </td>
                       <td>
@@ -118,14 +118,14 @@
                     <span aria-hidden="true">&laquo;</span>
                   </a>
                 </li>
-
+                
                 <!-- 페이지 번호 -->
-                <li class="page-item" th:each="pageNumber : ${pageNumbers}"
+                <li class="page-item" th:each="pageNumber : ${pageNumbers}" 
                     th:classappend="${pageNumber == currentPage} ? 'active'">
-                  <a class="page-link" th:href="@{/admin/addproperty(page=${pageNumber})}"
+                  <a class="page-link" th:href="@{/admin/addproperty(page=${pageNumber})}" 
                      th:text="${pageNumber}">1</a>
                 </li>
-
+                
                 <!-- 다음 페이지 그룹으로 이동 -->
                 <li class="page-item" th:if="${hasNext}">
                   <a class="page-link" th:href="@{/admin/addproperty(page=${nextPageGroup})}" aria-label="Next group">

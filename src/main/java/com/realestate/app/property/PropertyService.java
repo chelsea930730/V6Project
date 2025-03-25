@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.realestate.app.geocoding.GeocodingService;
+import com.realestate.app.property.PropertyImageRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +22,23 @@ import java.util.stream.Collectors;
 public class PropertyService {
     private final PropertyRepository propertyRepository;
     private final GeocodingService geocodingService;
+    private final PropertyImageRepository propertyImageRepository;
     private static final Logger log = LoggerFactory.getLogger(PropertyService.class);
 
     public List<Property> getAllProperties() {
-        return propertyRepository.findAll();
+        List<Property> properties = propertyRepository.findAll();
+        
+        // 각 매물의 썸네일 이미지 설정
+        for (Property property : properties) {
+            if (property.getThumbnailImage() == null) {
+                String firstImageUrl = propertyImageRepository.findFirstImageUrlByPropertyId(property.getPropertyId());
+                if (firstImageUrl != null) {
+                    property.setThumbnailImage(firstImageUrl);
+                }
+            }
+        }
+        
+        return properties;
     }
 
     @Transactional
@@ -94,7 +108,7 @@ public class PropertyService {
             List<String> detailTypes) {
 
         try {
-            return getAllProperties().stream()
+            List<Property> filteredProperties = getAllProperties().stream()
                     .filter(property -> {
                         // 가격 필터
                         if (property.getMonthlyPrice() == null ||
@@ -163,10 +177,11 @@ public class PropertyService {
                             }
                         }
 
-                        // 역 필터
+                        // 역 필터 수정
                         if (station != null && !station.isEmpty()) {
-                            if (property.getSubwayLine() == null ||
-                                    !property.getSubwayLine().contains(station)) {
+                            if (property.getStation() == null && 
+                                (property.getSubwayLine() == null || 
+                                 !property.getSubwayLine().contains(station))) {
                                 return false;
                             }
                         }
@@ -200,6 +215,20 @@ public class PropertyService {
                         return true;
                     })
                     .collect(Collectors.toList());
+
+            // 필터링된 매물들의 썸네일 이미지 설정
+            for (Property property : filteredProperties) {
+                if (property.getThumbnailImage() == null) {
+                    // 첫 번째 이미지를 썸네일로 사용
+                    String firstImageUrl = propertyImageRepository.findFirstImageUrlByPropertyId(property.getPropertyId());
+                    if (firstImageUrl != null) {
+                        property.setThumbnailImage(firstImageUrl);
+                    }
+                }
+            }
+
+            return filteredProperties;
+
         } catch (Exception e) {
             log.error("필터링 중 오류 발생: ", e);
             return getAllProperties();

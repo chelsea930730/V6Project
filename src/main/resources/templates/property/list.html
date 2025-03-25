@@ -216,7 +216,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="no-image-container"
+                        <div th:if="${property.thumbnailImage != null}" class="property-image-container">
+                            <img th:src="${property.thumbnailImage}" alt="매물 이미지" 
+                                 style="width: 150px; height: 100px; object-fit: cover;">
+                        </div>
+                        <div th:unless="${property.thumbnailImage != null}" class="no-image-container"
                              style="width: 150px; height: 100px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
                             <span>이미지 준비중</span>
                         </div>
