@@ -48,46 +48,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 전체 선택 체크박스 기능 수정
-    const selectAllCheckbox = document.getElementById('select-all-checkbox');
-    
-    if (selectAllCheckbox) {
-        selectAllCheckbox.addEventListener('change', function() {
-            const isChecked = this.checked;
-            
-            // 모든 개별 체크박스 선택 (현재 페이지에 있는 체크박스들)
-            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                if (checkbox.id !== 'select-all-checkbox') {
-                    checkbox.checked = isChecked;
-                }
-            });
-        });
-    }
-    
-    // 문서에 이벤트 위임 방식으로 체크박스 변경 감지
-    document.addEventListener('change', function(event) {
-        if (event.target.type === 'checkbox' && event.target.id !== 'select-all-checkbox') {
-            updateSelectAllCheckbox();
-        }
-    });
-    
-    // 전체 선택 체크박스 상태 업데이트 함수
-    function updateSelectAllCheckbox() {
-        if (!selectAllCheckbox) return;
-        
-        const checkboxes = Array.from(document.querySelectorAll('input[type="checkbox"]'))
-            .filter(cb => cb.id !== 'select-all-checkbox');
-        
-        const allChecked = checkboxes.every(cb => cb.checked);
-        const someChecked = checkboxes.some(cb => cb.checked);
-        
-        selectAllCheckbox.checked = allChecked;
-        selectAllCheckbox.indeterminate = !allChecked && someChecked;
-    }
-    
-    // 페이지 로드 시 초기 상태 설정
-    updateSelectAllCheckbox();
-
     // 선택한 매물 삭제 함수 (AJAX 방식)
     function deleteSelectedItems() {
         const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');

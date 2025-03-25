@@ -41,7 +41,7 @@ public class PropertyService {
 
     public Property getPropertyById(Long id) {
         return propertyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("매물을 찾을 수 없습니다: " + id));
+            .orElseThrow(() -> new RuntimeException("매물을 찾을 수 없습니다: " + id));
     }
 
     @Transactional
@@ -50,7 +50,7 @@ public class PropertyService {
 
         for (Property property : properties) {
             if (property.getLocation() != null &&
-                    (property.getLatitude() == null || property.getLongitude() == null)) {
+                (property.getLatitude() == null || property.getLongitude() == null)) {
 
                 log.info("Updating coordinates for property: {}", property.getTitle());
                 var result = geocodingService.getCoordinates(property.getLocation());
@@ -60,7 +60,7 @@ public class PropertyService {
                     property.setLongitude(BigDecimal.valueOf(result.longitude()));
                     propertyRepository.save(property);
                     log.info("Updated coordinates for {}: lat={}, lng={}",
-                            property.getTitle(), result.latitude(), result.longitude());
+                        property.getTitle(), result.latitude(), result.longitude());
                 } else {
                     log.error("Failed to get coordinates for property: {}", property.getTitle());
                 }
@@ -90,8 +90,7 @@ public class PropertyService {
             List<String> roomTypes,
             String buildingYear,
             String station,
-            String keyword,
-            List<String> detailTypes) {
+            String keyword) {
 
         try {
             return getAllProperties().stream()
@@ -111,29 +110,10 @@ public class PropertyService {
                             if (!matchesType) return false;
                         }
 
-                        // 방 타입 필터 - 2K이상 특별 처리
+                        // 방 타입 필터
                         if (roomTypes != null && !roomTypes.isEmpty()) {
-                            if (roomTypes.contains("2K이상")) {
-                                // 1R, 1K, 1DK, 1LDK가 아닌 다른 방 타입을 표시하는 로직
-                                boolean isSpecialMatch = !"1R".equals(property.getRoomType()) && 
-                                                        !"1K".equals(property.getRoomType()) && 
-                                                        !"1DK".equals(property.getRoomType()) && 
-                                                        !"1LDK".equals(property.getRoomType());
-                                
-                                // 다른 방 타입 체크박스도 함께 선택되었다면
-                                boolean otherTypeSelected = roomTypes.stream()
-                                        .filter(type -> !"2K이상".equals(type))
-                                        .anyMatch(type -> type.equals(property.getRoomType()));
-                                
-                                // 2K이상 조건에 맞거나, 다른 선택된 타입과 일치하면 통과
-                                if (!(isSpecialMatch || otherTypeSelected)) {
-                                    return false;
-                                }
-                            } else {
-                                // 2K이상이 선택되지 않았다면 일반적인 필터링
-                                if (!roomTypes.contains(property.getRoomType())) {
-                                    return false;
-                                }
+                            if (!roomTypes.contains(property.getRoomType())) {
+                                return false;
                             }
                         }
 
@@ -180,23 +160,6 @@ public class PropertyService {
                                             property.getDistrict().toLowerCase().contains(lowercaseKeyword));
                         }
 
-                        // 상세 조건 필터 추가
-                        if (detailTypes != null && !detailTypes.isEmpty()) {
-                            // 매물의 description이나 다른 필드에서 상세 조건 검색
-                            String description = property.getDescription();
-                            if (description == null) {
-                                return false;
-                            }
-
-                            // 하나라도 포함되면 매칭으로 간주
-                            boolean matchesDetail = detailTypes.stream()
-                                    .anyMatch(detail -> description.contains(detail));
-                            
-                            if (!matchesDetail) {
-                                return false;
-                            }
-                        }
-
                         return true;
                     })
                     .collect(Collectors.toList());
@@ -207,9 +170,5 @@ public class PropertyService {
     }
     public Page<Property> getAllPropertiesWithPaging(Pageable pageable) {
         return propertyRepository.findAll(pageable);
-    }
-
-    public List<Property> findByIds(List<Long> propertyIds) {
-        return propertyRepository.findAllById(propertyIds);
     }
 }

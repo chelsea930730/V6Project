@@ -107,6 +107,11 @@ public class UserController {
     public List<User> getAllUsers() {
         return userService.getAllUsers(); // 모든 사용자 반환
     }
+    @GetMapping("/api/users")
+    @ResponseBody
+    public List<User> getAllUsers() {
+        return userService.getAllUsers(); // 모든 사용자 반환
+    }
 
 
 }
