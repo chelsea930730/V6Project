@@ -115,3 +115,20 @@ tr:hover {
 .log-btn:hover {
     background-color: #355c86;
 }
+
+.view-btn {
+    display: inline-block;
+    padding: 6px 12px;
+    background-color: #6a99cd;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+.view-btn:hover {
+    background-color: #355c86;
+    color: white;
+    text-decoration: none;
+}

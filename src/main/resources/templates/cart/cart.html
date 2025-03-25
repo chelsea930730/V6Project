@@ -56,7 +56,7 @@
                 <div class="grid-item">
                     <span class="label">월세/관리비</span>
                     <span class="value">
-                        <span th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA')}">9.7만</span>원 /
+                        <span th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA')}">9.7만</span>엔 /
                         <span th:text="${#numbers.formatInteger(property.managementFee, 0, 'COMMA')}">1,000</span>엔
                     </span>
                 </div>
@@ -133,7 +133,6 @@
         form.submit();
     }
 </script>
-<script th:src="@{/js/cart.js}"></script>
 <script th:src="@{/js/navbar.js}"></script>
 </body>
 </html>

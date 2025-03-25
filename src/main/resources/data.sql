@@ -8389,92 +8389,443 @@ INSERT INTO property (
              NULL, NULL,
              NULL
          );
-
-INSERT INTO property (
-    property_title, monthly_price, shikikin, reikin, management_fee, location,
-    district, subway_line, room_type, building_type, status, description, area,
-    built_year, latitude, longitude, created_at
-) VALUES (
-             '東京都杉並区高円寺南3丁目20-16
- 1R', NULL,
-             1.0, 0.0,
-             7000.0, '東京都杉並区高円寺南3丁目20-16
-',
-             '東京都杉並区高円寺南3丁目20-16
-', '마루노우치선', '1R', '맨션',
-             '예약가능', '3월 입주',
-             18.37, '1995년',
-             NULL, NULL,
-             NULL
-         );
-
-INSERT INTO property (
-    property_title, monthly_price, shikikin, reikin, management_fee, location,
-    district, subway_line, room_type, building_type, status, description, area,
-    built_year, latitude, longitude, created_at
-) VALUES (
-             '神奈川県川崎市中原区新丸子町759-1
- 1K', NULL,
-             1.0, 1.0,
-             7300.0, '神奈川県川崎市中原区新丸子町759-1
-',
-             '神奈川県川崎市中原区新丸子町759-1
-', '토큐도요코선', '1K', '맨션',
-             '예약가능', '2월 입주',
-             20.07, '2012년',
-             NULL, NULL,
-             NULL
-         );
-
-INSERT INTO property (
-    property_title, monthly_price, shikikin, reikin, management_fee, location,
-    district, subway_line, room_type, building_type, status, description, area,
-    built_year, latitude, longitude, created_at
-) VALUES (
-             '東京都新宿区北新宿1丁目23-19
- 1R', NULL,
-             0.0, 1.0,
-             7000.0, '東京都新宿区北新宿1丁目23-19
-',
-             '東京都新宿区北新宿1丁目23-19
-', '마루노우치선', '1R', '맨션',
-             '예약가능', '인터넷 무료,  4월입주',
-             18.13, '1998년',
-             NULL, NULL,
-             NULL
-         );
-INSERT INTO property (
-    property_title, monthly_price, shikikin, reikin, management_fee, location,
-    district, subway_line, room_type, building_type, status, description, area,
-    built_year, latitude, longitude, created_at
-) VALUES (
-             '東京都新宿区北新宿1丁目23-18
- 1R', 8000,
-             0.0, 1.0,
-             7000.0, '東京都新宿区北新宿1丁目23-19
-',
-             '東京都新宿区北新宿1丁目23-19
-', '마루노우치선', '1R', '맨션',
-             '예약가능', '인터넷 무료,  4월입주',
-             18.13, '1998년',
-             NULL, NULL,
-             NULL
-         );
-
-INSERT INTO property (
-    property_title, monthly_price, shikikin, reikin, management_fee, location,
-    district, subway_line, room_type, building_type, status, description, area,
-    built_year, latitude, longitude, created_at
-) VALUES (
-             '東京都新宿区北新宿1丁目23-17
- 1R', 9000,
-             0.0, 1.0,
-             7000.0, '東京都新宿区北新宿1丁目23-19
-',
-             '東京都新宿区北新宿1丁目23-17
-', '마루노우치선', '1R', '맨션',
-             '예약가능', '인터넷 무료,  4월입주',
-             18.13, '1998년',
-             NULL, NULL,
-             NULL
-         );
+UPDATE property SET station = '早稲田 (와세다)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区 西早稲田1丁目16-11';
+UPDATE property SET station = '北参道 (키타산도)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都渋谷区千駄ヶ谷３丁目3－3';
+UPDATE property SET station = '新大久保 (신오오쿠보)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区北新宿１丁目12－15';
+UPDATE property SET station = '大門 (다이몬)', floor = '3층', thumbnail_image = NULL WHERE location = '港区浜松町１丁目１９－６';
+UPDATE property SET station = '六本木一丁目 (록뽄기잇초메)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都港区六本木2丁目3-25';
+UPDATE property SET station = '曙橋 (아케보노바시)', floor = '1층', thumbnail_image = NULL WHERE location = '新宿区市谷台町 9-2';
+UPDATE property SET station = '曙橋 (아케보노바시)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区富久町1-2';
+UPDATE property SET station = '八王子 (하치오지)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都八王子市千人町2-18-17';
+UPDATE property SET station = '田町 (타마치)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都港区芝浦４丁目５－１７';
+UPDATE property SET station = '沼袋 (누마부쿠로)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都中野区江古田4丁目2-1';
+UPDATE property SET station = '牛込柳町 (우시고메야나기초)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区原町1丁目2-5';
+UPDATE property SET station = '本蓮沼 (모토하스누마)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都板橋区大原町11-16';
+UPDATE property SET station = '白楽 (하쿠라쿠)', floor = '2층', thumbnail_image = NULL WHERE location = '神奈川県横浜市神奈川区白楽100-95';
+UPDATE property SET station = '亀戸 (카메이도)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都江東区亀戸4丁目35-2';
+UPDATE property SET station = '白金高輪 (시로카네타카나와)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都港区三田５丁目 13-19';
+UPDATE property SET station = '早稲田 (와세다)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都新宿区原町2丁目69';
+UPDATE property SET station = '蓮根 (하스네)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都板橋区東坂下2丁目20-6';
+UPDATE property SET station = '新井薬師前 (아라이야쿠시마에)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区西落合2丁目22-20';
+UPDATE property SET station = '後楽園 (코라쿠엔)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都文京区小石川4丁目1-14';
+UPDATE property SET station = '人形町 (닌교초)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都中央区日本橋蛎殻町1丁目9-9';
+UPDATE property SET station = '日ノ出町 (히노데초)', floor = '2층', thumbnail_image = NULL WHERE location = '神奈川県横浜市中区 末吉町1丁目12-1';
+UPDATE property SET station = '西横浜 (니시요코하마)', floor = '2층', thumbnail_image = NULL WHERE location = '神奈川県横浜市西区浜松町11-7';
+UPDATE property SET station = '蒔田 (마이타)', floor = '2층', thumbnail_image = NULL WHERE location = '神奈川県横浜市南区南太田2丁目28-28';
+UPDATE property SET station = '両国 (료고쿠)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都墨田区両国3丁目16-6';
+UPDATE property SET station = '西大島 (니시오지마)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都江東区北砂3丁目4-24';
+UPDATE property SET station = '西荻窪 (니시오기쿠보)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都杉並区西荻北１丁目4-4';
+UPDATE property SET station = '沼袋 (누마부쿠로)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都中野区江古田４丁目30-4';
+UPDATE property SET station = '早稲田 (와세다)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区 西早稲田1丁目16-11';
+UPDATE property SET station = '北参道 (키타산도)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都渋谷区千駄ヶ谷３丁目3－3';
+UPDATE property SET station = '新大久保 (신오오쿠보)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区北新宿１丁目12－15';
+UPDATE property SET station = '大門 (다이몬)', floor = '4층', thumbnail_image = NULL WHERE location = '港区浜松町１丁目１９－６';
+UPDATE property SET station = '六本木一丁目 (록뽄기잇초메)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都港区六本木2丁目3-25';
+UPDATE property SET station = '曙橋 (아케보노바시)', floor = '3층', thumbnail_image = NULL WHERE location = '新宿区市谷台町 9-2';
+UPDATE property SET station = '曙橋 (아케보노바시)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区富久町1-2';
+UPDATE property SET station = '八王子 (하치오지)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都八王子市千人町2-18-17';
+UPDATE property SET station = '田町 (타마치)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都港区芝浦４丁目５－１７';
+UPDATE property SET station = '沼袋 (누마부쿠로)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都中野区江古田4丁目2-1';
+UPDATE property SET station = '牛込柳町 (우시고메야나기초)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区原町1丁目2-5';
+UPDATE property SET station = '本蓮沼 (모토하스누마)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都板橋区大原町11-16';
+UPDATE property SET station = '白楽 (하쿠라쿠)', floor = '1층', thumbnail_image = NULL WHERE location = '神奈川県横浜市神奈川区白楽100-95';
+UPDATE property SET station = '亀戸 (카메이도)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都江東区亀戸4丁目35-2';
+UPDATE property SET station = '白金高輪 (시로카네타카나와)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都港区三田５丁目 13-19';
+UPDATE property SET station = '早稲田 (와세다)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区原町2丁目69';
+UPDATE property SET station = '蓮根 (하스네)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都板橋区東坂下2丁目20-6';
+UPDATE property SET station = '新井薬師前 (아라이야쿠시마에)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都新宿区西落合2丁目22-20';
+UPDATE property SET station = '後楽園 (코라쿠엔)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都文京区小石川4丁目1-14';
+UPDATE property SET station = '人形町 (닌교초)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都中央区日本橋蛎殻町1丁目9-9';
+UPDATE property SET station = '日ノ出町 (히노데초)', floor = '3층', thumbnail_image = NULL WHERE location = '神奈川県横浜市中区 末吉町1丁目12-1';
+UPDATE property SET station = '西横浜 (니시요코하마)', floor = '1층', thumbnail_image = NULL WHERE location = '神奈川県横浜市西区浜松町11-7';
+UPDATE property SET station = '蒔田 (마이타)', floor = '2층', thumbnail_image = NULL WHERE location = '神奈川県横浜市南区南太田2丁目28-28';
+UPDATE property SET station = '両国 (료고쿠)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都墨田区両国3丁目16-6';
+UPDATE property SET station = '西大島 (니시오지마)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都江東区北砂3丁目4-24';
+UPDATE property SET station = '西荻窪 (니시오기쿠보)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都杉並区西荻北１丁目4-4';
+UPDATE property SET station = '沼袋 (누마부쿠로)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都中野区江古田４丁目30-4';
+UPDATE property SET station = '西早稲田 (니시와세다)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区大久保3丁目2-15';
+UPDATE property SET station = '新板橋 (신이타바시)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都北区滝野川5丁目38-2';
+UPDATE property SET station = '芝公園 (시바코엔)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都港区芝3丁目12-21';
+UPDATE property SET station = '駒沢大学 (코마자와다이가쿠)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都世田谷区上馬4丁目2-2';
+UPDATE property SET station = '成城学園前 (세이죠가쿠엔마에)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都世田谷区喜多見7丁目33-16';
+UPDATE property SET station = '東陽町 (토요초)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都江東区東陽1丁目34-11';
+UPDATE property SET station = '牛込柳町 (우시고메야나기초)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都新宿区二十騎町1-31';
+UPDATE property SET station = '初台 (하츠다이)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都渋谷区初台２丁目 31-6';
+UPDATE property SET station = '駒沢大学 (코마자와다이가쿠)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都世田谷区駒沢5丁目18-14';
+UPDATE property SET station = '矢口渡 (야구치노와타시)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都大田区多摩川2丁目21-27';
+UPDATE property SET station = '四ツ谷 (요츠야)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都新宿区四谷本塩町15-14';
+UPDATE property SET station = '西荻窪 (니시오기쿠보)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都杉並区南荻窪3丁目21-11';
+UPDATE property SET station = 'とうきょうスカイツリー (도쿄스카이츠리)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都墨田区横川2丁目7-5';
+UPDATE property SET station = '池袋 (이케부쿠로)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都豊島区池袋３丁目２番１３';
+UPDATE property SET station = '高輪台 (타카나와다이)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都港区白金台2丁目12-33';
+UPDATE property SET station = '池袋 (이케부쿠로)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都豊島区南池袋2丁目9-16';
+UPDATE property SET station = '鶴見市場 (츠르미이치바)', floor = '3층', thumbnail_image = NULL WHERE location = '神奈川県横浜市鶴見区市場大和町4-24';
+UPDATE property SET station = '大久保 (오오쿠보)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区北新宿3丁目10-3';
+UPDATE property SET station = '新板橋 (신이타바시)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都北区滝野川4丁目21-8';
+UPDATE property SET station = '馬込 (마고메)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都大田区 中馬込2丁目24-6';
+UPDATE property SET station = '東新宿 (히가시신주쿠)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区新宿7丁目18-6';
+UPDATE property SET station = '木場 (키바)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都江東区富岡2丁目8-11';
+UPDATE property SET station = '恵比寿 (에비스)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都目黒区中目黒1丁目9-22';
+UPDATE property SET station = '中野富士見町 (나카노후지미초)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都中野区弥生町5丁目9-5';
+UPDATE property SET station = '南阿佐ヶ谷 (미나미아사가야)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都杉並区成田東4丁目33-14';
+UPDATE property SET station = '中村橋 (나카무라바시)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都練馬区中村北3丁目16-13';
+UPDATE property SET station = '立川 (타치카와)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都立川市高松町1丁目2-15';
+UPDATE property SET station = '中目黒 (나카메구로)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都目黒区 中目黒4丁目10-29';
+UPDATE property SET station = '本郷三丁目 (혼고산초메)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都文京区本郷5丁目3-7';
+UPDATE property SET station = '早稲田 (와세다)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都新宿区 西早稲田1丁目16-11';
+UPDATE property SET station = '北参道 (키타산도)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都渋谷区千駄ヶ谷３丁目3－3';
+UPDATE property SET station = '新大久保 (신오오쿠보)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区北新宿１丁目12－15';
+UPDATE property SET station = '大門 (다이몬)', floor = '1층', thumbnail_image = NULL WHERE location = '港区浜松町１丁目１９－６';
+UPDATE property SET station = '六本木一丁目 (록뽄기잇초메)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都港区六本木2丁目3-25';
+UPDATE property SET station = '曙橋 (아케보노바시)', floor = '2층', thumbnail_image = NULL WHERE location = '新宿区市谷台町 9-2';
+UPDATE property SET station = '曙橋 (아케보노바시)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区富久町1-2';
+UPDATE property SET station = '八王子 (하치오지)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都八王子市千人町2-18-17';
+UPDATE property SET station = '田町 (타마치)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都港区芝浦４丁目５－１７';
+UPDATE property SET station = '沼袋 (누마부쿠로)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都中野区江古田4丁目2-1';
+UPDATE property SET station = '牛込柳町 (우시고메야나기초)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区原町1丁目2-5';
+UPDATE property SET station = '本蓮沼 (모토하스누마)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都板橋区大原町11-16';
+UPDATE property SET station = '白楽 (하쿠라쿠)', floor = '1층', thumbnail_image = NULL WHERE location = '神奈川県横浜市神奈川区白楽100-95';
+UPDATE property SET station = '亀戸 (카메이도)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都江東区亀戸4丁目35-2';
+UPDATE property SET station = '白金高輪 (시로카네타카나와)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都港区三田５丁目 13-19';
+UPDATE property SET station = '早稲田 (와세다)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区原町2丁目69';
+UPDATE property SET station = '蓮根 (하스네)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都板橋区東坂下2丁目20-6';
+UPDATE property SET station = '新井薬師前 (아라이야쿠시마에)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区西落合2丁目22-20';
+UPDATE property SET station = '後楽園 (코라쿠엔)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都文京区小石川4丁目1-14';
+UPDATE property SET station = '人形町 (닌교초)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都中央区日本橋蛎殻町1丁目9-9';
+UPDATE property SET station = '日ノ出町 (히노데초)', floor = '4층', thumbnail_image = NULL WHERE location = '神奈川県横浜市中区 末吉町1丁目12-1';
+UPDATE property SET station = '西横浜 (니시요코하마)', floor = '4층', thumbnail_image = NULL WHERE location = '神奈川県横浜市西区浜松町11-7';
+UPDATE property SET station = '蒔田 (마이타)', floor = '2층', thumbnail_image = NULL WHERE location = '神奈川県横浜市南区南太田2丁目28-28';
+UPDATE property SET station = '両国 (료고쿠)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都墨田区両国3丁目16-6';
+UPDATE property SET station = '西大島 (니시오지마)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都江東区北砂3丁目4-24';
+UPDATE property SET station = '西荻窪 (니시오기쿠보)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都杉並区西荻北１丁目4-4';
+UPDATE property SET station = '沼袋 (누마부쿠로)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都中野区江古田４丁目30-4';
+UPDATE property SET station = '西早稲田 (니시와세다)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区大久保3丁目2-15';
+UPDATE property SET station = '新板橋 (신이타바시)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都北区滝野川5丁目38-2';
+UPDATE property SET station = '芝公園 (시바코엔)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都港区芝3丁目12-21';
+UPDATE property SET station = '駒沢大学 (코마자와다이가쿠)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都世田谷区上馬4丁目2-2';
+UPDATE property SET station = '成城学園前 (세이죠가쿠엔마에)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都世田谷区喜多見7丁目33-16';
+UPDATE property SET station = '東陽町 (토요초)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都江東区東陽1丁目34-11';
+UPDATE property SET station = '牛込柳町 (우시고메야나기초)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区二十騎町1-31';
+UPDATE property SET station = '初台 (하츠다이)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都渋谷区初台２丁目 31-6';
+UPDATE property SET station = '駒沢大学 (코마자와다이가쿠)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都世田谷区駒沢5丁目18-14';
+UPDATE property SET station = '矢口渡 (야구치노와타시)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都大田区多摩川2丁目21-27';
+UPDATE property SET station = '四ツ谷 (요츠야)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区四谷本塩町15-14';
+UPDATE property SET station = '西荻窪 (니시오기쿠보)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都杉並区南荻窪3丁目21-11';
+UPDATE property SET station = 'とうきょうスカイツリー (도쿄스카이츠리)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都墨田区横川2丁目7-5';
+UPDATE property SET station = '池袋 (이케부쿠로)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都豊島区池袋３丁目２番１３';
+UPDATE property SET station = '高輪台 (타카나와다이)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都港区白金台2丁目12-33';
+UPDATE property SET station = '池袋 (이케부쿠로)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都豊島区南池袋2丁目9-16';
+UPDATE property SET station = '鶴見市場 (츠르미이치바)', floor = '4층', thumbnail_image = NULL WHERE location = '神奈川県横浜市鶴見区市場大和町4-24';
+UPDATE property SET station = '大久保 (오오쿠보)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都新宿区北新宿3丁目10-3';
+UPDATE property SET station = '新板橋 (신이타바시)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都北区滝野川4丁目21-8';
+UPDATE property SET station = '馬込 (마고메)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都大田区 中馬込2丁目24-6';
+UPDATE property SET station = '東新宿 (히가시신주쿠)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区新宿7丁目18-6';
+UPDATE property SET station = '木場 (키바)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都江東区富岡2丁目8-11';
+UPDATE property SET station = '恵比寿 (에비스)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都目黒区中目黒1丁目9-22';
+UPDATE property SET station = '中野富士見町 (나카노후지미초)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都中野区弥生町5丁目9-5';
+UPDATE property SET station = '南阿佐ヶ谷 (미나미아사가야)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都杉並区成田東4丁目33-14';
+UPDATE property SET station = '中村橋 (나카무라바시)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都練馬区中村北3丁目16-13';
+UPDATE property SET station = '立川 (타치카와)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都立川市高松町1丁目2-15';
+UPDATE property SET station = '中目黒 (나카메구로)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都目黒区 中目黒4丁目10-29';
+UPDATE property SET station = '本郷三丁目 (혼고산초메)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都文京区本郷5丁目3-7';
+UPDATE property SET station = '大森 (오오모리)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都大田区山王３丁目 42-11';
+UPDATE property SET station = '都立家政 (토리츠카세이)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都練馬区中村南1丁目22-18';
+UPDATE property SET station = '中野富士見町 (나카노후지미초)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都中野区南台３丁目';
+UPDATE property SET station = '上井草 (카미이구사)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都練馬区下石神井４丁目';
+UPDATE property SET station = '目白 (메지로)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区下落合3丁目12-20';
+UPDATE property SET station = '初台 (하츠다이)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区西新宿４丁目39-21';
+UPDATE property SET station = '東新宿 (히가시신주쿠)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区新宿７丁目27-14';
+UPDATE property SET station = '若松河田 (와카마츠카와다)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区若松町31-5';
+UPDATE property SET station = '勝どき (카치도키)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都中央区晴海５丁目4-1';
+UPDATE property SET station = '水道橋 (스이도바시)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都文京区本郷1丁目8-14';
+UPDATE property SET station = '浜松町 (하마마츠초)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都港区海岸2丁目5-1';
+UPDATE property SET station = '水道橋 (스이도바시)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都文京区本郷1丁目32-10';
+UPDATE property SET station = '王子神谷 (오지카미야)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都足立区新田1丁目2-21';
+UPDATE property SET station = '東中野 (히가시나카노)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区北新宿4丁目28-11';
+UPDATE property SET station = '多磨 (타마)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都府中市朝日町１丁目 24-15';
+UPDATE property SET station = '小竹向原 (코타케무카이하라)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都板橋区東新町２丁目 40-6';
+UPDATE property SET station = '牛込柳町 (우시고메야나기초)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都新宿区北山伏町1-10';
+UPDATE property SET station = '西馬込 (니시마고메)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都大田区南馬込5丁目20-3';
+UPDATE property SET station = '早稲田 (와세다)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区西早稲田1丁目17-7';
+UPDATE property SET station = '雑司が谷 (조시가야)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都豊島区高田2丁目11-7';
+UPDATE property SET station = '大塚 (오오츠카)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都豊島区南大塚1丁目55-2';
+UPDATE property SET station = '中野坂上 (나카노사카우에)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都中野区中央3丁目6-7';
+UPDATE property SET station = '東中野 (히가시나카노)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都中野区東中野5丁目20-7';
+UPDATE property SET station = '外苑前 (가이엔마에)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都渋谷区神宮前３丁目 1-19';
+UPDATE property SET station = '西早稲田 (니시와세다)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区西早稲田２丁目２０ー１２';
+UPDATE property SET station = '新中野 (신나카노)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都中野区本町６丁目 9-11';
+UPDATE property SET station = '牛込柳町 (우시고메야나기초)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区納戸町34';
+UPDATE property SET station = '落合南長崎 (오치아이미나미나가사키)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区西落合１丁目30-11';
+UPDATE property SET station = '四谷三丁目 (요츠야산쵸메)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区大京町22-8';
+UPDATE property SET station = '早稲田 (와세다)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区早稲田鶴巻町563';
+UPDATE property SET station = '戸越銀座 (토고시긴자)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都品川区平塚2丁目11-12';
+UPDATE property SET station = '麻布十番 (아자부주방)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都港区東麻布２丁目 33-10';
+UPDATE property SET station = '都立家政 (토리츠카세이)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都練馬区中村南1丁目5-8';
+UPDATE property SET station = '後楽園 (코라쿠엔)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都文京区小石川4丁目1-14';
+UPDATE property SET station = '町田 (마치다)', floor = '1층', thumbnail_image = NULL WHERE location = '神奈川県相模原市南区上鶴間本町3丁目13-22';
+UPDATE property SET station = '下高井戸 (시모타카이도)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都杉並区下高井戸1丁目1-13';
+UPDATE property SET station = '池ノ上 (이케노우에)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都世田谷区 三宿2丁目25-16';
+UPDATE property SET station = '雑司が谷 (조시가야)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都豊島区高田1丁目24-1';
+UPDATE property SET station = '沼袋 (누마부쿠로)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都中野区 江古田4丁目4-4';
+UPDATE property SET station = '護国寺 (고코쿠지)', floor = '2층', thumbnail_image = NULL WHERE location = '文京区目白台３丁目26-7';
+UPDATE property SET station = '代々木公園 (요요기코엔)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都渋谷区富ヶ谷１丁目 46-3';
+UPDATE property SET station = '荻窪 (오기쿠보)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都杉並区上荻2丁目9-19';
+UPDATE property SET station = '板橋本町 (이타바시혼초)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都板橋区大和町22-15';
+UPDATE property SET station = '吉野町 (요시노쵸)', floor = '2층', thumbnail_image = NULL WHERE location = '神奈川県横浜市南区宮元町１丁目1';
+UPDATE property SET station = '落合南長崎 (오치아이미나미나가사키)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区西落合２丁目4－1';
+UPDATE property SET station = '尻手 (싯테)', floor = '2층', thumbnail_image = NULL WHERE location = '神奈川県川崎市幸区南幸町1丁目49-1';
+UPDATE property SET station = '田無 (타나시)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都西東京市芝久保町2丁目4-3';
+UPDATE property SET station = '早稲田 (와세다)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区 西早稲田1丁目16-11';
+UPDATE property SET station = '北参道 (키타산도)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都渋谷区千駄ヶ谷３丁目3－3';
+UPDATE property SET station = '新大久保 (신오오쿠보)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区北新宿１丁目12－15';
+UPDATE property SET station = '大門 (다이몬)', floor = '4층', thumbnail_image = NULL WHERE location = '港区浜松町１丁目１９－６';
+UPDATE property SET station = '六本木一丁目 (록뽄기잇초메)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都港区六本木2丁目3-25';
+UPDATE property SET station = '曙橋 (아케보노바시)', floor = '2층', thumbnail_image = NULL WHERE location = '新宿区市谷台町 9-2';
+UPDATE property SET station = '曙橋 (아케보노바시)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都新宿区富久町1-2';
+UPDATE property SET station = '八王子 (하치오지)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都八王子市千人町2-18-17';
+UPDATE property SET station = '田町 (타마치)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都港区芝浦４丁目５－１７';
+UPDATE property SET station = '沼袋 (누마부쿠로)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都中野区江古田4丁目2-1';
+UPDATE property SET station = '牛込柳町 (우시고메야나기초)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区原町1丁目2-5';
+UPDATE property SET station = '本蓮沼 (모토하스누마)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都板橋区大原町11-16';
+UPDATE property SET station = '白楽 (하쿠라쿠)', floor = '1층', thumbnail_image = NULL WHERE location = '神奈川県横浜市神奈川区白楽100-95';
+UPDATE property SET station = '亀戸 (카메이도)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都江東区亀戸4丁目35-2';
+UPDATE property SET station = '白金高輪 (시로카네타카나와)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都港区三田５丁目 13-19';
+UPDATE property SET station = '早稲田 (와세다)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区原町2丁目69';
+UPDATE property SET station = '蓮根 (하스네)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都板橋区東坂下2丁目20-6';
+UPDATE property SET station = '新井薬師前 (아라이야쿠시마에)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区西落合2丁目22-20';
+UPDATE property SET station = '後楽園 (코라쿠엔)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都文京区小石川4丁目1-14';
+UPDATE property SET station = '人形町 (닌교초)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都中央区日本橋蛎殻町1丁目9-9';
+UPDATE property SET station = '日ノ出町 (히노데초)', floor = '2층', thumbnail_image = NULL WHERE location = '神奈川県横浜市中区 末吉町1丁目12-1';
+UPDATE property SET station = '西横浜 (니시요코하마)', floor = '4층', thumbnail_image = NULL WHERE location = '神奈川県横浜市西区浜松町11-7';
+UPDATE property SET station = '蒔田 (마이타)', floor = '2층', thumbnail_image = NULL WHERE location = '神奈川県横浜市南区南太田2丁目28-28';
+UPDATE property SET station = '両国 (료고쿠)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都墨田区両国3丁目16-6';
+UPDATE property SET station = '西大島 (니시오지마)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都江東区北砂3丁目4-24';
+UPDATE property SET station = '西荻窪 (니시오기쿠보)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都杉並区西荻北１丁目4-4';
+UPDATE property SET station = '沼袋 (누마부쿠로)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都中野区江古田４丁目30-4';
+UPDATE property SET station = '西早稲田 (니시와세다)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区大久保3丁目2-15';
+UPDATE property SET station = '新板橋 (신이타바시)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都北区滝野川5丁目38-2';
+UPDATE property SET station = '芝公園 (시바코엔)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都港区芝3丁目12-21';
+UPDATE property SET station = '駒沢大学 (코마자와다이가쿠)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都世田谷区上馬4丁目2-2';
+UPDATE property SET station = '成城学園前 (세이죠가쿠엔마에)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都世田谷区喜多見7丁目33-16';
+UPDATE property SET station = '東陽町 (토요초)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都江東区東陽1丁目34-11';
+UPDATE property SET station = '牛込柳町 (우시고메야나기초)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区二十騎町1-31';
+UPDATE property SET station = '初台 (하츠다이)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都渋谷区初台２丁目 31-6';
+UPDATE property SET station = '駒沢大学 (코마자와다이가쿠)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都世田谷区駒沢5丁目18-14';
+UPDATE property SET station = '矢口渡 (야구치노와타시)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都大田区多摩川2丁目21-27';
+UPDATE property SET station = '四ツ谷 (요츠야)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区四谷本塩町15-14';
+UPDATE property SET station = '西荻窪 (니시오기쿠보)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都杉並区南荻窪3丁目21-11';
+UPDATE property SET station = 'とうきょうスカイツリー (도쿄스카이츠리)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都墨田区横川2丁目7-5';
+UPDATE property SET station = '池袋 (이케부쿠로)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都豊島区池袋３丁目２番１３';
+UPDATE property SET station = '高輪台 (타카나와다이)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都港区白金台2丁目12-33';
+UPDATE property SET station = '池袋 (이케부쿠로)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都豊島区南池袋2丁目9-16';
+UPDATE property SET station = '鶴見市場 (츠르미이치바)', floor = '2층', thumbnail_image = NULL WHERE location = '神奈川県横浜市鶴見区市場大和町4-24';
+UPDATE property SET station = '大久保 (오오쿠보)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区北新宿3丁目10-3';
+UPDATE property SET station = '新板橋 (신이타바시)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都北区滝野川4丁目21-8';
+UPDATE property SET station = '馬込 (마고메)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都大田区 中馬込2丁目24-6';
+UPDATE property SET station = '東新宿 (히가시신주쿠)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区新宿7丁目18-6';
+UPDATE property SET station = '木場 (키바)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都江東区富岡2丁目8-11';
+UPDATE property SET station = '恵比寿 (에비스)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都目黒区中目黒1丁目9-22';
+UPDATE property SET station = '中野富士見町 (나카노후지미초)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都中野区弥生町5丁目9-5';
+UPDATE property SET station = '南阿佐ヶ谷 (미나미아사가야)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都杉並区成田東4丁目33-14';
+UPDATE property SET station = '中村橋 (나카무라바시)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都練馬区中村北3丁目16-13';
+UPDATE property SET station = '立川 (타치카와)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都立川市高松町1丁目2-15';
+UPDATE property SET station = '中目黒 (나카메구로)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都目黒区 中目黒4丁目10-29';
+UPDATE property SET station = '本郷三丁目 (혼고산초메)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都文京区本郷5丁目3-7';
+UPDATE property SET station = '大森 (오오모리)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都大田区山王３丁目 42-11';
+UPDATE property SET station = '都立家政 (토리츠카세이)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都練馬区中村南1丁目22-18';
+UPDATE property SET station = '中野富士見町 (나카노후지미초)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都中野区南台３丁目';
+UPDATE property SET station = '上井草 (카미이구사)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都練馬区下石神井４丁目';
+UPDATE property SET station = '目白 (메지로)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区下落合3丁目12-20';
+UPDATE property SET station = '初台 (하츠다이)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区西新宿４丁目39-21';
+UPDATE property SET station = '東新宿 (히가시신주쿠)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区新宿７丁目27-14';
+UPDATE property SET station = '若松河田 (와카마츠카와다)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区若松町31-5';
+UPDATE property SET station = '勝どき (카치도키)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都中央区晴海５丁目4-1';
+UPDATE property SET station = '水道橋 (스이도바시)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都文京区本郷1丁目8-14';
+UPDATE property SET station = '浜松町 (하마마츠초)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都港区海岸2丁目5-1';
+UPDATE property SET station = '水道橋 (스이도바시)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都文京区本郷1丁目32-10';
+UPDATE property SET station = '王子神谷 (오지카미야)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都足立区新田1丁目2-21';
+UPDATE property SET station = '東中野 (히가시나카노)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都新宿区北新宿4丁目28-11';
+UPDATE property SET station = '多磨 (타마)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都府中市朝日町１丁目 24-15';
+UPDATE property SET station = '小竹向原 (코타케무카이하라)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都板橋区東新町２丁目 40-6';
+UPDATE property SET station = '牛込柳町 (우시고메야나기초)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都新宿区北山伏町1-10';
+UPDATE property SET station = '西馬込 (니시마고메)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都大田区南馬込5丁目20-3';
+UPDATE property SET station = '早稲田 (와세다)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都新宿区西早稲田1丁目17-7';
+UPDATE property SET station = '雑司が谷 (조시가야)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都豊島区高田2丁目11-7';
+UPDATE property SET station = '大塚 (오오츠카)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都豊島区南大塚1丁目55-2';
+UPDATE property SET station = '中野坂上 (나카노사카우에)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都中野区中央3丁目6-7';
+UPDATE property SET station = '東中野 (히가시나카노)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都中野区東中野5丁目20-7';
+UPDATE property SET station = '外苑前 (가이엔마에)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都渋谷区神宮前３丁目 1-19';
+UPDATE property SET station = '西早稲田 (니시와세다)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都新宿区西早稲田２丁目２０ー１２';
+UPDATE property SET station = '新中野 (신나카노)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都中野区本町６丁目 9-11';
+UPDATE property SET station = '牛込柳町 (우시고메야나기초)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区納戸町34';
+UPDATE property SET station = '落合南長崎 (오치아이미나미나가사키)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区西落合１丁目30-11';
+UPDATE property SET station = '四谷三丁目 (요츠야산쵸메)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都新宿区大京町22-8';
+UPDATE property SET station = '早稲田 (와세다)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区早稲田鶴巻町563';
+UPDATE property SET station = '戸越銀座 (토고시긴자)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都品川区平塚2丁目11-12';
+UPDATE property SET station = '麻布十番 (아자부주방)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都港区東麻布２丁目 33-10';
+UPDATE property SET station = '都立家政 (토리츠카세이)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都練馬区中村南1丁目5-8';
+UPDATE property SET station = '後楽園 (코라쿠엔)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都文京区小石川4丁目1-14';
+UPDATE property SET station = '町田 (마치다)', floor = '3층', thumbnail_image = NULL WHERE location = '神奈川県相模原市南区上鶴間本町3丁目13-22';
+UPDATE property SET station = '下高井戸 (시모타카이도)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都杉並区下高井戸1丁目1-13';
+UPDATE property SET station = '池ノ上 (이케노우에)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都世田谷区 三宿2丁目25-16';
+UPDATE property SET station = '雑司が谷 (조시가야)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都豊島区高田1丁目24-1';
+UPDATE property SET station = '沼袋 (누마부쿠로)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都中野区 江古田4丁目4-4';
+UPDATE property SET station = '護国寺 (고코쿠지)', floor = '1층', thumbnail_image = NULL WHERE location = '文京区目白台３丁目26-7';
+UPDATE property SET station = '代々木公園 (요요기코엔)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都渋谷区富ヶ谷１丁目 46-3';
+UPDATE property SET station = '荻窪 (오기쿠보)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都杉並区上荻2丁目9-19';
+UPDATE property SET station = '板橋本町 (이타바시혼초)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都板橋区大和町22-15';
+UPDATE property SET station = '吉野町 (요시노쵸)', floor = '1층', thumbnail_image = NULL WHERE location = '神奈川県横浜市南区宮元町１丁目1';
+UPDATE property SET station = '落合南長崎 (오치아이미나미나가사키)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区西落合２丁目4－1';
+UPDATE property SET station = '尻手 (싯테)', floor = '3층', thumbnail_image = NULL WHERE location = '神奈川県川崎市幸区南幸町1丁目49-1';
+UPDATE property SET station = '田無 (타나시)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都西東京市芝久保町2丁目4-3';
+UPDATE property SET station = '阪東橋 (반도바시)', floor = '2층', thumbnail_image = NULL WHERE location = '神奈川県横浜市中区 伊勢佐木町5丁目129-1';
+UPDATE property SET station = '阪東橋 (반도바시)', floor = '1층', thumbnail_image = NULL WHERE location = '神奈川県横浜市南区 白妙町3丁目36';
+UPDATE property SET station = '戸部 (토베)', floor = '3층', thumbnail_image = NULL WHERE location = '神奈川県横浜市西区 中央1丁目41-11';
+UPDATE property SET station = '神奈川新町 (카나가와신마치)', floor = '2층', thumbnail_image = NULL WHERE location = '神奈川県横浜市神奈川区 浦島町363-1';
+UPDATE property SET station = '大泉学園 (오이즈미카쿠엔)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都練馬区大泉学園町2丁目3-20';
+UPDATE property SET station = '反町 (탄마치)', floor = '3층', thumbnail_image = NULL WHERE location = '神奈川県横浜市神奈川区 松本町1丁目5-3';
+UPDATE property SET station = '横浜 (요코하마)', floor = '3층', thumbnail_image = NULL WHERE location = '神奈川県横浜市西区 平沼1丁目33-21';
+UPDATE property SET station = '保土ヶ谷 (호도가야)', floor = '1층', thumbnail_image = NULL WHERE location = '神奈川県横浜市保土ケ谷区 保土ケ谷町1丁目25';
+UPDATE property SET station = '世田谷代田 (세타가야다이타)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都世田谷区代田1丁目40-12';
+UPDATE property SET station = '東千葉駅 (히가시치바)', floor = '3층', thumbnail_image = NULL WHERE location = '千葉県千葉市中央区祐光1丁目33-7';
+UPDATE property SET station = '高井戸 (타카이도)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都杉並区高井戸西3丁目1-34';
+UPDATE property SET station = '本蓮沼 (모토하스누마)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都板橋区前野町1丁目32-3';
+UPDATE property SET station = '雑司が谷 (조시가야)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都豊島区雑司が谷2丁目4-1';
+UPDATE property SET station = '入谷 (이리야)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都台東区 千束1丁目19-11';
+UPDATE property SET station = 'ときわ台 (토키와다이)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都板橋区前野町2丁目15-7';
+UPDATE property SET station = '鷺ノ宮 (사기노미야)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都中野区鷺宮3丁目45-10';
+UPDATE property SET station = '新小岩 (신코이와)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都葛飾区東新小岩３丁目 16-2';
+UPDATE property SET station = '千歳船橋 (치도세후나바시)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都世田谷区千歳台３丁目３番１４';
+UPDATE property SET station = '武蔵小金井 (무사시코가네이)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都小金井市緑町3丁目9-31';
+UPDATE property SET station = '赤坂見附 (아카사카미츠케)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都港区元赤坂１丁目 １－７';
+UPDATE property SET station = '池袋 (이케부쿠로)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都豊島区池袋3丁目44-3';
+UPDATE property SET station = '三河島 (미카와지마)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都荒川区荒川3丁目52-4';
+UPDATE property SET station = '西荻窪 (니시오기쿠보)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都杉並区西荻北1丁目9-2';
+UPDATE property SET station = '飯田橋 (이이다바시)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区新小川町5-6';
+UPDATE property SET station = '落合 (오치아이)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区上落合2丁目13-1';
+UPDATE property SET station = '都立家政 (토리츠카세이)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都練馬区中村南1丁目22-18';
+UPDATE property SET station = '高田馬場 (타카다노바바)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区下落合1丁目15-10';
+UPDATE property SET station = '早稲田 (와세다)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都文京区関口１丁目 42-2';
+UPDATE property SET station = '浜松町 (하마마츠초)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都港区芝浦１丁目4-2';
+UPDATE property SET station = '目黒 (메구로)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都品川区上大崎３丁目12-25';
+UPDATE property SET station = '三河島 (미카와지마)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都荒川区西日暮里２丁目 1-12';
+UPDATE property SET station = '押上 (오시아게)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都江東区亀戸3丁目17-7';
+UPDATE property SET station = '武蔵新田 (무사시닛타)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都大田区下丸子2丁目17-5';
+UPDATE property SET station = '綱島 (츠나시마)', floor = '3층', thumbnail_image = NULL WHERE location = '神奈川県横浜市港北区綱島西4丁目7-12';
+UPDATE property SET station = '八幡山 (하치만야마)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都世田谷区上北沢５丁目45-4';
+UPDATE property SET station = '鵜の木 (우노키)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都大田区鵜の木2丁目1-1';
+UPDATE property SET station = '篠崎 (시노자키)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都江戸川区篠崎町2丁目23-2';
+UPDATE property SET station = '上町 (카미마치)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都世田谷区世田谷2丁目12-13';
+UPDATE property SET station = '千歳船橋 (치도세후나바시)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都世田谷区千歳台3丁目3-14';
+UPDATE property SET station = '桜台 (사쿠라다이)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都練馬区豊玉北４丁目１０-３';
+UPDATE property SET station = '池袋 (이케부쿠로)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都豊島区池袋４丁目3-5';
+UPDATE property SET station = '東高円寺 (히가시코엔지)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都杉並区和田３丁目51-12';
+UPDATE property SET station = '上石神井 (카미샤쿠지이)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都練馬区上石神井1丁目23-4';
+UPDATE property SET station = '後楽園 (코라쿠엔)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都文京区小石川1丁目4-15';
+UPDATE property SET station = '新代田 (신다이타)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都世田谷区代田4丁目10-26';
+UPDATE property SET station = '大久保 (오오쿠보)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都新宿区北新宿1丁目13-16';
+UPDATE property SET station = '石川台 (이시카와다이)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都大田区石川町2丁目2-6';
+UPDATE property SET station = '大岡山 (오오카야마)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都目黒区南2丁目8-3';
+UPDATE property SET station = '中延 (나카노부)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都品川区中延6丁目9-10';
+UPDATE property SET station = '幡ヶ谷 (하타가야)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都渋谷区 本町5丁目26-5';
+UPDATE property SET station = '西馬込 (니시마고메)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都大田区南馬込６丁目１１-１５';
+UPDATE property SET station = '水天宮前 (수이텐구마에)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都中央区日本橋中洲7-6';
+UPDATE property SET station = '江戸川橋 (에도가와바시)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都文京区水道2丁目4-1';
+UPDATE property SET station = '後楽園 (코라쿠엔)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都文京区小石川3丁目28-12';
+UPDATE property SET station = '立会川 (타치아이가와)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都品川区南大井1丁目8-8';
+UPDATE property SET station = '都立大学 (도리츠다이카쿠)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都目黒区碑文谷3丁目19-8';
+UPDATE property SET station = '武蔵小杉 (무사시코스기)', floor = '3층', thumbnail_image = NULL WHERE location = '神奈川県川崎市中原区新丸子町759-1';
+UPDATE property SET station = '下板橋 (시모이타바시)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都板橋区熊野町3-8';
+UPDATE property SET station = '武蔵関 (무사시세키)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都練馬区関町南3丁目31-11';
+UPDATE property SET station = '池袋 (이케부쿠로)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都豊島区東池袋5丁目7-6';
+UPDATE property SET station = '湯島 (유시마)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都文京区湯島２丁目 32-8';
+UPDATE property SET station = '雑司が谷 (조시가야)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区西早稲田３丁目 31-10';
+UPDATE property SET station = '東高円寺 (히가시코엔지)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都杉並区堀ノ内３丁目 1-18';
+UPDATE property SET station = '恵比寿 (에비스)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都目黒区中目黒１丁目  １';
+UPDATE property SET station = '五反田 (고탄다)', floor = '2층', thumbnail_image = NULL WHERE location = '品川区西五反田２丁目２３－１';
+UPDATE property SET station = '板橋区役所前 (이타바시쿠야쿠쇼마에)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都板橋区板橋２丁目63-9';
+UPDATE property SET station = '入谷 (이리야)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都台東区千束3丁目6-8';
+UPDATE property SET station = '初台 (하츠다이)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都渋谷区初台1丁目43-4';
+UPDATE property SET station = '茗荷谷 (묘가다니)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都文京区白山3丁目2-5';
+UPDATE property SET station = '上板橋 (카미이타바시)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都練馬区錦2丁目10-16';
+UPDATE property SET station = '錦糸町 (킨시초)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都江東区毛利２丁目9-16';
+UPDATE property SET station = '野方 (노가타)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都中野区 野方３丁目7-6';
+UPDATE property SET station = '鷺ノ宮 (사기노미야)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都中野区若宮２丁目59-16';
+UPDATE property SET station = '大宮 (오오미야)', floor = '4층', thumbnail_image = NULL WHERE location = '埼玉県さいたま市大宮区宮町4丁目74';
+UPDATE property SET station = '大森 (오오모리)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都大田区大森北5丁目12-12';
+UPDATE property SET station = '後楽園 (코라쿠엔)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都文京区小石川3丁目17-14';
+UPDATE property SET station = '大島 (오지마)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都江東区北砂６丁目';
+UPDATE property SET station = '東伏見 (히가시후시미)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都練馬区関町北3丁目4-8';
+UPDATE property SET station = '八広 (야히로)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都墨田区 八広4丁目49-7';
+UPDATE property SET station = '蔵前 (쿠라마에)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都台東区蔵前3丁目8-5';
+UPDATE property SET station = '本蓮沼 (모토하스누마)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都北区赤羽西６丁目28-1';
+UPDATE property SET station = '板橋区役所前 (이타바시쿠야쿠쇼마에)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都板橋区仲宿58-7';
+UPDATE property SET station = '青葉台 (아오바다이)', floor = '1층', thumbnail_image = NULL WHERE location = '横浜市青葉区奈良4-4-1';
+UPDATE property SET station = '青葉台 (아오바다이)', floor = '4층', thumbnail_image = NULL WHERE location = '神奈川県横浜市青葉区青葉台１丁目';
+UPDATE property SET station = '練馬高野台 (네리마타카노다이)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都練馬区谷原1丁目9-6';
+UPDATE property SET station = NULL, floor = '2층', thumbnail_image = NULL WHERE location = '東京都豊島区 長崎6丁目28-5';
+UPDATE property SET station = '白山 (하쿠상)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都文京区小石川５丁目';
+UPDATE property SET station = '飯田橋 (이이다바시)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都千代田区飯田橋４丁目';
+UPDATE property SET station = '新馬場 (신반바)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都品川区北品川2丁目8-3';
+UPDATE property SET station = '三ノ輪 (미노와)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都荒川区南千住2丁目16-12';
+UPDATE property SET station = '若松河田 (와카마츠카와다)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都新宿区 若松町33-2';
+UPDATE property SET station = '平和島 (헤이와지마)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都大田区大森北6丁目2-9';
+UPDATE property SET station = '駒沢大学 (코마자와다이가쿠)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都世田谷区駒沢2丁目16-3';
+UPDATE property SET station = '芦花公園 (로카코엔)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都杉並区上高井戸1丁目30-11';
+UPDATE property SET station = '西荻窪 (니시오기쿠보)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都杉並区上荻2丁目37-14';
+UPDATE property SET station = '下落合 (시모오치아이)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区下落合4丁目4-8';
+UPDATE property SET station = '代田橋 (다이타바시)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都杉並区和泉1丁目1-3';
+UPDATE property SET station = '押上 (오시아게)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都墨田区業平5丁目9-8';
+UPDATE property SET station = '目白 (메지로)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都豊島区目白3丁目14-6';
+UPDATE property SET station = '川崎 (카와사키)', floor = '2층', thumbnail_image = NULL WHERE location = '神奈川県 川崎市幸区 柳町35-7';
+UPDATE property SET station = '矢向 (야코우)', floor = '4층', thumbnail_image = NULL WHERE location = '神奈川県 横浜市鶴見区 矢向4-31-2';
+UPDATE property SET station = '西新宿 (니시신주쿠)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区西新宿8丁目2-21';
+UPDATE property SET station = NULL, floor = '4층', thumbnail_image = NULL WHERE location = '栃木県宇都宮市元今泉２丁目11-6';
+UPDATE property SET station = '武蔵小杉 (무사시코스기)', floor = '3층', thumbnail_image = NULL WHERE location = '神奈川県川崎市中原区新丸子町759-1';
+UPDATE property SET station = '吉祥寺 (키치죠지)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都武蔵野市吉祥寺本町4丁目17-17';
+UPDATE property SET station = '高円寺 (코엔지)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都中野区野方1丁目39-7';
+UPDATE property SET station = '大井町 (오이마치)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都品川区大井４丁目14周辺';
+UPDATE property SET station = '戸田公園 (토다코엔)', floor = '1층', thumbnail_image = NULL WHERE location = '埼玉県戸田市下戸田2丁目13-17';
+UPDATE property SET station = '東長崎 (히가시나가사키)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都豊島区長崎４丁目26-2';
+UPDATE property SET station = '明大前 (메이다이마에)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都世田谷区松原1丁目54-8';
+UPDATE property SET station = '大塚 (오오츠카)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都文京区大塚4-22-7';
+UPDATE property SET station = '表参道 (오모테산도)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都港区南青山6-9-10';
+UPDATE property SET station = '川崎 (카와사키)', floor = '4층', thumbnail_image = NULL WHERE location = '神奈川県川崎市川崎区南町22-1';
+UPDATE property SET station = '池袋 (이케부쿠로)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都豊島区西池袋４丁目15-4';
+UPDATE property SET station = '芦花公園 (로카코엔)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都杉並区上高井戸１丁目30-11';
+UPDATE property SET station = '用賀 (요우가)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都世田谷区瀬田2丁目31-28';
+UPDATE property SET station = '下落合 (시모오치아이)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区上落合１丁目25-20';
+UPDATE property SET station = '北池袋 (키타이케부쿠로)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都豊島区上池袋３丁目16-19';
+UPDATE property SET station = '新大久保 (신오오쿠보)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都新宿区大久保１丁目8-20';
+UPDATE property SET station = '八王子 (하치오지)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都八王子市南町5-12';
+UPDATE property SET station = '沼袋 (누마부쿠로)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都中野区沼袋１丁目45-4';
+UPDATE property SET station = '中野 (나카노)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都中野区中央５丁目28-17';
+UPDATE property SET station = '下高井戸 (시모타카이도)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都杉並区 下高井戸１丁目13-3';
+UPDATE property SET station = '練馬高野台 (네리마타카노다이)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都練馬区富士見台3丁目20-7';
+UPDATE property SET station = '平和島 (헤이와지마)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都大田区大森北6丁目30-1';
+UPDATE property SET station = '板橋区役所前 (이타바시쿠야쿠쇼마에)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都板橋区板橋2丁目63-9';
+UPDATE property SET station = '東府中 (히가시후추)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都府中市緑町2丁目1-7';
+UPDATE property SET station = '国分寺 (고쿠분지)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都国分寺市南町3丁目13-8';
+UPDATE property SET station = '西馬込 (니시마고메)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都大田区仲池上1丁目2-16';
+UPDATE property SET station = '上板橋 (카미이타바시)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都板橋区東新町１丁目１２-８';
+UPDATE property SET station = '都立家政 (토리츠카세이)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都練馬区中村南１丁目5-5';
+UPDATE property SET station = '横浜 (요코하마)', floor = '1층', thumbnail_image = NULL WHERE location = '横浜市神奈川区鶴屋町１丁目41';
+UPDATE property SET station = '横浜 (요코하마)', floor = '3층', thumbnail_image = NULL WHERE location = '横浜市神奈川区鶴屋町１丁目41';
+UPDATE property SET station = '西川口 (니시카와구치)', floor = '2층', thumbnail_image = NULL WHERE location = '横浜市中区山下町';
+UPDATE property SET station = '日野 (히노)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都日野市栄町5-2-15';
+UPDATE property SET station = '南与野 (미나미요노)', floor = '1층', thumbnail_image = NULL WHERE location = '埼玉県さいたま市中央区大戸6-8-20';
+UPDATE property SET station = '駒沢大学 (코마자와다이가쿠)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都目黒区東が丘1丁目3-1';
+UPDATE property SET station = '青井 (아오이)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都足立区青井6-4-2';
+UPDATE property SET station = '牛込柳町 (우시고메야나기초)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区市谷柳町26-1';
+UPDATE property SET station = '下高井戸 (시모타카이도)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都杉並区下高井戸1丁目1-13';
+UPDATE property SET station = '府中 (후추)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都府中市府中町2丁目25-8';
+UPDATE property SET station = '戸田公園 (토다코엔)', floor = '1층', thumbnail_image = NULL WHERE location = '埼玉県戸田市下戸田2丁目13-17';
+UPDATE property SET station = '武蔵関 (무사시세키)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都練馬区関町北1丁目21-9';
+UPDATE property SET station = '八幡山 (하치만야마)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都杉並区上高井戸1丁目4-16';
+UPDATE property SET station = '吉祥寺 (키치죠지)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都武蔵野市吉祥寺南町２丁目8－1';
+UPDATE property SET station = '高井戸 (타카이도)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都杉並区高井戸西２丁目17－21';
+UPDATE property SET station = '江戸川橋 (에도가와바시)', floor = '2층', thumbnail_image = NULL WHERE location = '東京都新宿区山吹町334';
+UPDATE property SET station = '新高円寺 (신코엔지)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都杉並区高円寺南3丁目20-16';
+UPDATE property SET station = '武蔵小杉 (무사시코스기)', floor = '4층', thumbnail_image = NULL WHERE location = '神奈川県川崎市中原区新丸子町759-1';
+UPDATE property SET station = '西新宿 (니시신주쿠)', floor = '1층', thumbnail_image = NULL WHERE location = '東京都新宿区北新宿1丁目23-19';
+UPDATE property SET station = '東府中 (히가시후추)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都府中市緑町3丁目33-1';

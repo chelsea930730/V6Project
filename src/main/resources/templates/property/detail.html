@@ -203,9 +203,11 @@
   </div>
 
 
+    <input type="hidden" id="propertyIdValue" th:value="${property.propertyId}">
+
     <div class="appointment">
-       <button class="appointment-button">상담예약 페이지 이동</button>
-</div>
+       <a th:href="@{/reservation(propertyIds=${property.propertyId})}" class="appointment-button">상담예약 페이지 이동</a>
+    </div>
 
     <script th:src="@{/js/navbar.js}"></script>
     <script th:src="@{/js/detail.js}"></script>

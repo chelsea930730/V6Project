@@ -12,9 +12,9 @@ public class ReservationDto {
     private String name;
     private String email;
     private String phone;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") // HTML datetime-local 형식에 맞춤
+    
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime reservedDate;
-
+    
     private String message;
 }

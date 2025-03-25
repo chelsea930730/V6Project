@@ -332,3 +332,21 @@ h2 {
 		padding: 15px;
 	}
 }
+.appointment-button {
+	display: inline-block;
+	padding: 10px 20px;
+	background-color: #6a99cd;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 16px;
+	text-align: center;
+	text-decoration: none; /* 링크 밑줄 제거 */
+}
+
+.appointment-button:hover {
+	background-color: #355c86;
+	text-decoration: none; /* 호버 시에도 밑줄 제거 */
+	color: white; /* 호버 시에도 텍스트 색상 유지 */
+}

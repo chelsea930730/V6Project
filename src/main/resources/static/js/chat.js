@@ -11,21 +11,21 @@ var lastSeenTimestamps = {};
 function connect() {
     var socket = new SockJS('/chat');
     stompClient = Stomp.over(socket);
-    
+
     // WebSocket 연결 시 사용자 이메일 설정
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
-        
+
         // 연결 성공 후 frame에서 user-name 추출
         if (frame) {
             var userNameMatch = frame.toString().match(/user-name:(.*?)[\r\n]/);
             if (userNameMatch && userNameMatch[1]) {
                 currentUserEmail = userNameMatch[1].trim();
                 console.log('Extracted email from connection:', currentUserEmail);
-                
+
                 // 관리자 여부 확인
                 isAdmin = (currentUserEmail === "admin@realestate.com");
-                
+
                 if (isAdmin) {
                     // 관리자인 경우, 유저 선택 UI 표시
                     showUserSelection();
@@ -35,7 +35,7 @@ function connect() {
                 }
             }
         }
-        
+
         // 개인 메시지 구독 (모든 사용자)
         stompClient.subscribe('/user/' + currentUserEmail + '/queue/messages', function(message) {
             var chatMessage = JSON.parse(message.body);
@@ -65,14 +65,14 @@ function connect() {
 function subscribeToPrivateChat() {
     // 일반 유저는 관리자와의 채팅방만 표시
     document.getElementById('chatRoomTitle').textContent = '관리자와의 채팅';
-    
+
     // 기존 채팅 내역 불러오기
     loadChatHistory("admin@realestate.com");
 }
 
 function sendMessage() {
     var message = document.getElementById('message').value;
-    
+
     // 이미지가 있으면 이미지 전송
     if (selectedImage) {
         sendImageMessage(selectedImage);
@@ -82,7 +82,7 @@ function sendMessage() {
         document.getElementById('message').value = '';
         return;
     }
-    
+
     // URL이 있으면 URL 전송
     if (pendingUrl) {
         sendUrlMessage(pendingUrl);
@@ -92,16 +92,16 @@ function sendMessage() {
         document.getElementById('message').value = '';
         return;
     }
-    
+
     if (message.trim() !== "") {
         console.log('Sending message with sender:', currentUserEmail);
-        
+
         var recipient = isAdmin ? getCurrentChatPartner() : "admin@realestate.com";
-        
+
         // 로컬호스트 URL 패턴도 포함하는 정규식
         const urlPattern = /(https?:\/\/(?:localhost|127\.0\.0\.1|[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::\d+)?(?:\/[^\s]*)?)/gi;
         const isUrl = urlPattern.test(message);
-        
+
         var chatMessage = {
             message: message,
             sender: currentUserEmail,
@@ -113,7 +113,7 @@ function sendMessage() {
         // WebSocket을 통해 메시지 전송
         stompClient.send("/app/private-chat", {}, JSON.stringify(chatMessage));
         document.getElementById('message').value = '';
-        
+
         // 메시지를 UI에 추가
         showMessage(chatMessage);
     } else {
@@ -127,11 +127,11 @@ function sendUrlMessage(url) {
     if (!url.match(/^https?:\/\//i)) {
         url = "http://" + url;
     }
-    
+
     console.log('Sending URL with sender:', currentUserEmail);
-    
+
     var recipient = isAdmin ? getCurrentChatPartner() : "admin@realestate.com";
-    
+
     var chatMessage = {
         message: url,
         sender: currentUserEmail,
@@ -142,7 +142,7 @@ function sendUrlMessage(url) {
 
     // WebSocket을 통해 메시지 전송
     stompClient.send("/app/private-chat", {}, JSON.stringify(chatMessage));
-    
+
     // 메시지를 UI에 추가
     showMessage(chatMessage);
 }
@@ -150,16 +150,16 @@ function sendUrlMessage(url) {
 // 이미지 메시지 전송 함수
 function sendImageMessage(imageData) {
     console.log('Sending image with sender:', currentUserEmail);
-    
+
     // 이미지 데이터가 너무 크면 압축
     if (imageData.length > 1000000) { // 1MB 이상이면
         // 이미지를 압축하거나 사이즈를 줄이는 로직을 추가할 수 있습니다
         console.log("이미지 크기가 큽니다. 압축을 시도합니다.");
         // 실제 압축 로직은 여기에 추가
     }
-    
+
     var recipient = isAdmin ? getCurrentChatPartner() : "admin@realestate.com";
-    
+
     var chatMessage = {
         message: imageData,
         sender: currentUserEmail,
@@ -186,7 +186,7 @@ function showMessage(chatMessage) {
     var messagesDiv = document.getElementById('messages');
     var messageDiv = document.createElement('div');
     messageDiv.className = chatMessage.sender === currentUserEmail ? 'message sent' : 'message received';
-    
+
     // 시간 포맷팅
     let sentTime = '';
     if (chatMessage.sentAt) {
@@ -196,7 +196,7 @@ function showMessage(chatMessage) {
 
     // 메시지 타입에 따른 내용 표시
     let messageContent = '';
-    
+
     if (chatMessage.type === "image") {
         // 이미지 메시지 처리
         messageContent = `<img src="${chatMessage.message}" class="message-image" alt="이미지" onclick="showLargeImage(this.src)">`;
@@ -220,7 +220,7 @@ function showMessage(chatMessage) {
 
     // 애니메이션 효과를 위한 클래스 추가
     messageDiv.classList.add('message-animation');
-    
+
     messagesDiv.appendChild(messageDiv);
     messagesDiv.scrollTop = messagesDiv.scrollHeight; // 스크롤을 아래로 이동
 }
@@ -228,7 +228,7 @@ function showMessage(chatMessage) {
 function startPrivateChat(userEmail) {
     // 읽음 상태로 변경
     unreadMessageCounts[userEmail] = 0;
-    
+
     // 선택한 사용자와의 개인 채팅방으로 이동
     window.location.href = `/mypage/chat.html?user=${userEmail}`;
 }
@@ -260,11 +260,11 @@ function loadChatHistory(partnerEmail) {
 document.addEventListener("DOMContentLoaded", function () {
     // 먼저 WebSocket 연결 설정
     connect();
-    
+
     // chat.html인지 chat-list.html인지 확인
     const isChatListPage = window.location.pathname.includes('chat-list.html');
     const isChatPage = window.location.pathname.includes('chat.html');
-    
+
     // 관리자인 경우 처리
     if (currentUserEmail === "admin@realestate.com") {
         if (isChatPage) {
@@ -273,22 +273,22 @@ document.addEventListener("DOMContentLoaded", function () {
             if (userSelectionDiv) {
                 userSelectionDiv.style.display = 'none';
             }
-            
+
             // URL에 user 파라미터가 있으면 특정 유저와의 채팅 로드
             const urlParams = new URLSearchParams(window.location.search);
             const userEmail = urlParams.get('user');
-            
+
             if (userEmail) {
                 document.getElementById('chatRoomTitle').textContent = `${userEmail}님과의 채팅`;
                 loadChatHistory(userEmail);
-                
+
                 // 읽음 상태로 업데이트
                 unreadMessageCounts[userEmail] = 0;
             } else {
                 // user 파라미터가 없으면 chat-list.html로 리다이렉트
                 window.location.href = '/mypage/chat-list.html';
             }
-        } 
+        }
         else if (isChatListPage) {
             // chat-list.html 페이지에서만 사용자 선택 UI 표시
             showUserSelection();
@@ -300,7 +300,7 @@ document.addEventListener("DOMContentLoaded", function () {
             loadChatHistory("admin@realestate.com");
         }
     }
-    
+
     // 이미지 버튼 이벤트 리스너
     document.getElementById("imageButton")?.addEventListener("click", function() {
         if (selectedImage) {
@@ -321,18 +321,18 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("imageInput").click();
         }
     });
-    
+
     // 이미지 입력 변경 이벤트
     document.getElementById("imageInput").addEventListener("change", function(e) {
         if (e.target.files.length > 0) {
             const file = e.target.files[0];
-            
+
             // 파일 크기 제한 (5MB)
             if (file.size > 5 * 1024 * 1024) {
                 alert("파일 크기는 5MB 이하여야 합니다.");
                 return;
             }
-            
+
             const reader = new FileReader();
             reader.onload = function(event) {
                 // 이미지 미리보기 설정
@@ -341,7 +341,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("imagePreviewContainer").style.display = 'block';
                 document.getElementById("imageButton").classList.add('active');
                 document.getElementById("message").placeholder = "이미지가 첨부됨 (엔터 키 또는 전송 버튼을 눌러 전송)";
-                
+
                 // URL 입력창 닫기
                 document.getElementById("urlInputContainer").style.display = 'none';
                 document.getElementById("urlButton").classList.remove('active');
@@ -350,7 +350,7 @@ document.addEventListener("DOMContentLoaded", function () {
             reader.readAsDataURL(file);
         }
     });
-    
+
     // 이미지 미리보기 닫기 버튼
     document.getElementById("closeImagePreview").addEventListener("click", function() {
         document.getElementById("imagePreviewContainer").style.display = 'none';
@@ -359,7 +359,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("imageInput").value = '';
         document.getElementById("message").placeholder = "메시지를 입력하세요...";
     });
-    
+
     // URL 버튼 클릭 이벤트
     document.getElementById("urlButton").addEventListener("click", function() {
         const urlContainer = document.getElementById("urlInputContainer");
@@ -375,7 +375,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("imageButton").classList.remove('active');
         }
     });
-    
+
     // URL 추가 버튼 클릭 이벤트
     document.getElementById("addUrlBtn").addEventListener("click", function() {
         const url = document.getElementById("urlInput").value.trim();
@@ -388,7 +388,7 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("URL을 입력해주세요.");
         }
     });
-    
+
     // URL 입력창 닫기 버튼
     document.getElementById("closeUrlInput").addEventListener("click", function() {
         document.getElementById("urlInputContainer").style.display = 'none';
@@ -396,19 +396,19 @@ document.addEventListener("DOMContentLoaded", function () {
         pendingUrl = null;
         document.getElementById("message").placeholder = "메시지를 입력하세요...";
     });
-    
+
     // 이미지 확대 모달 클릭 이벤트
     document.getElementById("imageModal").addEventListener("click", function() {
         this.style.display = "none";
     });
-    
+
     // 엔터키로 메시지 전송
     document.getElementById('message').addEventListener('keypress', function (event) {
         if (event.key === 'Enter') {
             sendMessage();
         }
     });
-    
+
     // 스타일 직접 추가
     const styleElement = document.createElement('style');
     styleElement.textContent = `
@@ -458,34 +458,34 @@ if (chatLink) {
 function showUserSelection() {
     // 관리자만 사용자 선택 UI를 볼 수 있음
     if (!isAdmin) return;
-    
+
     fetch('/api/chat/active-users')
         .then(response => response.json())
         .then(users => {
             const userSelectionDiv = document.getElementById('user-selection');
             if (!userSelectionDiv) return; // 요소가 존재하지 않으면 종료
-            
+
             userSelectionDiv.innerHTML = '<h2>채팅 요청 목록</h2>'; // 기존 내용 초기화
-            
+
             if (users.length === 0) {
                 userSelectionDiv.innerHTML += '<p>현재 채팅 요청이 없습니다.</p>';
                 return;
             }
-            
+
             // 최신 메시지 순으로 정렬 (lastMessageTime 기준)
             users.sort((a, b) => {
                 const timeA = a.lastMessageTime ? new Date(a.lastMessageTime).getTime() : 0;
                 const timeB = b.lastMessageTime ? new Date(b.lastMessageTime).getTime() : 0;
                 return timeB - timeA; // 내림차순 정렬 (최신이 위로)
             });
-            
+
             // 읽지 않은 메시지 우선 정렬
             users.sort((a, b) => {
                 const unreadA = unreadMessageCounts[a.email] || 0;
                 const unreadB = unreadMessageCounts[b.email] || 0;
                 return unreadB - unreadA; // 읽지 않은 메시지가 있는 채팅방 우선
             });
-            
+
             users.forEach(user => {
                 // 읽음 상태 시뮬레이션 (처음 로드 시)
                 if (unreadMessageCounts[user.email] === undefined) {
@@ -493,17 +493,17 @@ function showUserSelection() {
                     unreadMessageCounts[user.email] = Math.random() > 0.6 ? 1 : 0;
                     lastSeenTimestamps[user.email] = new Date().getTime();
                 }
-                
+
                 // 읽지 않은 메시지가 있으면 CSS 클래스 추가
                 const isUnread = unreadMessageCounts[user.email] > 0;
                 const unreadClass = isUnread ? 'unread-chat' : '';
-                
+
                 const userItem = document.createElement('div');
                 userItem.className = `chat-user-item ${unreadClass}`;
-                
+
                 // 읽지 않은 메시지가 있으면 추가 아이콘 표시
                 const unreadIndicator = isUnread ? '<div class="unread-dot"></div>' : '';
-                
+
                 userItem.innerHTML = `
                     <div class="user-info">
                         <div class="user-name-container">
@@ -520,7 +520,7 @@ function showUserSelection() {
                 `;
                 userSelectionDiv.appendChild(userItem);
             });
-            
+
             // 읽지 않은 메시지 표시를 위한 추가 스타일
             const unreadDotStyle = document.createElement('style');
             unreadDotStyle.textContent = `
@@ -557,14 +557,14 @@ function showUserSelection() {
 // 시간 포맷팅 함수
 function formatTime(timestamp) {
     if (!timestamp) return '';
-    
+
     const date = new Date(timestamp);
     const now = new Date();
     const diffMs = now - date;
     const diffMin = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
-    
+
     // 오늘 이내의 메시지는 시:분 형식으로
     if (diffDays < 1) {
         return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
@@ -587,16 +587,16 @@ function showDeleteConfirm(userEmail) {
         // 모달이 없으면 생성
         createDeleteModal();
     }
-    
+
     // 삭제할 사용자 정보 저장
     window.userToDelete = userEmail;
-    
+
     // 모달 텍스트 업데이트
     const modalText = document.querySelector('#deleteModal p');
     if (modalText) {
         modalText.textContent = `${userEmail}님과의 채팅방을 삭제하시겠습니까?`;
     }
-    
+
     // 모달 표시
     document.getElementById('deleteModal').style.display = 'flex';
 }
@@ -615,15 +615,15 @@ function createDeleteModal() {
             </div>
         </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', modalHTML);
-    
+
     // 이벤트 리스너 추가
     document.getElementById('confirmDelete').addEventListener('click', confirmDeleteChat);
     document.getElementById('cancelDelete').addEventListener('click', function() {
         document.getElementById('deleteModal').style.display = 'none';
     });
-    
+
     // 모달 외부 클릭 시 닫기
     document.getElementById('deleteModal').addEventListener('click', function(event) {
         if (event.target === this) {
@@ -635,26 +635,26 @@ function createDeleteModal() {
 // 삭제 확인 버튼 클릭 시 실행할 함수
 function confirmDeleteChat() {
     if (!window.userToDelete) return;
-    
+
     // 채팅방 삭제 API 호출
     fetch(`/api/chat/delete?partner=${window.userToDelete}`, {
         method: 'DELETE'
     })
-    .then(response => {
-        if (response.ok) {
-            // 삭제 성공 시 채팅 목록 새로고침
-            showUserSelection();
+        .then(response => {
+            if (response.ok) {
+                // 삭제 성공 시 채팅 목록 새로고침
+                showUserSelection();
+                document.getElementById('deleteModal').style.display = 'none';
+            } else {
+                alert('채팅방 삭제에 실패했습니다.');
+                document.getElementById('deleteModal').style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting chat room:', error);
+            alert('채팅방 삭제 중 오류가 발생했습니다.');
             document.getElementById('deleteModal').style.display = 'none';
-        } else {
-            alert('채팅방 삭제에 실패했습니다.');
-            document.getElementById('deleteModal').style.display = 'none';
-        }
-    })
-    .catch(error => {
-        console.error('Error deleting chat room:', error);
-        alert('채팅방 삭제 중 오류가 발생했습니다.');
-        document.getElementById('deleteModal').style.display = 'none';
-    });
+        });
 }
 
 // 기존 모달 관련 코드 수정
@@ -663,20 +663,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const deleteModal = document.getElementById('deleteModal');
     const confirmDelete = document.getElementById('confirmDelete');
     const cancelDelete = document.getElementById('cancelDelete');
-    
+
     if (deleteModal) {
         // 이미 존재하는 경우에만 이벤트 설정
         if (confirmDelete) {
             confirmDelete.removeEventListener('click', confirmDeleteChat);
             confirmDelete.addEventListener('click', confirmDeleteChat);
         }
-        
+
         if (cancelDelete) {
             cancelDelete.addEventListener('click', function() {
                 deleteModal.style.display = 'none';
             });
         }
-        
+
         // 모달 외부 클릭 시 닫기
         deleteModal.addEventListener('click', function(event) {
             if (event.target === this) {
@@ -690,7 +690,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function autoDetectLinks(text) {
     // 더 포괄적인 URL 패턴 (로컬호스트, IP 주소 포함)
     const urlPattern = /(https?:\/\/(?:localhost|127\.0\.0\.1|[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::\d+)?(?:\/[^\s]*)?)/gi;
-    
+
     return text.replace(urlPattern, function(url) {
         return `<a href="${url}" class="message-url" target="_blank">${url}</a>`;
     });
@@ -700,7 +700,7 @@ function autoDetectLinks(text) {
 function showLargeImage(src) {
     const imageModal = document.getElementById('imageModal');
     const imageElement = imageModal.querySelector('img');
-    
+
     imageElement.src = src;
     imageModal.style.display = 'flex';
 }

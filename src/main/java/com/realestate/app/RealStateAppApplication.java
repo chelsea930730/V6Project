@@ -9,7 +9,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class RealStateAppApplication {
 
 	public static void main(String[] args) {
-		Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+		Dotenv dotenv = Dotenv.configure()
+				.directory("src/main/resources")
+				.ignoreIfMissing()
+				.load();
 
 		// 환경변수 등록
 		System.setProperty("GOOGLE_CLIENT_ID", dotenv.get("GOOGLE_CLIENT_ID"));
