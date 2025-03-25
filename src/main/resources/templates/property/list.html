@@ -28,7 +28,7 @@
            th:text="${filterValue} + ' 노선 매물을 보고 계십니다'"></p>
     </div>
     <br>
-    <a href="/*" class="cta-btn">상담 예약 페이지 이동</a>
+    <a th:href="@{/reservation}" class="cta-btn">상담 예약 페이지 이동</a>
 </section>
 
 
@@ -56,13 +56,13 @@
         <div class="slider-container">
             <!-- 통합된 가격 라벨 -->
             <div id="priceLabel" class="price-label">50,000円 ~ 150,000円</div>
-
+            
             <div class="range-bar"></div>
             <div class="slider">
                 <input type="range" id="minPrice" min="50000" max="150000" step="1000" value="50000">
                 <input type="range" id="maxPrice" min="50000" max="150000" step="1000" value="150000">
             </div>
-
+            
             <!-- 최소/최대 표시 (선택사항) -->
             <div class="min-max-labels">
                 <span>최소</span>
@@ -98,7 +98,7 @@
 
         <!-- 건축년도 -->
         <label for="building-year">건축년도</label>
-        <select class="form-control" id="building-year">
+        <select class="form-control" id="building-year" style="width: 250px; margin: 0; padding: 8px; text-align: left; display: block; float: none;">
             <option value="">지정없음</option>
             <option value="1년 이내">1년 이내</option>
             <option value="5년 이내">5년 이내</option>
@@ -114,12 +114,12 @@
 
         <!-- 상세조건 -->
         <div class="detail-type">
-            <label>방 타입</label>
-            <label><input type="checkbox" name="detail" value="주차장"> 주차장</label>
+            <label>상세 조건</label>
+            <label><input type="checkbox" name="detail" value="즉시입주"> 즉시입주</label>
             <label><input type="checkbox" name="detail" value="2인 입주"> 2인 입주</label>
-            <label><input type="checkbox" name="detail" value="욕실, 화장실"> 욕실, 화장실 분리</label>
+            <label><input type="checkbox" name="detail" value="워홀비자가능"> 워홀비자가능</label>
             <label><input type="checkbox" name="detail" value="인터넷 무료"> 인터넷 무료</label>
-            <label><input type="checkbox" name="detail" value="에어컨"> 에어컨</label>
+            <label><input type="checkbox" name="detail" value="펫 가능"> 펫 가능</label>
         </div>
 
         <br>
@@ -216,7 +216,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="no-image-container"
+                        <div th:if="${property.thumbnailImage != null}" class="property-image-container">
+                            <img th:src="${property.thumbnailImage}" alt="매물 이미지" 
+                                 style="width: 150px; height: 100px; object-fit: cover;">
+                        </div>
+                        <div th:unless="${property.thumbnailImage != null}" class="no-image-container"
                              style="width: 150px; height: 100px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
                             <span>이미지 준비중</span>
                         </div>
@@ -248,6 +252,7 @@
             <div class="address-info">
                 <div th:text="${property.location}">도쿄도 세타가야구 상마4쵸메</div>
                 <div th:text="${property.subwayLine}">오다큐선 / 키타센주역 도보 7분</div>
+                <div th:if="${property.station != null}" th:text="${property.station}"></div>
                 <div th:if="${property.description != null}" th:text="${property.description}"></div>
             </div>
         </div>

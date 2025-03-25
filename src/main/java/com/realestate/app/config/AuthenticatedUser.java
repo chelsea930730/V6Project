@@ -19,7 +19,7 @@ public class AuthenticatedUser implements UserDetails, OAuth2User {
     public AuthenticatedUser(User user) {
         this.user = user;
     }
-
+    
     // OAuth2UserService에서 리턴 값으로 사용
     public AuthenticatedUser(User user, Map<String, Object> attributes) {
         this.user = user;
@@ -39,12 +39,12 @@ public class AuthenticatedUser implements UserDetails, OAuth2User {
         authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
         return authorities;
     }
-
+    
     @Override
     public String getPassword() {
         return user.getPassword();
     }
-
+    
     @Override
     public String getUsername() {
         return user.getEmail();
@@ -75,12 +75,12 @@ public class AuthenticatedUser implements UserDetails, OAuth2User {
     public Map<String, Object> getAttributes() {
         return attributes;
     }
-
+    
     @Override
     public String getName() {
         return user.getName();
     }
-
+    
     // 이 사용자가 OAuth2 사용자인지 확인하는 헬퍼 메서드
     public boolean isOAuth2User() {
         return attributes != null;

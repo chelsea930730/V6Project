@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
+<html lang="en" xmlns:th="http://www.thymeleaf.org" 
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   <head>
     <meta charset="UTF-8" />
@@ -21,38 +21,44 @@
                 margin: 0 auto;
                 display: block;
             }
-
+            
             .location {
                   text-align: center;
             }
-    </style>
-    <script th:inline="javascript">
+            </style>
+<script th:inline="javascript">
       function initMap() {
+            // 데이터베이스에서 가져온 위도/경도 값을 JavaScript 변수로 설정
             const latitude = [[${property.latitude}]];
             const longitude = [[${property.longitude}]];
-
+            
+            // 위치 정보가 없는 경우 기본값 사용 (선택사항)
             const lat = latitude || 37.498095;
             const lng = longitude || 126.854614;
-
+            
             const propertyLocation = {lat: lat, lng: lng};
-
+            
             const map = new google.maps.Map(document.getElementById('map'), {
                   center: propertyLocation,
                   zoom: 20,
             });
-
+            
             const marker = new google.maps.Marker({
-                  position: propertyLocation,
+                  position: propertyLocation,  // center가 아닌 propertyLocation 사용
                   map: map,
                   title: "매물 위치"
             });
       }
 
       function addToCart() {
+            // 현재 매물 ID 가져오기
             const propertyId = [[${property.propertyId}]];
+            
+            // CSRF 토큰 가져오기 (Spring Security 사용 시 필요)
             const token = document.querySelector("meta[name='_csrf']")?.getAttribute("content");
             const header = document.querySelector("meta[name='_csrf_header']")?.getAttribute("content");
-
+            
+            // 요청 보내기
             fetch('/cart/add', {
                   method: 'POST',
                   headers: {
@@ -73,13 +79,14 @@
                   alert('장바구니 추가 실패: ' + error.message);
             });
       }
-    </script>
-    <script async defer
+</script>
+      <script async defer
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDAqy6z-ttqo5AzxjzeO05vLev6rahKO2Q&callback=initMap">
-    </script>
+      </script>
+    <!-- CSRF 토큰 (Spring Security 사용 시) -->
     <meta name="_csrf" th:content="${_csrf?.token}" />
     <meta name="_csrf_header" th:content="${_csrf?.headerName}" />
-  </head>
+</head>
   <style>
     body {
       font-family: "Cafe24 Ssurround air OTF Light";
@@ -88,15 +95,18 @@
   <body>
     <div id="navbar-placeholder"></div>
 
-    <div class="main-content">
+       <div class="main-content">
+          <!-- 왼쪽: 사진 섹션 -->
           <section class="building-photos">
                 <div class="photo-grid" id="propertyPhotos">
+                      <!-- 여기에 데이터베이스의 사진들이 동적으로 표시될 예정 -->
                       <div class="property-images">
                             <img src="https://via.placeholder.com/400x300" alt="매물 이미지">
                       </div>
                 </div>
           </section>
-
+    
+          <!-- 오른쪽: 상세 정보 -->
           <div class="property-info-section">
                 <div class="property-stats">
                       <div class="stat-item">
@@ -120,72 +130,83 @@
                          <div class="stat-value">
                             <span th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA') + '円'}">0</span>
                          </div>
-                      </div>
-                      <div class="stat-item">
-                         <div class="stat-label">가까운 역</div>
-                         <div class="stat-value" th:text="${property.subwayLine}"></div>
-                      </div>
+                   </div>
+                   <div class="stat-item">
+                      <div class="stat-label">가까운 역</div>
+                      <div class="stat-value" th:text="${property.subwayLine}"></div>
                 </div>
 
+                </div>
+        
+                <!-- 로그인한 사용자에게만 표시 -->
                 <div class="add-to-cart" th:if="${isLoggedIn}">
                     <button class="cart-button" onclick="addToCart()">Add to cart</button>
                 </div>
 
+                <!-- 로그인하지 않은 사용자에게 표시 -->
                 <div class="add-to-cart" th:unless="${isLoggedIn}">
-                    <a href="/user/login" class="login-message">로그인 후 장바구니에 추가할 수 있습니다</a>
+                    <button class="cart-button" onclick="location.href='/user/login'">로그인 후 장바구니에 추가</button>
                 </div>
-          </div>
-    </div>
-
-    <section class="building-photos2">
-        <h2>건물 사진</h2>
-        <div class="photo-grid2" id="propertyPhotos2">
+            </div>
         </div>
-    </section>
 
-    <div class="details-section">
-        <table class="details-table">
-           <h2>상세 정보</h2>
-           <tr>
+<!-- 추가 사진 섹션 -->
+<section class="building-photos2">
+    <h2>건물 사진</h2>
+    <div class="photo-grid2" id="propertyPhotos2">
+          <!-- 여기에 데이터베이스의 사진들이 동적으로 표시될 예정 -->
+    </div>
+</section>
+
+<div class="details-section">
+    <table class="details-table">
+       <h2>상세 정보</h2> 
+       <tr>
                 <th>주소</th>
                 <td colspan="3" id="address" th:text="${property.location}"></td>
-           </tr>
-           <tr>
+          </tr>
+          <tr>
                 <th>건물 타입</th>
                 <td colspan="3" id="buildingType" th:text="${property.buildingType}"></td>
-           </tr>
-           <tr>
+          </tr>
+          <tr>
                 <th>등록일</th>
                 <td colspan="3" id="registDate" th:text="${#temporals.format(property.createdAt, 'yyyy년 M월 d일')}"></td>
-           </tr>
-           <tr>
+          </tr>
+          <tr>
                 <th>초기비용</th>
                 <td colspan="3" id="costDetail" th:text="${property.initialCost}"></td>
-           </tr>
-           <tr>
+          </tr>
+
+          <tr>
                 <th>비고</th>
                 <td colspan="3" id="notes" th:text="${property.description}"></td>
-           </tr>
-        </table>
-    </div>
+          </tr>
+    </table>
+</div>
 
-    <div class="facilities amenities">
-       <h2>주변 시설</h2>
-          <div class="facilities-content amenities-content">
+    <div class="amenities">
+       <h2>방의 특징과 설비</h2>
+          <div class="amenities-content" id="amenitiesList">
               <p th:text="${property.nearbyFacilities}"></p>
-          </div>
+        <!-- 편의시설 목록이 동적으로 추가됨 -->
+      </ul>
     </div>
 
     <div class="location">
-        <h2>위치 정보</h2>
-        <br>
-        <div id="map">
-          <!-- 지도가 표시될 영역 -->
-        </div>
+      <h2>위치 정보</h2>
+      <br>
+      <div id="map">
+        <!-- 지도가 표시될 영역 -->
+      </div>
     </div>
+  </div>
+
+
+    <input type="hidden" id="propertyIdValue" th:value="${property.propertyId}">
 
     <div class="appointment">
-        <button class="appointment-button">상담예약 페이지 이동</button>
+       <a th:href="@{/reservation(propertyIds=${property.propertyId})}" class="appointment-button">상담예약 페이지 이동</a>
     </div>
 
     <script th:src="@{/js/navbar.js}"></script>

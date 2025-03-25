@@ -39,15 +39,15 @@ public class CartController {
         // 캐스팅을 시도하지 말고 인증 상태만 확인
         boolean isLoggedIn = false;
         String userEmail = null;
-
-        if (authentication != null && authentication.isAuthenticated() &&
+        
+        if (authentication != null && authentication.isAuthenticated() && 
                 !authentication.getPrincipal().equals("anonymousUser")) {
-
+            
             isLoggedIn = true;
-
+            
             // Principal 객체에서 사용자 이메일(username) 얻기
             Object principal = authentication.getPrincipal();
-
+            
             // 안전한 타입 체크와 캐스팅
             if (principal instanceof UserDetails) {
                 userEmail = ((UserDetails) principal).getUsername();
@@ -55,14 +55,14 @@ public class CartController {
                 // 다른 타입의 경우 getName() 사용
                 userEmail = authentication.getName();
             }
-
+            
             // 로그인된 사용자의 장바구니 아이템 가져오기
             if (userEmail != null) {
                 // 이메일로 사용자 ID를 조회한 후 장바구니 아이템 가져오기
                 Long userId = cartService.getUserIdByEmail(userEmail);
                 List<Property> properties = cartService.getCartItems(userId);
                 model.addAttribute("properties", properties);
-
+                
                 // 이미지 정보 등 추가 작업
                 Map<Long, String> propertyImages = new HashMap<>();
                 for (Property property : properties) {
@@ -76,7 +76,7 @@ public class CartController {
             // 로그인하지 않은 경우 빈 목록 표시
             model.addAttribute("properties", new ArrayList<>());
         }
-
+        
         // 로그인 상태 모델에 추가
         model.addAttribute("isLoggedIn", isLoggedIn);
         

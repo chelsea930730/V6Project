@@ -34,32 +34,33 @@
             <form id="sangdamForm" class="sangdam-form" th:action="@{/reservation}" method="post" th:object="${reservation}">
                 <!-- CSRF 토큰이 존재할 경우에만 추가 -->
                 <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-
+                
                 <div class="form-group">
                     <label for="name">성명</label>
-                    <input type="text" id="name" th:field="*{name}" placeholder="이름을 입력하세요" required>
+                    <input type="text" id="name" th:field="*{name}" readonly>
                 </div>
 
                 <div class="form-group">
                     <label for="email">이메일</label>
-                    <input type="email" id="email" th:field="*{email}" placeholder="이메일을 입력하세요" required>
+                    <input type="email" id="email" th:field="*{email}" readonly>
                 </div>
 
                 <div class="form-group">
                     <label for="phone">연락 가능한 전화번호</label>
-                    <input type="tel" id="phone" th:field="*{phone}" placeholder="전화번호를 입력하세요" required>
+                    <input type="tel" id="phone" th:field="*{phone}" 
+                           th:placeholder="${reservation.phone != null ? '' : '전화번호를 입력하세요'}" required>
                 </div>
 
                 <div class="form-group">
                     <label for="reservedDate">상담 날짜</label>
-                    <input type="date" id="reservedDate" th:field="*{reservedDate}" required>
+                    <input type="datetime-local" id="reservedDate" th:field="*{reservedDate}" required>
                 </div>
 
                 <div class="form-group">
                     <label for="message">기타 문의 사항</label>
                     <textarea id="message" th:field="*{message}" placeholder="문의사항을 입력하세요"></textarea>
                 </div>
-
+                
                 <!-- 선택된 매물 ID를 hidden으로 전송 -->
                 <div th:if="${properties != null}">
                     <div th:each="property : ${properties}">
@@ -79,7 +80,6 @@
                         <th>게시번호</th>
                         <th>건물명</th>
                         <th>월세+관리비</th>
-                        <th>시키킹/레이킹</th>
                         <th>방타입</th>
                         <th>건축년도</th>
                     </tr>
@@ -92,12 +92,29 @@
                         <td th:text="${property.roomType}">1K</td>
                         <td th:text="${property.builtYear}">2020년</td>
                     </tr>
-                    <!-- 추가 행들... -->
                 </tbody>
             </table>
         </div>
     </main>
 
     <div id="footer-placeholder"></div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sangdamForm = document.getElementById('sangdamForm');
+        
+        if (sangdamForm) {
+            sangdamForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // 기본 제출 동작 중지
+                
+                // 확인 대화상자 표시
+                if (confirm('이대로 제출하시겠습니까?')) {
+                    // 사용자가 확인을 누른 경우 폼 제출
+                    this.submit();
+                }
+            });
+        }
+    });
+    </script>
 </body>
 </html>

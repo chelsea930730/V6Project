@@ -8,13 +8,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // 상담 버튼 클릭 이벤트
-    const consultButton = document.querySelector('.consult-btn');
-    consultButton.addEventListener('click', function () {
-        alert('상담 페이지로 이동합니다.');
-        // 상담 페이지로 이동하는 로직 추가
-    });
-
     // 이미지 모달 기능
     const modal = document.getElementById('imageModal');
     const modalImg = document.getElementById('modalImage');
@@ -50,11 +43,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 전체 선택 체크박스 기능 수정
     const selectAllCheckbox = document.getElementById('select-all-checkbox');
-
+    
     if (selectAllCheckbox) {
         selectAllCheckbox.addEventListener('change', function() {
             const isChecked = this.checked;
-
+            
             // 모든 개별 체크박스 선택 (현재 페이지에 있는 체크박스들)
             document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
                 if (checkbox.id !== 'select-all-checkbox') {
@@ -63,28 +56,28 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     }
-
+    
     // 문서에 이벤트 위임 방식으로 체크박스 변경 감지
     document.addEventListener('change', function(event) {
         if (event.target.type === 'checkbox' && event.target.id !== 'select-all-checkbox') {
             updateSelectAllCheckbox();
         }
     });
-
+    
     // 전체 선택 체크박스 상태 업데이트 함수
     function updateSelectAllCheckbox() {
         if (!selectAllCheckbox) return;
-
+        
         const checkboxes = Array.from(document.querySelectorAll('input[type="checkbox"]'))
             .filter(cb => cb.id !== 'select-all-checkbox');
-
+        
         const allChecked = checkboxes.every(cb => cb.checked);
         const someChecked = checkboxes.some(cb => cb.checked);
-
+        
         selectAllCheckbox.checked = allChecked;
         selectAllCheckbox.indeterminate = !allChecked && someChecked;
     }
-
+    
     // 페이지 로드 시 초기 상태 설정
     updateSelectAllCheckbox();
 
