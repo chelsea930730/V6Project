@@ -1,6 +1,6 @@
 /* 네비 전체 글씨 설정 */
 nav{
-	font-family: 'Cafe24 Ssurround air OTF Light';
+    font-family: 'Cafe24 Ssurround air OTF Light';
 }
 
 /* 기본 바디 스타일 설정 - 어드민 페이지 공통 */
@@ -83,7 +83,7 @@ body {
         position: relative;
         height: auto;
     }
-    
+
     main {
         margin-left: 0 !important;
     }

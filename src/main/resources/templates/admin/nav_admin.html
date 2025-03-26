@@ -13,12 +13,6 @@
     </div>
     <ul class="nav-links">
         <li>
-            <a href="/" class="nav-link">
-                <i class="fas fa-house"></i>
-                홈으로
-            </a>
-        </li>
-        <li>
             <a href="/admin/dashboard" class="nav-link">
                 <i class="fas fa-home"></i>
                 대시보드
@@ -65,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .catch(error => console.error('로그아웃 실패:', error));
         });
     }
-    
+
     // 현재 페이지에 해당하는 메뉴 항목에 active 클래스 추가
     const currentPath = window.location.pathname;
     const navLinks = document.querySelectorAll('.nav-links .nav-link');
@@ -75,15 +69,15 @@ document.addEventListener('DOMContentLoaded', function() {
             link.classList.add('active');
         }
     });
-    
-    // LION 로고 클릭 시 홈으로 이동
+
+    // LION 로고 클릭 시 홈페이지로 이동
     const lionLogo = document.getElementById('lionLogo');
     if (lionLogo) {
         lionLogo.addEventListener('click', function() {
-            window.location.href = '/';
+            window.location.href = '/'; // 루트 경로(홈페이지)로 이동
         });
     }
 });
 </script>
 </body>
-</html> 
+</html>

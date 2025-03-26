@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" 
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   <head>
     <meta charset="UTF-8" />
@@ -25,18 +25,18 @@
             // 데이터베이스에서 가져온 위도/경도 값을 JavaScript 변수로 설정
             const latitude = [[${property.latitude}]];
             const longitude = [[${property.longitude}]];
-            
+
             // 위치 정보가 없는 경우 기본값 사용 (선택사항)
             const lat = latitude || 37.498095;
             const lng = longitude || 126.854614;
-            
+
             const propertyLocation = {lat: lat, lng: lng};
-            
+
             const map = new google.maps.Map(document.getElementById('map'), {
                   center: propertyLocation,
                   zoom: 20,
             });
-            
+
             const marker = new google.maps.Marker({
                   position: propertyLocation,  // center가 아닌 propertyLocation 사용
                   map: map,
@@ -47,11 +47,11 @@
       function addToCart() {
             // 현재 매물 ID 가져오기
             const propertyId = [[${property.propertyId}]];
-            
+
             // CSRF 토큰 가져오기 (Spring Security 사용 시 필요)
             const token = document.querySelector("meta[name='_csrf']")?.getAttribute("content");
             const header = document.querySelector("meta[name='_csrf_header']")?.getAttribute("content");
-            
+
             // 요청 보내기
             fetch('/cart/add', {
                   method: 'POST',
@@ -99,7 +99,7 @@
                       </div>
                 </div>
           </section>
-    
+
           <!-- 오른쪽: 상세 정보 -->
           <div class="property-info-section">
                 <div class="property-stats">
@@ -131,7 +131,7 @@
                 </div>
 
                 </div>
-        
+
                 <!-- 로그인한 사용자에게만 표시 -->
                 <div class="add-to-cart" th:if="${isLoggedIn}">
                     <button class="cart-button" onclick="addToCart()">Add to cart</button>
@@ -154,7 +154,7 @@
 
 <div class="details-section">
     <table class="details-table">
-       <h2>상세 정보</h2> 
+       <h2>상세 정보</h2>
        <tr>
                 <th>주소</th>
                 <td colspan="3" id="address" th:text="${property.location}"></td>

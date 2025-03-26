@@ -1,5 +1,5 @@
 package com.realestate.app.reservation;
 
 public enum ReservationStatus {
-    PENDING, CONFIRMED, CANCELLED
+    PENDING, CONFIRMED, COMPLETED, CANCELLED
 }

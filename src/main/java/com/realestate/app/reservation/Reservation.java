@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -25,15 +27,25 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     private ReservationStatus status = ReservationStatus.PENDING;
 
-    private LocalDateTime reservedDate;
+    private LocalDate reservedDate;
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(length = 1000)
+    private String message;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "property_id")
-    private Property property;
-}
+    @ManyToMany
+    @JoinTable(
+            name = "reservation_property",
+            joinColumns = @JoinColumn(name = "reservation_id"),
+            inverseJoinColumns = @JoinColumn(name = "property_id")
+    )
+    private List<Property> properties = new ArrayList<>();
 
+    public void addProperty(Property property) {
+        this.properties.add(property);
+    }
+}
