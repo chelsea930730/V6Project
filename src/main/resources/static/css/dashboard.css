@@ -99,18 +99,19 @@ main.col-md-10 {
 }
 
 .day-cell {
-    cursor: pointer;
-    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 40px;
     height: 40px;
-    line-height: 40px;
+    border-radius: 50%;
     margin: 0 auto;
     transition: all 0.2s ease;
-    position: relative;
 }
 
 .day-cell:hover {
     background-color: #e9ecef;
+    cursor: pointer;
 }
 
 /* 오늘 날짜 스타일 - 더 강조 */
@@ -118,7 +119,6 @@ main.col-md-10 {
     background-color: #6a99cd;
     color: white;
     font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* 선택된 날짜 스타일 */
@@ -126,10 +126,13 @@ main.col-md-10 {
     background-color: #007bff;
     color: white;
     font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* 예약 있는 날짜 표시 - 더 명확하게 */
+.day-cell.has-reservation {
+    position: relative;
+}
+
 .day-cell.has-reservation::after {
     content: '';
     position: absolute;

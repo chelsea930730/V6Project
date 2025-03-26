@@ -374,6 +374,7 @@ function fetchMonthReservationDates() {
         .catch(error => {
             console.error('예약 날짜 조회 오류:', error);
             const todayString = document.getElementById('calendarContainer').dataset.today;
+            // 오류 발생 시 빈 배열로 처리
             updateCalendar([], todayString);
         });
 } 

@@ -66,8 +66,8 @@ public class AdminController {
         long completedReservationsCount = reservationService.countByStatus(ReservationStatus.COMPL);
         long cancelledReservationsCount = reservationService.countByStatus(ReservationStatus.CANCELLED);
         
-        // 월별 예약 통계 데이터 (그래프용)
-        List<Long> monthlyStats = Arrays.asList(15L, 22L, 18L, 25L, 30L, 35L, 28L, 40L, 45L, 38L, 42L, 48L);
+        // 월별 예약 통계 데이터 계산 (컨설팅 페이지 데이터 기반)
+        List<Long> monthlyStats = calculateMonthlyStats();
         
         // 오늘 예약 목록 (선택된 날짜의 모든 예약)
         // Pageable 객체 생성 - 페이지 사이즈를 충분히 크게 설정하여 모든 예약을 가져옴
@@ -75,27 +75,13 @@ public class AdminController {
         Page<Reservation> dayReservationsPage = reservationService.findByReservedDate(selectedDate, pageable);
         List<Reservation> dayReservations = dayReservationsPage.getContent();
         
-        // 현재 월의 예약 있는 날짜들을 하드코딩된 데이터로 대체
-        List<String> reservationDates = new ArrayList<>();
-        LocalDate now = LocalDate.now();
-        // 현재 월의 날짜 중 임의로 5-10개 선택
-        int daysInMonth = now.lengthOfMonth();
-        int numDates = 5 + (int)(Math.random() * 6); // 5-10개 날짜
+        // 현재 월의 예약 있는 날짜들 조회
+        // 현재 년월의 첫날과 마지막 날 계산
+        LocalDate firstDayOfMonth = selectedDate.withDayOfMonth(1);
+        LocalDate lastDayOfMonth = selectedDate.withDayOfMonth(selectedDate.lengthOfMonth());
         
-        for (int i = 0; i < numDates; i++) {
-            int day = 1 + (int)(Math.random() * daysInMonth);
-            LocalDate randomDate = now.withDayOfMonth(Math.min(day, daysInMonth));
-            reservationDates.add(randomDate.format(DateTimeFormatter.ISO_DATE));
-        }
-        
-        // 오늘 날짜도 포함
-        reservationDates.add(now.format(DateTimeFormatter.ISO_DATE));
-        
-        // 중복 제거 및 정렬
-        reservationDates = reservationDates.stream()
-            .distinct()
-            .sorted()
-            .collect(Collectors.toList());
+        // 이번 달의 예약 날짜 조회 (컨설팅 데이터 기반)
+        List<String> reservationDates = getReservationDatesForMonth(firstDayOfMonth, lastDayOfMonth);
         
         // 예약 날짜 JSON 형식으로 변환
         ObjectMapper objectMapper = new ObjectMapper();
@@ -117,6 +103,50 @@ public class AdminController {
         model.addAttribute("reservationDatesJson", reservationDatesJson);
         
         return "admin/dashboard";
+    }
+
+    // 월별 예약 통계 데이터 계산 (현재 연도의 1월부터 12월까지)
+    private List<Long> calculateMonthlyStats() {
+        List<Long> monthlyStats = new ArrayList<>(12);
+        LocalDate today = LocalDate.now();
+        int currentYear = today.getYear();
+        
+        System.out.println("현재 연도의 월별 예약 통계 계산 시작: " + currentYear);
+        
+        // 현재 연도의 1월부터 12월까지 각 달의 예약 수 계산
+        for (int month = 1; month <= 12; month++) {
+            LocalDate monthStart = LocalDate.of(currentYear, month, 1);
+            LocalDate monthEnd = monthStart.withDayOfMonth(monthStart.lengthOfMonth());
+            
+            // 모든 예약 목록 가져오기 (Pageable 사용)
+            Pageable pageable = PageRequest.of(0, 1000, Sort.by("reservedDate").ascending());
+            Page<Reservation> reservationsPage = reservationService.findByReservedDateBetween(monthStart, monthEnd, pageable);
+            long count = reservationsPage.getContent().size();
+            
+            System.out.println(month + "월의 예약 수: " + count);
+            
+            // 해당 월의 예약 수 추가
+            monthlyStats.add(count);
+        }
+        
+        System.out.println("계산된 월별 통계: " + monthlyStats);
+        
+        return monthlyStats;
+    }
+
+    // 특정 월의 예약 날짜 목록 조회
+    private List<String> getReservationDatesForMonth(LocalDate firstDay, LocalDate lastDay) {
+        // 해당 월 전체 예약 목록 조회
+        Pageable pageable = PageRequest.of(0, 1000, Sort.by("reservedDate").ascending());
+        Page<Reservation> reservationsPage = reservationService.findByReservedDateBetween(firstDay, lastDay, pageable);
+        List<Reservation> reservations = reservationsPage.getContent();
+        
+        // 날짜만 추출하여 중복 제거 후 반환
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+        return reservations.stream()
+            .map(reservation -> reservation.getReservedDate().format(formatter))
+            .distinct()
+            .collect(Collectors.toList());
     }
 
     @GetMapping("/addproperty")

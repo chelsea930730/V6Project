@@ -1,5 +1,6 @@
 package com.realestate.app.reservation;
 
+import com.realestate.app.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -150,4 +151,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
   // 특정 날짜의 예약 조회 - @Query 사용
   @Query("SELECT r FROM Reservation r WHERE CAST(r.reservedDate AS date) = CAST(:date AS date)")
   List<Reservation> findByDateDirect(@Param("date") LocalDate date);
+
+  List<Reservation> findByUser(User user);
 }

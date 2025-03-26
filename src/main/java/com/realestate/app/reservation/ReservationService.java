@@ -500,4 +500,8 @@ public class ReservationService {
     public List<LocalDate> findDistinctReservedDatesByDateRange(LocalDate startDate, LocalDate endDate) {
         return reservationRepository.findDistinctDatesByRangeDirect(startDate, endDate);
     }
+
+    public List<Reservation> findByUser(User user) {
+        return reservationRepository.findByUser(user);
+    }
 }
