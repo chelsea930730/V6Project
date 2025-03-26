@@ -61,7 +61,7 @@
                   <h6 class="card-subtitle mb-2 text-muted">
                     총 상담 예약 건수
                   </h6>
-                  <h2 class="card-title">123</h2>
+                  <h2 class="card-title" th:text="${totalReservationsCount + '건'}">123건</h2>
                 </div>
               </div>
             </div>
@@ -69,7 +69,7 @@
               <div class="card">
                 <div class="card-body">
                   <h6 class="card-subtitle mb-2 text-muted">진행 중인 상담</h6>
-                  <h2 class="card-title">16</h2>
+                  <h2 class="card-title" th:text="${activeReservationsCount + '건'}">16건</h2>
                 </div>
               </div>
             </div>
@@ -77,7 +77,7 @@
               <div class="card">
                 <div class="card-body">
                   <h6 class="card-subtitle mb-2 text-muted">계약 완료</h6>
-                  <h2 class="card-title">43</h2>
+                  <h2 class="card-title" th:text="${completedReservationsCount + '건'}">43건</h2>
                 </div>
               </div>
             </div>
@@ -87,7 +87,7 @@
                   <h6 class="card-subtitle mb-2 text-muted">
                     취소된 예약 건수
                   </h6>
-                  <h2 class="card-title">64</h2>
+                  <h2 class="card-title" th:text="${cancelledReservationsCount + '건'}">64건</h2>
                 </div>
               </div>
             </div>
@@ -99,128 +99,104 @@
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">1년간 예약 증감 현황</h5>
-                  <div id="reservationChart" style="height: 300px"></div>
+                  <div id="reservationChart" style="height: 300px" th:data-monthly-stats="${monthlyStats}"></div>
                 </div>
               </div>
             </div>
             <div class="col-md-4">
               <div class="card">
                 <div class="card-body">
-                  <h5 class="card-title">매물 등록 현황</h5>
-                  <div id="propertyChart" style="height: 300px"></div>
+                  <h5 class="card-title">예약 상태 현황</h5>
+                  <div id="propertyChart" style="height: 300px" 
+                       th:data-completed="${completedReservationsCount}"
+                       th:data-pending="${activeReservationsCount}"
+                       th:data-cancelled="${cancelledReservationsCount}">
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- 예약 현황 목록 -->
+          <!-- 달력 및 예약 리스트 -->
           <div class="card">
             <div class="card-body">
               <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="card-title">건의 예약 현황</h5>
+                <h5 class="card-title">예약 현황</h5>
               </div>
 
               <!-- 달력 표시 -->
               <div class="calendar-header mb-4">
                 <div class="d-flex justify-content-between align-items-center">
-                  <h6>23 December, Sunday</h6>
+                  <h6 th:text="${#temporals.format(selectedDate, 'yyyy년 MM월 dd일 E요일')}">2025년 03월 26일 수요일</h6>
                   <div class="calendar-nav">
-                    <button class="btn btn-sm btn-outline-secondary me-2">
+                    <button class="btn btn-sm btn-outline-secondary me-2" id="prevMonth">
                       <i class="fas fa-chevron-left"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-secondary">
+                    <button class="btn btn-sm btn-outline-secondary" id="nextMonth">
                       <i class="fas fa-chevron-right"></i>
                     </button>
                   </div>
                 </div>
-                <div class="calendar-days mt-3">
-                  <div class="row text-center">
-                    <div class="col">Sun</div>
-                    <div class="col">Mon</div>
-                    <div class="col">Tue</div>
-                    <div class="col">Wed</div>
-                    <div class="col">Thu</div>
-                    <div class="col">Fri</div>
-                    <div class="col">Sat</div>
-                  </div>
-                  <div class="row text-center mt-2">
-                    <div class="col current-day">23</div>
-                    <div class="col">24</div>
-                    <div class="col">25</div>
-                    <div class="col">26</div>
-                    <div class="col">27</div>
-                    <div class="col">28</div>
-                    <div class="col">29</div>
-                  </div>
+                <div class="calendar-days mt-3" id="calendarContainer" 
+                     th:data-reservation-dates="${reservationDatesJson}" 
+                     th:data-today="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                  <!-- 달력은 자바스크립트로 동적 생성됨 -->
                 </div>
               </div>
 
               <!-- 예약 목록 -->
               <div class="reservation-list">
-                <div class="reservation-item mb-3 p-3 border rounded">
+                <!-- 선택된 날짜에 예약이 없는 경우 -->
+                <div th:if="${#lists.isEmpty(dayReservations)}" class="text-center p-4 text-muted">
+                  <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                  <p>선택하신 날짜에 예약된 상담이 없습니다.</p>
+                </div>
+                
+                <!-- 선택된 날짜의 예약 목록 -->
+                <div th:each="reservation : ${dayReservations}" class="reservation-item mb-3 p-3 border rounded">
                   <div class="d-flex justify-content-between align-items-center">
                     <div>
-                      <h6 class="mb-1">시가노마이아까지 도보 15분 이내 매물 희망</h6>
-                      <small class="text-muted">December 23, 2018</small>
+                      <h6 class="mb-1" th:text="${!reservation.properties.isEmpty() ? 
+                                                  reservation.properties[0].title + 
+                                                  (reservation.properties.size() > 1 ? ' 외 ' + (reservation.properties.size() - 1) + '개' : '') : 
+                                                  '매물 정보 없음'}">
+                        시가노마이아까지 도보 15분 이내 매물 희망
+                      </h6>
+                      <small class="text-muted" th:text="${#temporals.format(reservation.reservedDate, 'yyyy년 MM월 dd일 HH:mm')}">
+                        2025년 03월 26일 14:00
+                      </small>
                       <div class="mt-1">
-                        <span class="text-muted">김고객 고객님</span>
+                        <span class="text-muted" th:text="${reservation.user.name + ' 고객님'}">김고객 고객님</span>
                         <span class="mx-2">|</span>
-                        <span class="text-muted">aaaa@google.com</span>
+                        <span class="text-muted" th:text="${reservation.user.email}">aaaa@google.com</span>
                       </div>
                     </div>
                     <div>
-                      <span class="badge bg-success">상담 완료</span>
-                      <div class="reservation-number mt-2 text-muted">
+                      <span class="badge"
+                            th:classappend="${
+                                reservation.status.name() == 'PENDING' ? 'bg-warning text-dark' : 
+                                reservation.status.name() == 'CONFIRMED' ? 'bg-primary' :
+                                reservation.status.name() == 'COMPL' ? 'bg-success' :
+                                'bg-orange'
+                            }"
+                            th:text="${
+                                reservation.status.name() == 'PENDING' ? '예약 대기' : 
+                                reservation.status.name() == 'CONFIRMED' ? '예약 중' :
+                                reservation.status.name() == 'COMPL' ? '계약 완료' :
+                                '계약 불가'
+                            }">
+                        상담 완료
+                      </span>
+                      <div class="reservation-number mt-2 text-muted" th:text="${'NO.' + reservation.reservationId}">
                         NO.000125
                       </div>
+                      <a th:href="@{'/admin/consulting?search=' + ${reservation.reservationId} + '&searchType=reservationId'}" 
+                         class="btn btn-sm btn-outline-primary mt-2">
+                        <i class="fas fa-eye"></i> 상세보기
+                      </a>
                     </div>
                   </div>
                 </div>
-
-                <div class="reservation-item mb-3 p-3 border rounded">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                      <h6 class="mb-1">세타가야구 아침 7인방 이하 매물 희망</h6>
-                      <small class="text-muted">December 23, 2018</small>
-                      <div class="mt-1">
-                        <span class="text-muted">박고객 고객님</span>
-                        <span class="mx-2">|</span>
-                        <span class="text-muted">bbbb@google.com</span>
-                      </div>
-                    </div>
-                    <div>
-                      <span class="badge bg-warning text-dark">검토 중</span>
-                      <div class="reservation-number mt-2 text-muted">
-                        NO.000254
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="reservation-item mb-3 p-3 border rounded">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                      <h6 class="mb-1">시가현,레이와 같은 인터넷 무료 10K 엔선 매물 희망</h6>
-                      <small class="text-muted">December 23, 2018</small>
-                      <div class="mt-1">
-                        <span class="text-muted">박우영 고객님</span>
-                        <span class="mx-2">|</span>
-                        <span class="text-muted">cccc@google.com</span>
-                      </div>
-                    </div>
-                    <div>
-                      <span class="badge bg-success">상담 완료</span>
-                      <div class="reservation-number mt-2 text-muted">
-                        NO.000194
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Show more 버튼 -->
-              <div class="text-center mt-4">
-                <button class="btn btn-outline-primary">Show more</button>
               </div>
             </div>
           </div>

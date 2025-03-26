@@ -34,21 +34,29 @@
 		<table class="reservation-table">
 			<thead>
 			<tr>
-				<th><input type="checkbox" id="selectAll"></th>
 				<th>예약번호</th>
 				<th>상담 날짜</th>
-				<th>진행 상태</th>
+				<th>계약 현황</th>
 				<th>문의사항</th>
 				<th>채팅 바로가기</th>
 				<th>예약 상세보기</th>
 			</tr>
 			</thead>
 			<tbody>
-			<tr th:each="reservation : ${activeReservations}">
-				<td><input type="checkbox" th:value="${reservation.reservationId}"></td>
+			<!-- 예약 대기 및 예약 중인 항목만 표시 -->
+			<tr th:each="reservation : ${activeReservations}" 
+				th:if="${reservation.status.name() == 'PENDING' || reservation.status.name() == 'CONFIRMED'}">
 				<td th:text="${'NO.' + reservation.reservationId}">NO.000006</td>
 				<td th:text="${#temporals.format(reservation.reservedDate, 'yyyy-MM-dd')}">2025-03-22</td>
-				<td th:text="${reservation.status.name() == 'PENDING' ? '상담대기' : '-'}">상담대기</td>
+				<td>
+					<!-- 편집 불가능한 계약 현황 셀렉트 박스 -->
+					<select class="status-select" disabled>
+						<option value="PENDING" th:selected="${reservation.status.name() == 'PENDING'}">예약 대기</option>
+						<option value="CONFIRMED" th:selected="${reservation.status.name() == 'CONFIRMED'}">예약 중</option>
+						<option value="COMPL" th:selected="${reservation.status.name() == 'COMPL'}">계약 완료</option>
+						<option value="CANCELLED" th:selected="${reservation.status.name() == 'CANCELLED'}">계약 불가</option>
+					</select>
+				</td>
 				<td th:text="${reservation.message != null && #strings.length(reservation.message) > 10 ?
 							#strings.substring(reservation.message, 0, 10) + '...' :
 							(reservation.message != null ? reservation.message : '-')}">문의사항...</td>
@@ -57,12 +65,11 @@
 					<a th:href="@{'/mypage/reservation/' + ${reservation.reservationId}}" class="view-btn">상세보기</a>
 				</td>
 			</tr>
-			<tr th:if="${activeReservations.isEmpty()}">
-				<td colspan="7" class="empty-message">진행 중인 예약이 없습니다.</td>
+			<tr th:if="${#lists.isEmpty(activeReservations)}">
+				<td colspan="6" class="empty-message">진행 중인 예약이 없습니다.</td>
 			</tr>
 			</tbody>
 		</table>
-		<button class="cancel-btn">체크된 예약 취소하기</button>
 	</section>
 
 	<section class="history-section">
@@ -70,35 +77,40 @@
 		<table class="history-table">
 			<thead>
 			<tr>
-				<th><input type="checkbox" id="selectAllHistory"></th>
 				<th>예약번호</th>
 				<th>상담 날짜</th>
-				<th>진행 상태</th>
+				<th>계약 현황</th>
 				<th>문의사항</th>
-				<th>채팅로그 보기</th>
 				<th>예약 상세보기</th>
 			</tr>
 			</thead>
 			<tbody>
-			<tr th:each="reservation : ${completedReservations}">
-				<td><input type="checkbox" th:value="${reservation.reservationId}"></td>
+			<!-- 계약 완료 또는 계약 불가 상태인 항목 표시 -->
+			<tr th:each="reservation : ${allReservations}" 
+				th:if="${reservation.status.name() == 'COMPL' || reservation.status.name() == 'CANCELLED'}">
 				<td th:text="${'NO.' + reservation.reservationId}">NO.000001</td>
 				<td th:text="${#temporals.format(reservation.reservedDate, 'yyyy-MM-dd')}">2022-10-22</td>
-				<td th:text="${reservation.status.name() == 'CANCELLED' ? '상담취소' : '상담완료'}">상담취소</td>
+				<td>
+					<!-- 편집 불가능한 계약 현황 셀렉트 박스 -->
+					<select class="status-select" disabled>
+						<option value="PENDING" th:selected="${reservation.status.name() == 'PENDING'}">예약 대기</option>
+						<option value="CONFIRMED" th:selected="${reservation.status.name() == 'CONFIRMED'}">예약 중</option>
+						<option value="COMPL" th:selected="${reservation.status.name() == 'COMPL'}">계약 완료</option>
+						<option value="CANCELLED" th:selected="${reservation.status.name() == 'CANCELLED'}">계약 불가</option>
+					</select>
+				</td>
 				<td th:text="${reservation.message != null && #strings.length(reservation.message) > 10 ?
 							#strings.substring(reservation.message, 0, 10) + '...' :
 							(reservation.message != null ? reservation.message : '-')}">문의사항...</td>
-				<td><button class="log-btn">로그보기</button></td>
 				<td>
 					<a th:href="@{'/mypage/reservation/' + ${reservation.reservationId}}" class="view-btn">상세보기</a>
 				</td>
 			</tr>
-			<tr th:if="${completedReservations.isEmpty()}">
-				<td colspan="7" class="empty-message">완료된 상담 내역이 없습니다.</td>
+			<tr th:if="${#lists.isEmpty(allReservations)}">
+				<td colspan="5" class="empty-message">완료된 상담 내역이 없습니다.</td>
 			</tr>
 			</tbody>
 		</table>
-		<button class="delete-btn">체크한 상담 내역 삭제하기</button>
 	</section>
 </main>
 

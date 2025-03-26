@@ -77,6 +77,8 @@ dependencies {
 
 	// jQuery
 	implementation 'org.webjars:jquery:3.7.1'
+
+	implementation 'org.json:json:20231013'
 }
 
 tasks.named('test') {

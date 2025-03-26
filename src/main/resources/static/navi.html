@@ -20,10 +20,10 @@
 <footer class="footer">
 	<div class="footer-container">
 		<div class="footer-left">
-			<strong><a href="/templates/index.html" class="footer-logo">LION</a></strong>
+			<strong><a href="#" onclick="scrollToTop(); return false;" class="footer-logo">LION</a></strong>
 		</div>
 		<div class="footer-right">
-			<strong><a href="/*" class="kakao-link">상담원 카카오톡 문의</a></strong>
+			<strong><a href="https://open.kakao.com/o/s3I8uMnh" target="_blank" class="kakao-link">상담원 카카오톡 문의</a></strong>
 			<p class="account">비니니: BBBBB</p>
 		</div>
 	</div>
@@ -58,7 +58,6 @@
 	/* 푸터 */
 
 	.footer {
-
 		width: 100%;
 		background-color: white;
 		padding: 15px 50px;
@@ -82,6 +81,7 @@
 		font-size: 20px;
 		color: #355c86;
 		text-decoration: none;
+		cursor: pointer;
 	}
 
 	.footer-left {
@@ -98,6 +98,11 @@
 		text-decoration: none;
 		color: #2d5be3;
 		font-size: 14px;
+		transition: color 0.3s;
+	}
+
+	.kakao-link:hover {
+		color: #FEE500; /* 카카오톡 노란색으로 변경 */
 	}
 
 	.account {
@@ -205,5 +210,14 @@
 
 <!-- 네비게이션 스크립트 추가 -->
 <script src="/js/navbar.js"></script>
+<script>
+// 페이지 상단으로 스크롤하는 함수
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+</script>
 </body>
 </html>

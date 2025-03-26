@@ -6,6 +6,11 @@ import com.realestate.app.reservation.ReservationStatus;
 import com.realestate.app.user.User;
 import com.realestate.app.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -13,7 +18,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +35,8 @@ public class MyPageController {
 
     private final ReservationService reservationService;
     private final UserService userService;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @GetMapping("/mypage/mypage.html")
     public String myPageHtml(Model model, Authentication authentication) {
@@ -77,23 +88,24 @@ public class MyPageController {
         try {
             user = userService.getUserByEmail(userEmail);
             
-            // 1. 진행 중인 예약 목록 - 문자열로 상태 비교 
-            List<Reservation> activeReservations = reservationService.findByUserId(user.getUserId())
-                .stream()
-                .filter(r -> "PENDING".equals(r.getStatus().name()) || 
-                           "CONFIRMED".equals(r.getStatus().name()))
+            // 모든 예약 목록을 한번에 가져옴
+            List<Reservation> allReservations = reservationService.findByUserId(user.getUserId());
+            
+            // 활성 예약 (PENDING, CONFIRMED)
+            List<Reservation> activeReservations = allReservations.stream()
+                .filter(r -> r.getStatus() == ReservationStatus.PENDING || 
+                             r.getStatus() == ReservationStatus.CONFIRMED)
                 .collect(Collectors.toList());
             
-            // 2. 완료된 상담 내역 - 문자열로 상태 비교
-            List<Reservation> completedReservations = reservationService.findByUserId(user.getUserId())
-                .stream()
-                .filter(r -> "CANCELLED".equals(r.getStatus().name()))
+            // 완료된 예약 (COMPL만 포함, CANCELLED는 제외)
+            List<Reservation> completedReservations = allReservations.stream()
+                .filter(r -> r.getStatus() == ReservationStatus.COMPL)
                 .collect(Collectors.toList());
             
             // 데이터를 모델에 추가
             model.addAttribute("user", user);
             model.addAttribute("activeReservations", activeReservations);
-            model.addAttribute("completedReservations", completedReservations);
+            model.addAttribute("allReservations", completedReservations); // COMPL 상태만 포함
             
             // 성공/오류 메시지 전달 (리디렉션된 경우)
             model.addAttribute("success", model.getAttribute("success"));
@@ -102,7 +114,7 @@ public class MyPageController {
         } catch (Exception e) {
             model.addAttribute("error", "사용자 정보를 불러오는 중 오류가 발생했습니다: " + e.getMessage());
             model.addAttribute("activeReservations", new ArrayList<>());
-            model.addAttribute("completedReservations", new ArrayList<>());
+            model.addAttribute("allReservations", new ArrayList<>());
         }
         
         return "mypage/mypage";
@@ -185,6 +197,360 @@ public class MyPageController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                .body("예약 취소 처리 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 관리자용 상담 관리 페이지
+     */
+    @GetMapping("/admin/consulting-management")
+    public String adminConsulting(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        
+        // 페이지네이션 설정
+        Pageable pageable = PageRequest.of(page, size, Sort.by("reservedDate").descending());
+        
+        // 모든 예약 목록 조회 (기본값)
+        Page<Reservation> reservationsPage = reservationService.findAllReservations(pageable);
+        
+        // 필터링 조건이 있는 경우 적용
+        if (status != null && !status.isEmpty()) {
+            try {
+                ReservationStatus statusEnum = ReservationStatus.valueOf(status);
+                reservationsPage = reservationService.findByStatus(statusEnum, pageable);
+            } catch (IllegalArgumentException e) {
+                // 잘못된 상태값이 입력된 경우 무시
+            }
+        }
+        
+        if (date != null) {
+            reservationsPage = reservationService.findByReservedDate(date, pageable);
+        }
+        
+        if (search != null && !search.isEmpty()) {
+            reservationsPage = reservationService.findByUserNameOrEmail(search, pageable);
+        }
+        
+        // 모델에 데이터 추가
+        model.addAttribute("reservations", reservationsPage.getContent());
+        model.addAttribute("currentPage", reservationsPage.getNumber());
+        model.addAttribute("totalPages", reservationsPage.getTotalPages());
+        model.addAttribute("totalItems", reservationsPage.getTotalElements());
+        
+        // 필터 파라미터 유지
+        model.addAttribute("status", status);
+        model.addAttribute("date", date);
+        model.addAttribute("search", search);
+        
+        return "admin/consulting";
+    }
+    
+    /**
+     * 예약 상세 정보 API
+     */
+    @GetMapping("/api/reservations/{id}")
+    @ResponseBody
+    public ResponseEntity<?> getReservationDetails(@PathVariable Long id) {
+        try {
+            Reservation reservation = reservationService.findById(id)
+                    .orElseThrow(() -> new RuntimeException("예약 정보를 찾을 수 없습니다."));
+            
+            return ResponseEntity.ok(reservation);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
+     * 예약 상태 변경 API - 숫자 코드로 변경
+     */
+    @PutMapping("/api/reservations/{id}/status")
+    @ResponseBody
+    public ResponseEntity<?> updateReservationStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> request) {
+        
+        try {
+            // statusCode 필드로 숫자 값 받기
+            Integer statusCode = (Integer) request.get("statusCode");
+            if (statusCode == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "상태 코드가 필요합니다."));
+            }
+            
+            // 상태 코드에 따라 enum 설정
+            ReservationStatus status;
+            switch(statusCode) {
+                case 0:
+                    status = ReservationStatus.PENDING;
+                    break;
+                case 1:
+                    status = ReservationStatus.CONFIRMED;
+                    break;
+                case 2:
+                    status = ReservationStatus.COMPL;
+                    break;
+                case 3:
+                    status = ReservationStatus.CANCELLED;
+                    break;
+                default:
+                    return ResponseEntity.badRequest().body(Map.of("error", "잘못된 상태 코드입니다: " + statusCode));
+            }
+            
+            // 예약 상태 업데이트
+            Reservation reservation = reservationService.findById(id)
+                    .orElseThrow(() -> new RuntimeException("예약 정보를 찾을 수 없습니다."));
+            
+            reservation.setStatus(status);
+            reservationService.saveReservation(reservation);
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true, 
+                "message", "상태가 성공적으로 변경되었습니다."
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
+     * 예약 정보 업데이트 API
+     */
+    @PostMapping("/api/reservations/update")
+    @ResponseBody
+    public ResponseEntity<?> updateReservation(@RequestBody Map<String, Object> requestData) {
+        try {
+            Long reservationId = Long.parseLong(requestData.get("reservationId").toString());
+            
+            Reservation reservation = reservationService.findById(reservationId)
+                    .orElseThrow(() -> new RuntimeException("예약 정보를 찾을 수 없습니다."));
+            
+            // 예약 날짜 업데이트
+            if (requestData.containsKey("reservedDate") && requestData.get("reservedDate") != null) {
+                String dateStr = requestData.get("reservedDate").toString();
+                
+                // ISO 형식의 날짜 문자열에서 LocalDate 추출 (YYYY-MM-DD 부분)
+                LocalDate reservedDate;
+                if (dateStr.contains("T")) {
+                    // "YYYY-MM-DDThh:mm:ss" 형식인 경우
+                    reservedDate = LocalDate.parse(dateStr.split("T")[0]);
+                } else {
+                    // "YYYY-MM-DD" 형식인 경우
+                    reservedDate = LocalDate.parse(dateStr);
+                }
+                
+                reservation.setReservedDate(reservedDate);
+            }
+            
+            // 상태 업데이트
+            if (requestData.containsKey("status") && requestData.get("status") != null) {
+                String statusStr = requestData.get("status").toString();
+                ReservationStatus status = ReservationStatus.valueOf(statusStr);
+                reservation.setStatus(status);
+            }
+            
+            // 메시지 업데이트
+            if (requestData.containsKey("message")) {
+                reservation.setMessage(requestData.get("message") != null 
+                        ? requestData.get("message").toString() 
+                        : null);
+            }
+            
+            // 관리자 메모 업데이트
+            if (requestData.containsKey("adminNotes")) {
+                reservation.setAdminNotes(requestData.get("adminNotes") != null 
+                        ? requestData.get("adminNotes").toString() 
+                        : null);
+            }
+            
+            reservationService.saveReservation(reservation);
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true, 
+                "message", "예약 정보가 성공적으로 업데이트되었습니다."
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * 간소화된 예약 상태 변경 API
+     */
+    @PostMapping("/api/reservations/{id}/status-simple")
+    @ResponseBody
+    public ResponseEntity<?> updateReservationStatusSimple(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> request) {
+        
+        try {
+            String status = request.get("status");
+            if (status == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "상태값이 필요합니다."));
+            }
+            
+            Reservation reservation = reservationService.findById(id)
+                    .orElseThrow(() -> new RuntimeException("예약 정보를 찾을 수 없습니다."));
+            
+            // 단순 문자열 비교로 상태 설정
+            if ("PENDING".equals(status)) {
+                reservation.setStatus(ReservationStatus.PENDING);
+            } else if ("CONFIRMED".equals(status)) {
+                reservation.setStatus(ReservationStatus.CONFIRMED);
+            } else if ("COMPL".equals(status)) {
+                reservation.setStatus(ReservationStatus.COMPL);
+            } else if ("CANCELLED".equals(status)) {
+                reservation.setStatus(ReservationStatus.CANCELLED);
+            } else {
+                return ResponseEntity.badRequest().body(Map.of("error", "잘못된 상태값입니다: " + status));
+            }
+            
+            reservationService.saveReservation(reservation);
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true, 
+                "message", "상태가 변경되었습니다.",
+                "newStatus", status
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * 간소화된 예약 정보 업데이트 API
+     */
+    @PostMapping("/api/reservations/update-simple")
+    @ResponseBody
+    public ResponseEntity<?> updateReservationSimple(@RequestBody Map<String, Object> requestData) {
+        try {
+            Long reservationId = Long.parseLong(requestData.get("reservationId").toString());
+            
+            Reservation reservation = reservationService.findById(reservationId)
+                    .orElseThrow(() -> new RuntimeException("예약 정보를 찾을 수 없습니다."));
+            
+            // 예약 날짜 업데이트
+            if (requestData.containsKey("reservedDate") && requestData.get("reservedDate") != null) {
+                String dateStr = requestData.get("reservedDate").toString();
+                
+                // ISO 형식의 날짜 문자열에서 LocalDate 추출
+                LocalDate reservedDate;
+                if (dateStr.contains("T")) {
+                    reservedDate = LocalDate.parse(dateStr.split("T")[0]);
+                } else {
+                    reservedDate = LocalDate.parse(dateStr);
+                }
+                
+                reservation.setReservedDate(reservedDate);
+            }
+            
+            // 상태 업데이트 - 단순 문자열 비교
+            if (requestData.containsKey("status") && requestData.get("status") != null) {
+                String status = requestData.get("status").toString();
+                
+                if ("PENDING".equals(status)) {
+                    reservation.setStatus(ReservationStatus.PENDING);
+                } else if ("CONFIRMED".equals(status)) {
+                    reservation.setStatus(ReservationStatus.CONFIRMED);
+                } else if ("COMPL".equals(status)) {
+                    reservation.setStatus(ReservationStatus.COMPL);
+                } else if ("CANCELLED".equals(status)) {
+                    reservation.setStatus(ReservationStatus.CANCELLED);
+                }
+            }
+            
+            // 메시지 업데이트
+            if (requestData.containsKey("message")) {
+                reservation.setMessage(requestData.get("message") != null 
+                        ? requestData.get("message").toString() 
+                        : null);
+            }
+            
+            // 관리자 메모 업데이트
+            if (requestData.containsKey("adminNotes")) {
+                reservation.setAdminNotes(requestData.get("adminNotes") != null 
+                        ? requestData.get("adminNotes").toString() 
+                        : null);
+            }
+            
+            reservationService.saveReservation(reservation);
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true, 
+                "message", "예약 정보가 성공적으로 업데이트되었습니다."
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * 직접 SQL로 예약 상태 업데이트 (응급 조치)
+     */
+    @PostMapping("/api/reservations/direct-update")
+    @ResponseBody
+    public ResponseEntity<?> directUpdateReservation(@RequestBody Map<String, Object> request) {
+        try {
+            Long reservationId = Long.parseLong(request.get("reservationId").toString());
+            String status = request.get("status").toString();
+            
+            // 직접 JdbcTemplate으로 SQL 실행
+            String sql = "UPDATE reservation SET status = ? WHERE reservation_id = ?";
+            jdbcTemplate.update(sql, status, reservationId);
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true, 
+                "message", "상태가 성공적으로 변경되었습니다."
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * 상태만 변경하는 API - 예약은 삭제하지 않음
+     */
+    @PostMapping("/api/reservations/update-status-only")
+    @ResponseBody
+    public ResponseEntity<?> updateReservationStatusOnly(@RequestBody Map<String, Object> request) {
+        try {
+            Long reservationId = Long.valueOf(request.get("reservationId").toString());
+            String status = request.get("status").toString();
+            
+            Reservation reservation = reservationService.findById(reservationId)
+                .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다: " + reservationId));
+            
+            // 상태 업데이트 (삭제하지 않음)
+            ReservationStatus reservationStatus = ReservationStatus.valueOf(status);
+            reservation.setStatus(reservationStatus);
+            
+            // 저장
+            reservationService.saveReservation(reservation);
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "예약 상태가 성공적으로 변경되었습니다."
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of(
+                    "success", false,
+                    "error", "상태 변경 중 오류가 발생했습니다: " + e.getMessage()
+                ));
         }
     }
 }

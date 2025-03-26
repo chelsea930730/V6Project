@@ -138,8 +138,8 @@
 
                 </div>
         
-                <!-- 로그인한 사용자에게만 표시 -->
-                <div class="add-to-cart" th:if="${isLoggedIn}">
+                <!-- 로그인한 사용자에게만 표시 (관리자 제외) -->
+                <div class="add-to-cart" th:if="${isLoggedIn and userRole != 'ADMIN'}">
                     <button class="cart-button" onclick="addToCart()">Add to cart</button>
                 </div>
 
@@ -205,12 +205,47 @@
 
     <input type="hidden" id="propertyIdValue" th:value="${property.propertyId}">
 
-    <div class="appointment">
+    <!-- 상담예약 버튼 - 관리자가 아닐 때만 표시 -->
+    <div class="appointment" th:if="${userRole != 'ADMIN'}">
        <a th:href="@{/reservation(propertyIds=${property.propertyId})}" class="appointment-button">상담예약 페이지 이동</a>
     </div>
 
     <script th:src="@{/js/navbar.js}"></script>
     <script th:src="@{/js/detail.js}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 페이지 로드 시 버튼들을 모두 숨김
+        const cartButtons = document.querySelectorAll('.add-to-cart');
+        const appointmentButton = document.querySelector('.appointment');
+        
+        // 사용자 정보 API 호출
+        fetch('/user/index')
+            .then(response => response.json())
+            .then(data => {
+                console.log('사용자 정보:', data);
+                
+                // 관리자 여부 확인
+                const isAdmin = data.role === 'ADMIN';
+                console.log('관리자 여부:', isAdmin);
+                
+                if (isAdmin) {
+                    // 관리자인 경우 버튼들을 숨김
+                    cartButtons.forEach(btn => btn.style.display = 'none');
+                    if (appointmentButton) appointmentButton.style.display = 'none';
+                } else {
+                    // 관리자가 아닌 경우 버튼들을 표시
+                    cartButtons.forEach(btn => btn.style.display = '');
+                    if (appointmentButton) appointmentButton.style.display = '';
+                }
+            })
+            .catch(error => {
+                console.error('사용자 정보 확인 실패:', error);
+                // 오류 발생 시 기본적으로 버튼들을 표시
+                cartButtons.forEach(btn => btn.style.display = '');
+                if (appointmentButton) appointmentButton.style.display = '';
+            });
+    });
+    </script>
   </body>
 </html>
 
