@@ -391,6 +391,30 @@ document.addEventListener('DOMContentLoaded', function() {
 			if (thumbnailInput && thumbnailInput.files.length > 0) {
 					formData.append('thumbnailImage', thumbnailInput.files[0]);
 			}
+
+			// 평면도 이미지들
+			const floorplanInput = document.getElementById('floorplanImages');
+			if (floorplanInput && floorplanInput.files.length > 0) {
+					for (let i = 0; i < floorplanInput.files.length; i++) {
+							formData.append('floorplanImages', floorplanInput.files[i]);
+					}
+			}
+
+			// 건물 이미지들
+			const buildingInput = document.getElementById('buildingImages');
+			if (buildingInput && buildingInput.files.length > 0) {
+					for (let i = 0; i < buildingInput.files.length; i++) {
+							formData.append('buildingImages', buildingInput.files[i]);
+					}
+			}
+
+			// 내부 이미지들
+			const interiorInput = document.getElementById('interiorImages');
+			if (interiorInput && interiorInput.files.length > 0) {
+					for (let i = 0; i < interiorInput.files.length; i++) {
+							formData.append('interiorImages', interiorInput.files[i]);
+					}
+			}
 			
 			// API 요청
 			fetch('/api/properties', {
