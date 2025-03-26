@@ -1,4 +1,4 @@
-// 예약 증감 현황 차트
+ // 예약 증감 현황 차트
 document.addEventListener('DOMContentLoaded', function() {
     // 차트 데이터 초기화
     const reservationChartElement = document.querySelector("#reservationChart");

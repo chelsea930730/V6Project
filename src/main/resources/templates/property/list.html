@@ -28,7 +28,9 @@
            th:text="${filterValue} + ' 노선 매물을 보고 계십니다'"></p>
     </div>
     <br>
-    <a th:href="@{/reservation}" class="cta-btn">상담 예약 페이지 이동</a>
+    <!-- 관리자가 아닐 때만 상담 예약 버튼 표시 -->
+    <a th:if="${session.user == null or session.user.role != 'ADMIN'}" 
+       th:href="@{/reservation}" class="cta-btn">상담 예약 페이지 이동</a>
 </section>
 
 
@@ -56,13 +58,13 @@
         <div class="slider-container">
             <!-- 통합된 가격 라벨 -->
             <div id="priceLabel" class="price-label">50,000円 ~ 150,000円</div>
-
+            
             <div class="range-bar"></div>
             <div class="slider">
                 <input type="range" id="minPrice" min="50000" max="150000" step="1000" value="50000">
                 <input type="range" id="maxPrice" min="50000" max="150000" step="1000" value="150000">
             </div>
-
+            
             <!-- 최소/최대 표시 (선택사항) -->
             <div class="min-max-labels">
                 <span>최소</span>
@@ -203,61 +205,61 @@
                     </div>
                 </div>
 
-                <!-- 매물 정보 테이블 -->
-                <table class="property-info-table">
-                    <tr>
-                        <th>사진</th>
-                        <th>월세/관리비</th>
-                        <th>시키킹/레이킹</th>
-                        <th>방 타입/면적</th>
-                        <th>건축년도</th>
-                        <th>예약상태</th>
-                        <th>상세보기</th>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div th:if="${property.thumbnailImage != null}" class="property-image-container">
-                                <img th:src="${property.thumbnailImage}" alt="매물 이미지"
-                                     style="width: 150px; height: 100px; object-fit: cover;">
-                            </div>
-                            <div th:unless="${property.thumbnailImage != null}" class="no-image-container"
-                                 style="width: 150px; height: 100px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
-                                <span>이미지 준비중</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA') + '円'}">9.7만円</div>
-                            <div th:text="${#numbers.formatInteger(property.managementFee, 0, 'COMMA') + '円'}">10000円</div>
-                        </td>
-                        <td>
-                            <div th:text="${#numbers.formatInteger(property.shikikin, 0, 'COMMA') + ' / ' +
+            <!-- 매물 정보 테이블 -->
+            <table class="property-info-table">
+                <tr>
+                    <th>사진</th>
+                    <th>월세/관리비</th>
+                    <th>시키킹/레이킹</th>
+                    <th>방 타입/면적</th>
+                    <th>건축년도</th>
+                    <th>예약상태</th>
+                    <th>상세보기</th>
+                </tr>
+                <tr>
+                    <td>
+                        <div th:if="${property.thumbnailImage != null}" class="property-image-container">
+                            <img th:src="${property.thumbnailImage}" alt="매물 이미지" 
+                                 style="width: 150px; height: 100px; object-fit: cover;">
+                        </div>
+                        <div th:unless="${property.thumbnailImage != null}" class="no-image-container"
+                             style="width: 150px; height: 100px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                            <span>이미지 준비중</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div th:text="${#numbers.formatInteger(property.monthlyPrice, 0, 'COMMA') + '円'}">9.7만円</div>
+                        <div th:text="${#numbers.formatInteger(property.managementFee, 0, 'COMMA') + '円'}">10000円</div>
+                    </td>
+                    <td>
+                        <div th:text="${#numbers.formatInteger(property.shikikin, 0, 'COMMA') + ' / ' +
                                       #numbers.formatInteger(property.reikin, 0, 'COMMA') }">1/1</div>
-                        </td>
-                        <td>
-                            <div th:text="${property.roomType}">1K</div>
-                            <div th:text="${property.area + 'm²'}">25.92m²</div>
-                            <div th:text="${property.buildingType}">아파트</div>
-                        </td>
-                        <td th:text="${property.builtYear}">2018년</td>
-                        <td>
-                            <div class="status-available" th:text="${property.status}">예약가능</div>
-                        </td>
-                        <td>
-                            <a th:href="@{/property/{id}(id=${property.propertyId})}" class="detail-button">상세보기</a>
-                        </td>
-                    </tr>
-                </table>
+                    </td>
+                    <td>
+                        <div th:text="${property.roomType}">1K</div>
+                        <div th:text="${property.area + 'm²'}">25.92m²</div>
+                        <div th:text="${property.buildingType}">아파트</div>
+                    </td>
+                    <td th:text="${property.builtYear}">2018년</td>
+                    <td>
+                        <div class="status-available" th:text="${property.status}">예약가능</div>
+                    </td>
+                    <td>
+                        <a th:href="@{/property/{id}(id=${property.propertyId})}" class="detail-button">상세보기</a>
+                    </td>
+                </tr>
+            </table>
 
-                <!-- 주소 정보 -->
-                <div class="address-info">
-                    <div th:text="${property.location}">도쿄도 세타가야구 상마4쵸메</div>
-                    <div th:text="${property.subwayLine}">오다큐선 / 키타센주역 도보 7분</div>
-                    <div th:if="${property.station != null}" th:text="${property.station}"></div>
-                    <div th:if="${property.description != null}" th:text="${property.description}"></div>
-                </div>
+            <!-- 주소 정보 -->
+            <div class="address-info">
+                <div th:text="${property.location}">도쿄도 세타가야구 상마4쵸메</div>
+                <div th:text="${property.subwayLine}">오다큐선 / 키타센주역 도보 7분</div>
+                <div th:if="${property.station != null}" th:text="${property.station}"></div>
+                <div th:if="${property.description != null}" th:text="${property.description}"></div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 </div>
 
 
@@ -269,3 +271,9 @@
 <script th:src="@{/js/navbar.js}"></script>
 </body>
 </html>
+
+
+
+
+
+

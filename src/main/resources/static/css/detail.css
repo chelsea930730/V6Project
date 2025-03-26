@@ -282,7 +282,7 @@ h2 {
 /* 버튼 스타일 */
 .appointment-button {
 	width: 100%;
-	max-width: 300px;
+	max-width: 300px; 
 	background-color: #6a99cd;
 	color: white;
 	padding: 15px 30px;
@@ -305,30 +305,48 @@ h2 {
 /* 반응형 디자인 */
 @media (max-width: 768px) {
 	.main-content {
-		flex-direction: column;
+			flex-direction: column;
 	}
 
 	.building-photos,
 	.property-info-section {
-		flex: none;
-		width: 100%;
+			flex: none;
+			width: 100%;
 	}
 
 	.property-stats {
-		grid-template-columns: 1fr;
+			grid-template-columns: 1fr;
 	}
 
 	.amenities {
 		width: 95%;
 		padding: 0 15px;
-	}
+}
 
-	.amenities-header {
+.amenities-header {
 		font-size: 1em;  /* 글자 크기 조정 */
 		padding: 12px;
-	}
+}
 
-	.amenities-content {
+.amenities-content {
 		padding: 15px;
 	}
+}
+.appointment-button {
+	display: inline-block;
+	padding: 10px 20px;
+	background-color: #6a99cd;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 16px;
+	text-align: center;
+	text-decoration: none; /* 링크 밑줄 제거 */
+}
+
+.appointment-button:hover {
+	background-color: #355c86;
+	text-decoration: none; /* 호버 시에도 밑줄 제거 */
+	color: white; /* 호버 시에도 텍스트 색상 유지 */
 }
