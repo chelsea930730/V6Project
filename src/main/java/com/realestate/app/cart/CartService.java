@@ -7,8 +7,6 @@ import com.realestate.app.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.realestate.app.user.Role;
-import com.realestate.app.user.Provider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,18 +49,18 @@ public class CartService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userId));
 
         List<Cart> cartItems = new ArrayList<>();
-
+        
         for (Long propertyId : propertyIds) {
             // 이미 장바구니에 있는지 확인
             if (!cartRepository.existsByUserIdAndPropertyId(userId, propertyId)) {
                 Property property = propertyRepository.findById(propertyId)
                         .orElseThrow(() -> new IllegalArgumentException("매물을 찾을 수 없습니다: " + propertyId));
-
+                
                 Cart cart = new Cart(user, property);
                 cartItems.add(cart);
             }
         }
-
+        
         cartRepository.saveAll(cartItems);
     }
 
@@ -92,7 +90,7 @@ public class CartService {
     public void clearCart(Long userId) {
         cartRepository.deleteAllByUserId(userId);
     }
-
+    
     /**
      * 장바구니에 매물이 있는지 확인
      */

@@ -1,15 +1,15 @@
 package com.realestate.app.reservation;
+
 import com.realestate.app.property.Property;
 import com.realestate.app.user.User;
-
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import lombok.Setter;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,9 +39,9 @@ public class Reservation {
 
     @ManyToMany
     @JoinTable(
-            name = "reservation_property",
-            joinColumns = @JoinColumn(name = "reservation_id"),
-            inverseJoinColumns = @JoinColumn(name = "property_id")
+        name = "reservation_property",
+        joinColumns = @JoinColumn(name = "reservation_id"),
+        inverseJoinColumns = @JoinColumn(name = "property_id")
     )
     private List<Property> properties = new ArrayList<>();
 
@@ -49,3 +49,4 @@ public class Reservation {
         this.properties.add(property);
     }
 }
+

@@ -1,7 +1,11 @@
 package com.realestate.app.property;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -84,18 +88,38 @@ public class Property {
             this.createdAt = LocalDateTime.now();
         }
     }
-}
 
-enum BuildingType {
-    아파트,
-    맨션,   // 인서트문에서 '맨션' 값을 위해 추가
-    타운하우스,
-    오피스텔,
-    셰어하우스
-}
+    public enum BuildingType {
+        아파트("아파트"),
+        맨션("맨션"),
+        타운하우스("타운하우스"),
+        오피스텔("오피스텔"),
+        셰어하우스("셰어하우스");
 
-enum Status {
-    예약중,
-    거래완료,
-    예약가능  // 인서트문에서 '예약가능' 값을 위해 추가
+        private final String value;
+
+        BuildingType(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    public enum Status {
+        예약중("예약중"),
+        거래완료("거래완료"),
+        예약가능("예약가능");
+
+        private final String value;
+
+        Status(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 }

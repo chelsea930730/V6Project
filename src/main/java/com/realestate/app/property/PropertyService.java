@@ -1,19 +1,16 @@
 package com.realestate.app.property;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import com.realestate.app.geocoding.GeocodingService;
-import com.realestate.app.property.PropertyImageRepository;
-
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +24,7 @@ public class PropertyService {
 
     public List<Property> getAllProperties() {
         List<Property> properties = propertyRepository.findAll();
-
+        
         // 각 매물의 썸네일 이미지 설정
         for (Property property : properties) {
             if (property.getThumbnailImage() == null) {
@@ -37,7 +34,7 @@ public class PropertyService {
                 }
             }
         }
-
+        
         return properties;
     }
 
@@ -129,16 +126,16 @@ public class PropertyService {
                         if (roomTypes != null && !roomTypes.isEmpty()) {
                             if (roomTypes.contains("2K이상")) {
                                 // 1R, 1K, 1DK, 1LDK가 아닌 다른 방 타입을 표시하는 로직
-                                boolean isSpecialMatch = !"1R".equals(property.getRoomType()) &&
-                                        !"1K".equals(property.getRoomType()) &&
-                                        !"1DK".equals(property.getRoomType()) &&
-                                        !"1LDK".equals(property.getRoomType());
-
+                                boolean isSpecialMatch = !"1R".equals(property.getRoomType()) && 
+                                                        !"1K".equals(property.getRoomType()) && 
+                                                        !"1DK".equals(property.getRoomType()) && 
+                                                        !"1LDK".equals(property.getRoomType());
+                                
                                 // 다른 방 타입 체크박스도 함께 선택되었다면
                                 boolean otherTypeSelected = roomTypes.stream()
                                         .filter(type -> !"2K이상".equals(type))
                                         .anyMatch(type -> type.equals(property.getRoomType()));
-
+                                
                                 // 2K이상 조건에 맞거나, 다른 선택된 타입과 일치하면 통과
                                 if (!(isSpecialMatch || otherTypeSelected)) {
                                     return false;
@@ -179,9 +176,9 @@ public class PropertyService {
 
                         // 역 필터 수정
                         if (station != null && !station.isEmpty()) {
-                            if (property.getStation() == null &&
-                                    (property.getSubwayLine() == null ||
-                                            !property.getSubwayLine().contains(station))) {
+                            if (property.getStation() == null && 
+                                (property.getSubwayLine() == null || 
+                                 !property.getSubwayLine().contains(station))) {
                                 return false;
                             }
                         }
@@ -206,7 +203,7 @@ public class PropertyService {
                             // 하나라도 포함되면 매칭으로 간주
                             boolean matchesDetail = detailTypes.stream()
                                     .anyMatch(detail -> description.contains(detail));
-
+                            
                             if (!matchesDetail) {
                                 return false;
                             }

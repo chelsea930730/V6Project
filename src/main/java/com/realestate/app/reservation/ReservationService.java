@@ -3,16 +3,13 @@ package com.realestate.app.reservation;
 import com.realestate.app.property.Property;
 import com.realestate.app.property.PropertyService;
 import com.realestate.app.user.User;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.time.LocalDateTime;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Arrays;
-
-import lombok.AllArgsConstructor;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -37,16 +34,16 @@ public class ReservationService {
         reservation.setUser(user);
         reservation.setReservedDate(LocalDate.from(dto.getReservedDate()));
         reservation.setStatus(ReservationStatus.PENDING);
-
+        
         // message 필드 설정
         reservation.setMessage(dto.getMessage());
-
+        
         // 모든 매물을 예약에 추가
         for (Long propertyId : propertyIds) {
             Property property = propertyService.getPropertyById(propertyId);
             reservation.addProperty(property);  // 단일 property 설정 대신 addProperty 메서드 사용
         }
-
+        
         // 하나의 예약 저장
         reservationRepository.save(reservation);
     }
@@ -74,14 +71,14 @@ public class ReservationService {
     @Transactional
     public void cancelReservations(List<Long> reservationIds) {
         List<Reservation> reservations = reservationRepository.findAllById(reservationIds);
-
+        
         for (Reservation reservation : reservations) {
             // PENDING 상태인 예약만 취소 가능
             if (reservation.getStatus() == ReservationStatus.PENDING) {
                 reservation.setStatus(ReservationStatus.CANCELLED);
             }
         }
-
+        
         reservationRepository.saveAll(reservations);
     }
 
@@ -90,8 +87,8 @@ public class ReservationService {
     }
 
     public List<Reservation> findByUserIdAndCompletedStatuses(Long userId) {
-        return reservationRepository.findByUser_UserIdAndStatusIn(userId,
-                Arrays.asList(ReservationStatus.COMPLETED, ReservationStatus.CANCELLED));
+        return reservationRepository.findByUser_UserIdAndStatusIn(userId, 
+            Arrays.asList(ReservationStatus.COMPLETED, ReservationStatus.CANCELLED));
     }
 
     // 특정 사용자의 특정 상태 예약 조회 메소드 추가

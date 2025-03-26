@@ -5,8 +5,10 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>마이 페이지</title>
 	<link th:href="@{/css/mypage.css}" rel="stylesheet" />
-	<script th:src="@{/js/navibar.js}" defer></script>
+	<script th:src="@{/js/navbar.js}" defer></script>
 	<script th:src="@{/js/mypage.js}" defer></script>
+	<meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}" />
 </head>
 <body>
 <div id="navbar-placeholder"></div>
@@ -15,9 +17,12 @@
 	<h1>마이 페이지</h1>
 	<p class="sub-heading">당신이 예약한 건물을 확인하세요!</p>
 
+	<!-- CSRF 토큰을 hidden 필드로 추가 -->
+	<input type="hidden" name="_csrf" th:if="${_csrf != null}" th:value="${_csrf.token}" />
+
 	<section class="reservation-section">
 		<h2>예약 리스트</h2>
-		
+
 		<!-- 성공/오류 메시지 표시 -->
 		<div th:if="${success}" class="alert alert-success">
 			<span th:text="${success}"></span>
@@ -25,7 +30,7 @@
 		<div th:if="${error}" class="alert alert-danger">
 			<span th:text="${error}"></span>
 		</div>
-		
+
 		<table class="reservation-table">
 			<thead>
 			<tr>
@@ -33,6 +38,7 @@
 				<th>예약번호</th>
 				<th>상담 날짜</th>
 				<th>진행 상태</th>
+				<th>문의사항</th>
 				<th>채팅 바로가기</th>
 				<th>예약 상세보기</th>
 			</tr>
@@ -42,13 +48,17 @@
 				<td><input type="checkbox" th:value="${reservation.reservationId}"></td>
 				<td th:text="${'NO.' + reservation.reservationId}">NO.000006</td>
 				<td th:text="${#temporals.format(reservation.reservedDate, 'yyyy-MM-dd')}">2025-03-22</td>
-				<td th:text="${reservation.status.name() == 'PENDING' ? '상담대기' : 
-							 (reservation.status.name() == 'CONFIRMED' ? '상담확정' : '기타')}">상담대기</td>
+				<td th:text="${reservation.status.name() == 'PENDING' ? '상담대기' : '-'}">상담대기</td>
+				<td th:text="${reservation.message != null && #strings.length(reservation.message) > 10 ?
+							#strings.substring(reservation.message, 0, 10) + '...' :
+							(reservation.message != null ? reservation.message : '-')}">문의사항...</td>
 				<td><button class="chat-btn">채팅하기</button></td>
-				<td><button class="view-btn" th:onclick="'viewReservation(' + ${reservation.reservationId} + ')'">상세보기</button></td>
+				<td>
+					<a th:href="@{'/mypage/reservation/' + ${reservation.reservationId}}" class="view-btn">상세보기</a>
+				</td>
 			</tr>
 			<tr th:if="${activeReservations.isEmpty()}">
-				<td colspan="6" class="empty-message">진행 중인 예약이 없습니다.</td>
+				<td colspan="7" class="empty-message">진행 중인 예약이 없습니다.</td>
 			</tr>
 			</tbody>
 		</table>
@@ -64,6 +74,7 @@
 				<th>예약번호</th>
 				<th>상담 날짜</th>
 				<th>진행 상태</th>
+				<th>문의사항</th>
 				<th>채팅로그 보기</th>
 				<th>예약 상세보기</th>
 			</tr>
@@ -74,11 +85,16 @@
 				<td th:text="${'NO.' + reservation.reservationId}">NO.000001</td>
 				<td th:text="${#temporals.format(reservation.reservedDate, 'yyyy-MM-dd')}">2022-10-22</td>
 				<td th:text="${reservation.status.name() == 'CANCELLED' ? '상담취소' : '상담완료'}">상담취소</td>
+				<td th:text="${reservation.message != null && #strings.length(reservation.message) > 10 ?
+							#strings.substring(reservation.message, 0, 10) + '...' :
+							(reservation.message != null ? reservation.message : '-')}">문의사항...</td>
 				<td><button class="log-btn">로그보기</button></td>
-				<td><button class="view-btn" th:onclick="'viewReservation(' + ${reservation.reservationId} + ')'">상세보기</button></td>
+				<td>
+					<a th:href="@{'/mypage/reservation/' + ${reservation.reservationId}}" class="view-btn">상세보기</a>
+				</td>
 			</tr>
 			<tr th:if="${completedReservations.isEmpty()}">
-				<td colspan="6" class="empty-message">완료된 상담 내역이 없습니다.</td>
+				<td colspan="7" class="empty-message">완료된 상담 내역이 없습니다.</td>
 			</tr>
 			</tbody>
 		</table>
@@ -96,5 +112,4 @@
 </body>
 
 
-<script th:src="@{/js/navbar.js}"></script>
 </html>

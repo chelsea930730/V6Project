@@ -35,5 +35,13 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll(); // UserRepository에서 모든 사용자 반환
     }
+
+    /**
+     * 사용자 정보를 업데이트합니다.
+     */
+    @Transactional
+    public void updateUser(User user) {
+        userRepository.save(user);
+    }
 }
 
