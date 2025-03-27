@@ -1,20 +1,8 @@
 // 네비게이션과 푸터 연결
 document.addEventListener("DOMContentLoaded", function () {
 	console.log("⭐️ 네비게이션 스크립트 로딩 시작");
-	
-	// 네비게이션 로딩에 타임아웃 설정
-	const controller = new AbortController();
-	const timeoutId = setTimeout(() => controller.abort(), 5000); // 5초 타임아웃
-	
-	fetch("/navi.html", {
-		signal: controller.signal,
-		headers: {
-			'Cache-Control': 'no-cache',
-			'Pragma': 'no-cache'
-		}
-	})
+	fetch("/navi.html")
 		.then(response => {
-			clearTimeout(timeoutId);
 			if (!response.ok) {
 				throw new Error("네비게이션 파일을 찾을 수 없습니다.");
 			}
@@ -49,55 +37,16 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
 
 			// ✅ 네비게이션이 완전히 로드된 후 로그인 상태 확인
-			setTimeout(checkLoginStatus, 100);
+			checkLoginStatus();
 		})
-		.catch(error => {
-			clearTimeout(timeoutId);
-			console.error("❌ 네비게이션 로딩 오류:", error);
-			// 오류 발생 시에도 페이지 로드는 계속되도록 함
-			document.body.classList.add('nav-load-error');
-			
-			// 간단한 대체 네비게이션 추가
-			const navbarPlaceholder = document.getElementById("navbar-placeholder");
-			if (navbarPlaceholder) {
-				navbarPlaceholder.innerHTML = `
-					<header style="position:fixed;top:0;left:0;width:100%;background-color:white;height:80px;display:flex;align-items:center;justify-content:space-between;padding:0 50px;border-bottom:1px solid #ddd;z-index:1000;box-sizing:border-box;">
-						<nav style="display:flex;justify-content:space-between;width:100%;max-width:1200px;margin:0 auto;">
-							<strong><a href="/" style="text-decoration:none;color:#355c86;font-size:30px;">LION</a></strong>
-							<div id="nav-menu">
-								<div class="auth-buttons">
-									<a href="/user/login" class="login-btn" style="background-color:#6a99cd;color:white;border:none;padding:10px 20px;border-radius:15px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;">LOGIN</a>
-								</div>
-							</div>
-						</nav>
-					</header>
-				`;
-			}
-		});
+		.catch(error => console.error("❌ 네비게이션 로딩 오류:", error));
 });
 
 // 로그인 상태 체크 및 네비게이션 업데이트
 function checkLoginStatus() {
 	console.log("⭐️ 로그인 상태 확인 시작");
-	
-	// API 호출에 타임아웃 설정
-	const controller = new AbortController();
-	const timeoutId = setTimeout(() => controller.abort(), 5000); // 5초 타임아웃
-	
-	fetch("/user/index", {
-		signal: controller.signal,
-		headers: {
-			'Cache-Control': 'no-cache',
-			'Pragma': 'no-cache'
-		}
-	})
-		.then(response => {
-			clearTimeout(timeoutId);
-			if (!response.ok) {
-				throw new Error(`상태 코드: ${response.status}`);
-			}
-			return response.json();
-		})
+	fetch("/user/index")
+		.then(response => response.json())
 		.then(data => {
 			console.log("⭐️ 사용자 데이터 수신:", data);
 			const navMenu = document.getElementById("nav-menu"); // 네비게이션 메뉴 영역
@@ -134,6 +83,9 @@ function checkLoginStatus() {
 						</div>
 					`;
 				}
+
+				// 이전의 관리자 채팅 기능 이벤트 리스너 제거 - 이제 필요 없음
+				// 링크는 직접 각 페이지로 이동하게 설정됨
 			} else {
 				console.log("⭐️ 로그아웃 상태 - 로그인 버튼만 표시");
 				// ✅ 로그아웃 상태일 때는 로그인 버튼만 표시
@@ -147,7 +99,6 @@ function checkLoginStatus() {
 			console.log("⭐️ 네비게이션 메뉴 설정 완료:", navMenu.innerHTML);
 		})
 		.catch(error => {
-			clearTimeout(timeoutId);
 			console.error("❌ 로그인 상태 확인 실패:", error);
 			// 에러 발생 시 기본적으로 로그인 버튼을 표시
 			const navMenu = document.getElementById("nav-menu");
@@ -158,8 +109,6 @@ function checkLoginStatus() {
 					</div>
 				`;
 			}
-			// 페이지 로딩은 계속되도록 함
-			document.body.classList.add('nav-load-error');
 		});
 }
 

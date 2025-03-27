@@ -153,6 +153,12 @@ function updateCalendar(reservationDates = []) {
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
     
+    // 오늘 날짜 파싱 (실제 오늘 날짜)
+    const today = new Date();
+    const todayYear = today.getFullYear();
+    const todayMonth = today.getMonth();
+    const todayDate = today.getDate();
+
     // 달력 HTML 생성
     let calendarHTML = `
         <div class="row text-center">
@@ -179,6 +185,8 @@ function updateCalendar(reservationDates = []) {
     for (let i = firstDay; i < 7; i++) {
         if (dayCounter <= lastDate) {
             // 각 날짜의 클래스 결정
+            // 오늘 날짜 체크: 년, 월, 일이 모두 일치해야 함
+            const isToday = todayYear === currentYear && todayMonth === currentMonth && dayCounter === todayDate;
             const isSelected = dayCounter === currentDate;
             
             // 예약이 있는 날짜인지 확인
@@ -187,6 +195,7 @@ function updateCalendar(reservationDates = []) {
             
             // 클래스 조합
             let cellClass = 'day-cell';
+            if (isToday) cellClass += ' today';
             if (isSelected) cellClass += ' selected';
             if (hasReservation) cellClass += ' has-reservation';
             
@@ -213,6 +222,8 @@ function updateCalendar(reservationDates = []) {
         for (let i = 0; i < 7; i++) {
             if (dayCounter <= lastDate) {
                 // 각 날짜의 클래스 결정
+                // 오늘 날짜 체크: 년, 월, 일이 모두 일치해야 함
+                const isToday = todayYear === currentYear && todayMonth === currentMonth && dayCounter === todayDate;
                 const isSelected = dayCounter === currentDate;
                 
                 // 예약이 있는 날짜인지 확인
@@ -221,6 +232,7 @@ function updateCalendar(reservationDates = []) {
                 
                 // 클래스 조합
                 let cellClass = 'day-cell';
+                if (isToday) cellClass += ' today';
                 if (isSelected) cellClass += ' selected';
                 if (hasReservation) cellClass += ' has-reservation';
                 

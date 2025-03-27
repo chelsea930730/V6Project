@@ -96,33 +96,13 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 // 매물 데이터 가져오기
 function fetchProperties() {
-	const controller = new AbortController();
-	const timeoutId = setTimeout(() => controller.abort(), 5000); // 5초 타임아웃
-	
-	fetch('/property/list', {
-		signal: controller.signal,
-		headers: {
-			'Cache-Control': 'no-cache',
-			'Pragma': 'no-cache'
-		}
-	})
-		.then(response => {
-			clearTimeout(timeoutId);
-			if (!response.ok) {
-				throw new Error(`상태 코드: ${response.status}`);
-			}
-			return response.json();
-		})
+	fetch('/property/list')
+		.then(response => response.json())
 		.then(data => {
 			currentProperties = data;
 			updatePropertyList(currentProperties);
 		})
-		.catch(error => {
-			clearTimeout(timeoutId);
-			console.error('매물 데이터 로드 실패:', error);
-			// 오류 발생 시 빈 목록이나 기본 UI 표시
-			updatePropertyList([]);
-		});
+		.catch(error => console.error('매물 데이터 로드 실패:', error));
 }
 
 
