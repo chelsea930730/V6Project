@@ -12,13 +12,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 모든 예약 날짜 수집하여 달력에 표시
     const reservationDates = collectReservationDates();
-    const today = new Date().toISOString().split('T')[0];
     
-    // 달력 초기화
-    initializeCalendar(reservationDates, today);
+    // 달력 초기화 - today 파라미터 제거
+    initializeCalendar(reservationDates);
     
-    // 페이지 로드 시 오늘 날짜의 예약 표시
-    loadDayReservations(today);
+    // 페이지 로드 시 현재 날짜의 예약 표시 - 현재 날짜 가져오기
+    const currentDate = new Date().toISOString().split('T')[0];
+    loadDayReservations(currentDate);
 });
 
 // 모든 예약 날짜를 수집하는 함수
@@ -58,12 +58,12 @@ function collectReservationDates() {
 let currentDate, currentMonth, currentYear;
 
 // 달력 초기화 함수
-function initializeCalendar(reservationDates = [], todayString = '') {
+function initializeCalendar(reservationDates = []) {
     // URL에서 날짜 파라미터가 있으면 해당 날짜로 설정, 없으면 현재 날짜
     const urlParams = new URLSearchParams(window.location.search);
     const dateParam = urlParams.get('date');
     
-    const today = dateParam ? new Date(dateParam) : new Date(todayString || new Date());
+    const today = dateParam ? new Date(dateParam) : new Date();
     currentDate = today.getDate();
     currentMonth = today.getMonth();
     currentYear = today.getFullYear();
@@ -72,8 +72,8 @@ function initializeCalendar(reservationDates = [], todayString = '') {
     const calendarContainer = document.getElementById('calendarContainer');
     if (!calendarContainer) return;
     
-    // 달력 업데이트
-    updateCalendar(reservationDates, todayString || today.toISOString().split('T')[0]);
+    // 달력 업데이트 - today 파라미터 제거
+    updateCalendar(reservationDates);
 
     // 이전/다음 달 버튼 이벤트
     const prevMonthBtn = document.getElementById('prevMonth');
@@ -102,7 +102,7 @@ function handlePrevMonth() {
     
     // 달력 업데이트
     const reservationDates = collectReservationDates();
-    updateCalendar(reservationDates, new Date().toISOString().split('T')[0]);
+    updateCalendar(reservationDates);
     
     // 날짜 표시 업데이트
     updateDateDisplay();
@@ -118,7 +118,7 @@ function handleNextMonth() {
     
     // 달력 업데이트
     const reservationDates = collectReservationDates();
-    updateCalendar(reservationDates, new Date().toISOString().split('T')[0]);
+    updateCalendar(reservationDates);
     
     // 날짜 표시 업데이트
     updateDateDisplay();
@@ -146,18 +146,13 @@ function updateDateDisplay() {
 }
 
 // 달력 업데이트 함수 (예약 날짜와 오늘 날짜 정보 추가)
-function updateCalendar(reservationDates = [], todayString = '') {
+function updateCalendar(reservationDates = []) {
     const calendarContainer = document.getElementById('calendarContainer');
     if (!calendarContainer) return;
 
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
     
-    // 오늘 날짜 파싱
-    const today = new Date(todayString);
-    const isCurrentMonth = today.getMonth() === currentMonth && today.getFullYear() === currentYear;
-    const todayDate = today.getDate();
-
     // 달력 HTML 생성
     let calendarHTML = `
         <div class="row text-center">
@@ -184,7 +179,6 @@ function updateCalendar(reservationDates = [], todayString = '') {
     for (let i = firstDay; i < 7; i++) {
         if (dayCounter <= lastDate) {
             // 각 날짜의 클래스 결정
-            const isToday = isCurrentMonth && dayCounter === todayDate;
             const isSelected = dayCounter === currentDate;
             
             // 예약이 있는 날짜인지 확인
@@ -193,7 +187,6 @@ function updateCalendar(reservationDates = [], todayString = '') {
             
             // 클래스 조합
             let cellClass = 'day-cell';
-            if (isToday) cellClass += ' today';
             if (isSelected) cellClass += ' selected';
             if (hasReservation) cellClass += ' has-reservation';
             
@@ -220,7 +213,6 @@ function updateCalendar(reservationDates = [], todayString = '') {
         for (let i = 0; i < 7; i++) {
             if (dayCounter <= lastDate) {
                 // 각 날짜의 클래스 결정
-                const isToday = isCurrentMonth && dayCounter === todayDate;
                 const isSelected = dayCounter === currentDate;
                 
                 // 예약이 있는 날짜인지 확인
@@ -229,7 +221,6 @@ function updateCalendar(reservationDates = [], todayString = '') {
                 
                 // 클래스 조합
                 let cellClass = 'day-cell';
-                if (isToday) cellClass += ' today';
                 if (isSelected) cellClass += ' selected';
                 if (hasReservation) cellClass += ' has-reservation';
                 

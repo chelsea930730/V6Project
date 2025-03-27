@@ -43,7 +43,6 @@
 					<th>상담 날짜</th>
 					<th>계약 현황</th>
 					<th>문의사항</th>
-					<th>채팅 바로가기</th>
 					<th>예약 상세보기</th>
 				</tr>
 				</thead>
@@ -64,7 +63,6 @@
 					<td th:text="${reservation.message != null && #strings.length(reservation.message) > 10 ?
 								#strings.substring(reservation.message, 0, 10) + '...' :
 								(reservation.message != null ? reservation.message : '-')}">문의사항...</td>
-					<td><button class="chat-btn">채팅하기</button></td>
 					<td>
 						<a th:href="@{'/mypage/reservation/' + ${reservation.reservationId}}" class="view-btn">상세보기</a>
 					</td>
