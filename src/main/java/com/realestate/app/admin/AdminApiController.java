@@ -142,7 +142,11 @@ public class AdminApiController {
             return ResponseEntity.ok().body(savedProperty);
         } catch (Exception e) {
             log.error("매물 등록 중 오류 발생", e);
-            return ResponseEntity.badRequest().body("매물 등록에 실패했습니다: " + e.getMessage());
+            // JSON 형식으로 오류 메시지 반환
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "매물 등록에 실패했습니다: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 
@@ -227,7 +231,11 @@ public class AdminApiController {
             return ResponseEntity.ok().body(updatedProperty);
         } catch (Exception e) {
             log.error("매물 수정 중 오류 발생", e);
-            return ResponseEntity.badRequest().body("매물 수정에 실패했습니다: " + e.getMessage());
+            // JSON 형식으로 오류 메시지 반환
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "매물 수정에 실패했습니다: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 
@@ -291,7 +299,11 @@ public class AdminApiController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("매물 조회 중 오류 발생", e);
-            return ResponseEntity.badRequest().body("매물 조회에 실패했습니다: " + e.getMessage());
+            // JSON 형식으로 오류 메시지 반환
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "매물 조회에 실패했습니다: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 
@@ -310,6 +322,19 @@ public class AdminApiController {
             ));
         } catch (Exception e) {
             log.error("매물 삭제 중 오류 발생", e);
+            
+            // 외래키 제약조건 위반 오류 메시지 확인 (장바구니나 예약에 포함된 매물)
+            String errorMessage = e.getMessage();
+            if (errorMessage != null && 
+                (errorMessage.contains("foreign key constraint") || 
+                 errorMessage.contains("constraint fails") || 
+                 errorMessage.contains("FKmk46lll28mjrtb5ji3fiqjanp"))) {
+                return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "장바구니에 담긴 매물이나 예약중인 매물은 삭제할 수 없습니다."
+                ));
+            }
+            
             return ResponseEntity.badRequest().body(Map.of(
                 "success", false,
                 "message", "매물 삭제에 실패했습니다: " + e.getMessage()

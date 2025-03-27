@@ -434,7 +434,19 @@ document.addEventListener('DOMContentLoaded', function() {
 			})
 			.then(response => {
 					if (!response.ok) {
-							throw new Error(propertyId ? '매물 수정에 실패했습니다.' : '매물 등록에 실패했습니다.');
+							return response.text().then(text => {
+									try {
+											// JSON 응답일 경우 파싱
+											const errorData = JSON.parse(text);
+											throw new Error(errorData.message || (propertyId ? '매물 수정에 실패했습니다.' : '매물 등록에 실패했습니다.'));
+									} catch (e) {
+											// JSON이 아니거나 파싱 실패한 경우
+											if (e instanceof SyntaxError) {
+													throw new Error(text || (propertyId ? '매물 수정에 실패했습니다.' : '매물 등록에 실패했습니다.'));
+											}
+											throw e;
+									}
+							});
 					}
 					return response.json();
 			})
