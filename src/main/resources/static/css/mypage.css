@@ -1,5 +1,6 @@
 @import url('../css/consulting.css'); /* consulting.css의 스타일을 가져옴 */
 
+/* 기본 레이아웃 */
 .mypage-container {
     max-width: 1400px;
     margin: 120px auto 80px;
@@ -18,7 +19,21 @@ h1 {
     margin-bottom: 30px;
 }
 
+/* 좌우 배치를 위한 컨테이너 */
+.row-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* 테이블 섹션 스타일 */
 .reservation-section, .history-section {
+    flex: 1;
+    margin-bottom: 30px;
+}
+
+.calendar-section {
+    width: 100%;
     margin-bottom: 50px;
 }
 
@@ -27,6 +42,7 @@ h2 {
     margin-bottom: 20px;
 }
 
+/* 테이블 스타일 */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -46,21 +62,7 @@ th {
     border-right: none;
 }
 
-/* 진행상태 칸의 배경색 제거 */
-th:nth-child(4) {
-    background-color: #6a99cd;
-    color: white;
-}
-
-/* 테이블 헤더 사이의 경계선 추가 (선택사항) */
-th:nth-child(4) {
-    border-right: none;
-}
-
-th:last-child {
-    border-right: none;
-}
-
+/* 상세보기 버튼 스타일 */
 .view-btn {
     background-color: #6a99cd;
     color: white;
@@ -78,7 +80,7 @@ th:last-child {
     color: white;
 }
 
-/* 채팅 버튼 스타일 추가 */
+/* 채팅 버튼 스타일 */
 .chat-btn {
     background-color: #6a99cd;
     color: white;
@@ -92,20 +94,6 @@ th:last-child {
     background-color: #355c86;
 }
 
-/* 채팅로그 버튼 스타일 */
-.log-btn {
-    background-color: #6a99cd;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.log-btn:hover {
-    background-color: #355c86;
-}
-
 /* 빈 메시지 스타일 */
 .empty-message {
     text-align: center;
@@ -113,7 +101,7 @@ th:last-child {
     padding: 20px 0;
 }
 
-/* 상태 셀렉트 박스를 consulting.css와 동일하게 적용 */
+/* 상태 셀렉트 박스 스타일 */
 .status-select {
     width: 100%;
     padding: 8px 12px;
@@ -126,33 +114,16 @@ th:last-child {
     cursor: default;
 }
 
-/* PENDING 상태 (예약 대기) */
-.status-select option[value="PENDING"] {
-    background-color: #ffc107;
-    color: #000;
-}
-
+/* 상태별 색상 */
 .status-select.pending {
     background-color: #ffc107;
     border-color: #ffc107;
     color: #000;
 }
 
-/* CONFIRMED 상태 (예약 중) */
-.status-select option[value="CONFIRMED"] {
-    background-color: #007bff;
-    color: white;
-}
-
 .status-select.confirmed {
     background-color: #007bff;
     border-color: #007bff;
-    color: white;
-}
-
-/* COMPL 상태 (계약 완료) */
-.status-select option[value="COMPL"] {
-    background-color: #28a745;
     color: white;
 }
 
@@ -162,14 +133,252 @@ th:last-child {
     color: white;
 }
 
-/* CANCELLED 상태 (계약 불가) - 주황색으로 변경 */
-.status-select option[value="CANCELLED"] {
-    background-color: #ff9800;
-    color: white;
-}
-
 .status-select.cancelled {
     background-color: #ff9800;
     border-color: #ff9800;
     color: white;
+}
+
+/* 카드 컴포넌트 스타일 */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border: none;
+    margin-bottom: 20px;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* 달력 헤더 스타일 */
+.calendar-header h6 {
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.calendar-nav {
+    display: flex;
+    gap: 5px;
+}
+
+/* 달력 일자 스타일 */
+.calendar-days {
+    margin-bottom: 20px;
+}
+
+.calendar-days .row {
+    margin-bottom: 5px;
+}
+
+.calendar-days .col {
+    padding: 8px;
+    text-align: center;
+}
+
+.day-name {
+    font-weight: 500;
+    color: #495057;
+}
+
+.day-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 0 auto;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.day-cell:hover {
+    background-color: #e9ecef;
+}
+
+/* 오늘 날짜 강조 */
+.day-cell.today {
+    background-color: #6a99cd;
+    color: white;
+    font-weight: bold;
+}
+
+/* 선택된 날짜 스타일 */
+.day-cell.selected {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+/* 예약이 있는 날짜 표시 */
+.day-cell.has-reservation {
+    position: relative;
+}
+
+.day-cell.has-reservation::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #ff6b6b;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* 오늘이면서 예약 있는 날짜 */
+.day-cell.today.has-reservation::after {
+    background-color: #fff;
+}
+
+/* 선택되었으면서 예약 있는 날짜 */
+.day-cell.selected.has-reservation::after {
+    background-color: #fff;
+}
+
+/* 예약 항목 스타일 */
+.reservation-item {
+    background-color: #fff;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.reservation-item:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.reservation-number {
+    font-size: 0.8rem;
+}
+
+/* 예약 상태 배지 스타일 */
+.badge {
+    padding: 5px 8px;
+    border-radius: 30px;
+    font-weight: 400;
+    font-size: 12px;
+}
+
+.bg-success {
+    background-color: #28a745 !important;
+}
+
+.bg-warning {
+    background-color: #ffc107 !important;
+}
+
+.bg-primary {
+    background-color: #007bff !important;
+}
+
+.bg-orange {
+    background-color: #ff9800 !important;
+    color: white !important;
+}
+
+/* 버튼 스타일 */
+.btn-outline-primary {
+    color: #355c86;
+    border-color: #355c86;
+}
+
+.btn-outline-primary:hover {
+    background-color: #355c86;
+    border-color: #355c86;
+    color: white;
+}
+
+.btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+/* 날짜 선택 영역 스타일 */
+.day-reservations-container {
+    padding: 10px 0;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+    .row-container {
+        flex-direction: column;
+    }
+    
+    .reservation-section, .history-section {
+        width: 100%;
+    }
+    
+    table {
+        font-size: 0.9rem;
+    }
+    
+    th, td {
+        padding: 10px;
+    }
+    
+    .day-cell {
+        width: 35px;
+        height: 35px;
+    }
+}
+
+/* 테이블 내 셀 반응형 조정 */
+@media (max-width: 576px) {
+    .reservation-table th:nth-child(4),
+    .reservation-table td:nth-child(4),
+    .history-table th:nth-child(4),
+    .history-table td:nth-child(4) {
+        display: none;
+    }
+}
+
+/* 예약 날짜에 점 표시 */
+.reservation-dot {
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #f85353;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* 오늘이면서 예약이 있는 날짜 */
+.day-cell.today .reservation-dot {
+    background-color: #ffffff;
+}
+
+/* 선택된 날짜이면서 예약이 있는 날짜 */
+.day-cell.selected .reservation-dot {
+    background-color: #ffffff;
+}
+
+/* 예약이 있는 날짜를 더 확실하게 표시 */
+.day-cell.has-reservation {
+    border: 2px solid #f85353;
+    font-weight: bold;
+}
+
+/* 날짜 셀이 선택되거나 오늘인 경우 border 색상 변경 */
+.day-cell.today.has-reservation,
+.day-cell.selected.has-reservation {
+    border-color: rgba(255, 255, 255, 0.5);
 }

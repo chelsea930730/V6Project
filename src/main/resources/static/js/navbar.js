@@ -78,7 +78,7 @@ function checkLoginStatus() {
 						<div class="nav-links">
 							<a href="/cart" class="nav-link">🛒 Cart</a>
 							<a href="/mypage/chat.html?user=admin@realestate.com" class="nav-link" id="chat-link">채팅</a>
-							<a href="/mypage/mypage.html" class="nav-link">마이페이지</a>
+							<a href="/mypage" class="nav-link">마이페이지</a>
 							<button class="logout-btn">LOGOUT</button>
 						</div>
 					`;
