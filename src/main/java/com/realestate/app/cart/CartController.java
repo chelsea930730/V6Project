@@ -2,7 +2,6 @@ package com.realestate.app.cart;
 
 import com.realestate.app.config.AuthenticatedUser;
 import com.realestate.app.property.Property;
-import com.realestate.app.property.PropertyImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
