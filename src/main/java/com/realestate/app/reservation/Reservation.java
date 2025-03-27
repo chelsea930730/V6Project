@@ -27,6 +27,7 @@ public class Reservation {
     private Long reservationId;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     private ReservationStatus status = ReservationStatus.PENDING;
 
     private LocalDate reservedDate;

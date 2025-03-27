@@ -107,7 +107,7 @@ public class ReservationService {
 
     public List<Reservation> findByUserIdAndCompletedStatuses(Long userId) {
         return reservationRepository.findByUser_UserIdAndStatusIn(userId, 
-            Arrays.asList(ReservationStatus.COMPLETED, ReservationStatus.CANCELLED));
+            Arrays.asList(ReservationStatus.COMPL, ReservationStatus.CANCELLED));
     }
 
     // 특정 사용자의 특정 상태 예약 조회 메소드 추가

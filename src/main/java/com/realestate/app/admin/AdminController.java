@@ -53,36 +53,36 @@ public class AdminController {
     public String dashboard(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             Model model) {
-        
+
         // 날짜 파라미터가 없으면 오늘 날짜 사용
         LocalDate selectedDate = date != null ? date : LocalDate.now();
-        
+
         // 총 예약 건수 (모든 상태 포함)
         long totalReservationsCount = reservationService.countAll();
-        
+
         // 상태별 예약 건수
-        long activeReservationsCount = reservationService.countByStatus(ReservationStatus.CONFIRMED) + 
+        long activeReservationsCount = reservationService.countByStatus(ReservationStatus.CONFIRMED) +
                                      reservationService.countByStatus(ReservationStatus.PENDING);
         long completedReservationsCount = reservationService.countByStatus(ReservationStatus.COMPL);
         long cancelledReservationsCount = reservationService.countByStatus(ReservationStatus.CANCELLED);
-        
+
         // 월별 예약 통계 데이터 계산 (컨설팅 페이지 데이터 기반)
         List<Long> monthlyStats = calculateMonthlyStats();
-        
+
         // 오늘 예약 목록 (선택된 날짜의 모든 예약)
         // Pageable 객체 생성 - 페이지 사이즈를 충분히 크게 설정하여 모든 예약을 가져옴
         Pageable pageable = PageRequest.of(0, 100, Sort.by("reservedDate").ascending());
         Page<Reservation> dayReservationsPage = reservationService.findByReservedDate(selectedDate, pageable);
         List<Reservation> dayReservations = dayReservationsPage.getContent();
-        
+
         // 현재 월의 예약 있는 날짜들 조회
         // 현재 년월의 첫날과 마지막 날 계산
         LocalDate firstDayOfMonth = selectedDate.withDayOfMonth(1);
         LocalDate lastDayOfMonth = selectedDate.withDayOfMonth(selectedDate.lengthOfMonth());
-        
+
         // 이번 달의 예약 날짜 조회 (컨설팅 데이터 기반)
         List<String> reservationDates = getReservationDatesForMonth(firstDayOfMonth, lastDayOfMonth);
-        
+
         // 예약 날짜 JSON 형식으로 변환
         ObjectMapper objectMapper = new ObjectMapper();
         String reservationDatesJson = "[]";
@@ -91,7 +91,7 @@ public class AdminController {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        
+
         // 모델에 데이터 추가
         model.addAttribute("totalReservationsCount", totalReservationsCount);
         model.addAttribute("activeReservationsCount", activeReservationsCount);
@@ -101,7 +101,7 @@ public class AdminController {
         model.addAttribute("dayReservations", dayReservations);
         model.addAttribute("selectedDate", selectedDate);
         model.addAttribute("reservationDatesJson", reservationDatesJson);
-        
+
         return "admin/dashboard";
     }
 
@@ -110,27 +110,27 @@ public class AdminController {
         List<Long> monthlyStats = new ArrayList<>(12);
         LocalDate today = LocalDate.now();
         int currentYear = today.getYear();
-        
+
         System.out.println("현재 연도의 월별 예약 통계 계산 시작: " + currentYear);
-        
+
         // 현재 연도의 1월부터 12월까지 각 달의 예약 수 계산
         for (int month = 1; month <= 12; month++) {
             LocalDate monthStart = LocalDate.of(currentYear, month, 1);
             LocalDate monthEnd = monthStart.withDayOfMonth(monthStart.lengthOfMonth());
-            
+
             // 모든 예약 목록 가져오기 (Pageable 사용)
             Pageable pageable = PageRequest.of(0, 1000, Sort.by("reservedDate").ascending());
             Page<Reservation> reservationsPage = reservationService.findByReservedDateBetween(monthStart, monthEnd, pageable);
             long count = reservationsPage.getContent().size();
-            
+
             System.out.println(month + "월의 예약 수: " + count);
-            
+
             // 해당 월의 예약 수 추가
             monthlyStats.add(count);
         }
-        
+
         System.out.println("계산된 월별 통계: " + monthlyStats);
-        
+
         return monthlyStats;
     }
 
@@ -140,7 +140,7 @@ public class AdminController {
         Pageable pageable = PageRequest.of(0, 1000, Sort.by("reservedDate").ascending());
         Page<Reservation> reservationsPage = reservationService.findByReservedDateBetween(firstDay, lastDay, pageable);
         List<Reservation> reservations = reservationsPage.getContent();
-        
+
         // 날짜만 추출하여 중복 제거 후 반환
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
         return reservations.stream()
@@ -154,7 +154,7 @@ public class AdminController {
         // 페이지는 0부터 시작하므로 1을 빼줍니다
         int pageNumber = page - 1;
         // 한 페이지당 8개의 항목, 페이지 크기는 10으로 설정
-        Pageable pageable = PageRequest.of(pageNumber, 8);
+        Pageable pageable = PageRequest.of(pageNumber, 8, Sort.by("createdAt").descending());
         Page<Property> propertyPage = propertyService.getAllPropertiesWithPaging(pageable);
 
         model.addAttribute("properties", propertyPage.getContent());
@@ -203,10 +203,10 @@ public class AdminController {
             @RequestParam(value = "searchType", required = false) String searchType,
             @RequestParam(value = "search", required = false) String search,
             Model model) {
-        
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("reservedDate").descending());
         Page<Reservation> reservationsPage;
-        
+
         // 검색어와 필터 조건 적용
         if (search != null && !search.isEmpty() && searchType != null) {
             // 검색 유형에 따른 처리
@@ -247,7 +247,7 @@ public class AdminController {
             // 모든 예약 표시 (계약 불가 포함)
             reservationsPage = reservationService.findAll(pageable);
         }
-        
+
         model.addAttribute("reservations", reservationsPage.getContent());
         model.addAttribute("currentPage", reservationsPage.getNumber());
         model.addAttribute("totalPages", reservationsPage.getTotalPages());
@@ -256,7 +256,7 @@ public class AdminController {
         model.addAttribute("endDate", endDate);
         model.addAttribute("searchType", searchType);
         model.addAttribute("search", search);
-        
+
         return "admin/consulting";
     }
 
@@ -269,7 +269,7 @@ public class AdminController {
     /**
      * 선택한 예약 삭제 처리 (관리자용)
      */
-    @PostMapping("/api/admin/reservations/cancel")
+    @PostMapping("/reservations/cancel")
     @ResponseBody
     public ResponseEntity<?> adminCancelReservations(@RequestBody Map<String, List<Long>> request) {
         try {
@@ -282,7 +282,7 @@ public class AdminController {
             }
 
             int cancelledCount = reservationService.deleteReservationsAndMakePropertiesAvailable(reservationIds);
-            
+
             return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", cancelledCount + "개의 예약이 취소되고 관련 매물이 다시 등록되었습니다.",

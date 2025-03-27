@@ -54,10 +54,10 @@ public class MyPageController {
             ReservationStatus.PENDING
         );
         
-        // 완료된 예약 (COMPLETED, CANCELLED 상태)
+        // 완료된 예약 (COMPL, CANCELLED 상태)
         List<Reservation> completedReservations = reservationService.findByUserIdAndStatusIn(
             user.getUserId(), 
-            Arrays.asList(ReservationStatus.COMPLETED, ReservationStatus.CANCELLED)
+            Arrays.asList(ReservationStatus.COMPL, ReservationStatus.CANCELLED)
         );
         
         model.addAttribute("activeReservations", activeReservations);

@@ -25,7 +25,6 @@ import java.util.Map;
 public class CartController {
 
     private final CartService cartService;
-    private final PropertyImageRepository propertyImageRepository;
 
     /**
      * 장바구니 목록 조회

@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
             headers[csrfHeader] = csrfToken;
         }
         
-        fetch('/api/admin/reservations/cancel', {
+        fetch('/admin/reservations/cancel', {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({ reservationIds: reservationIds })

@@ -234,7 +234,7 @@ public class ReservationController {
         
         List<Reservation> completedReservations = reservationService.findByUserIdAndStatus(
             user.getUserId(), 
-            ReservationStatus.COMPLETED
+            ReservationStatus.COMPL
         );
         
         model.addAttribute("reservations", completedReservations);

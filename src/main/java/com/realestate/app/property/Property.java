@@ -1,11 +1,7 @@
 package com.realestate.app.property;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -84,6 +80,15 @@ public class Property {
 
     @Column(name = "is_reserved")
     private Boolean reserved = false;
+
+    @Column(name = "floorplan_image")
+    private String floorplanImage;  // 평면도 이미지 URL
+
+    @Column(name = "building_image")
+    private String buildingImage;  // 건물 외관 이미지 URL
+
+    @Column(name = "interior_image")
+    private String interiorImage;  // 내부 이미지 URL
 
     @PrePersist
     public void prePersist() {

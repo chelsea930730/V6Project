@@ -29,9 +29,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const lionLogo = document.getElementById('lionLogo');
     if (lionLogo) {
-        lionLogo.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.location.href = 'http://localhost:8080/';
+        lionLogo.addEventListener('click', function() {
+            window.location.href = '/';
         });
     }
 });

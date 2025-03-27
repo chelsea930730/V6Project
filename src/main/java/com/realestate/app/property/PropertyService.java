@@ -2,6 +2,13 @@ package com.realestate.app.property;
 
 import com.realestate.app.geocoding.GeocodingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import com.realestate.app.geocoding.GeocodingService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -9,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,23 +27,10 @@ import java.util.stream.Collectors;
 public class PropertyService {
     private final PropertyRepository propertyRepository;
     private final GeocodingService geocodingService;
-    private final PropertyImageRepository propertyImageRepository;
     private static final Logger log = LoggerFactory.getLogger(PropertyService.class);
 
     public List<Property> getAllProperties() {
-        List<Property> properties = propertyRepository.findAll();
-        
-        // 각 매물의 썸네일 이미지 설정
-        for (Property property : properties) {
-            if (property.getThumbnailImage() == null) {
-                String firstImageUrl = propertyImageRepository.findFirstImageUrlByPropertyId(property.getPropertyId());
-                if (firstImageUrl != null) {
-                    property.setThumbnailImage(firstImageUrl);
-                }
-            }
-        }
-        
-        return properties;
+        return propertyRepository.findAllByOrderByCreatedAtDesc();
     }
 
     @Transactional
@@ -105,7 +100,7 @@ public class PropertyService {
             List<String> detailTypes) {
 
         try {
-            List<Property> filteredProperties = getAllProperties().stream()
+            return getAllProperties().stream()
                     .filter(property -> {
                         // 가격 필터
                         if (property.getMonthlyPrice() == null ||
@@ -194,17 +189,17 @@ public class PropertyService {
 
                         // 상세 조건 필터 추가
                         if (detailTypes != null && !detailTypes.isEmpty()) {
-                            // 매물의 description이나 다른 필드에서 상세 조건 검색
+                            // 매물의 description 필드에서 상세 조건 검색
                             String description = property.getDescription();
                             if (description == null) {
                                 return false;
                             }
 
-                            // 하나라도 포함되면 매칭으로 간주
-                            boolean matchesDetail = detailTypes.stream()
-                                    .anyMatch(detail -> description.contains(detail));
+                            // 선택된 모든 조건이 description에 포함되어야 함 (AND 조건)
+                            boolean matchesAllDetails = detailTypes.stream()
+                                    .allMatch(detail -> description.contains(detail));
                             
-                            if (!matchesDetail) {
+                            if (!matchesAllDetails) {
                                 return false;
                             }
                         }
@@ -213,29 +208,21 @@ public class PropertyService {
                     })
                     .collect(Collectors.toList());
 
-            // 필터링된 매물들의 썸네일 이미지 설정
-            for (Property property : filteredProperties) {
-                if (property.getThumbnailImage() == null) {
-                    // 첫 번째 이미지를 썸네일로 사용
-                    String firstImageUrl = propertyImageRepository.findFirstImageUrlByPropertyId(property.getPropertyId());
-                    if (firstImageUrl != null) {
-                        property.setThumbnailImage(firstImageUrl);
-                    }
-                }
-            }
-
-            return filteredProperties;
-
         } catch (Exception e) {
             log.error("필터링 중 오류 발생: ", e);
             return getAllProperties();
         }
     }
     public Page<Property> getAllPropertiesWithPaging(Pageable pageable) {
-        return propertyRepository.findAll(pageable);
+        return propertyRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
 
     public List<Property> findByIds(List<Long> propertyIds) {
         return propertyRepository.findAllById(propertyIds);
+    }
+
+    @Transactional
+    public void deleteProperty(Long id) {
+        propertyRepository.deleteById(id);
     }
 }
