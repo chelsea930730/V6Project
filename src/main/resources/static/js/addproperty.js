@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 매물 삭제 함수
     function deleteProperty(propertyId) {
-        fetch(`/api/admin/property/${propertyId}`, {
+        fetch(`/api/properties/${propertyId}`, {
             method: 'DELETE'
         })
         .then(response => {

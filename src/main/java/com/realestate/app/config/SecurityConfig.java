@@ -65,7 +65,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/user/login", "/user/register", "/error","/property/**",
                                 "/css/**", "/js/**", "/img/**", "/static/**", "/navi.html",
-                                "/webjars/**", "/fonts/**", "/images/**").permitAll()
+                                "/webjars/**", "/fonts/**", "/images/**", "/uploads/**").permitAll()
                         .requestMatchers("/admin/dashboard", "/admin/addproperty", "/admin/create", "/admin/create/**", "/admin/consulting").hasRole("ADMIN")
                         .requestMatchers("/oauth2/**").permitAll()
                         .anyRequest().authenticated()

@@ -80,6 +80,10 @@ public class UserController {
                     response.put("email", user.getUsername());
                     response.put("name", user.getName());
                     
+                    // 사용자 역할 정보 추가
+                    response.put("role", user.getUser().getRole().name());
+                    log.info("🔍 사용자 역할: {}", user.getUser().getRole().name());
+                    
                     if (user.isOAuth2User()) {
                         response.put("loginType", "oauth2");
                     } else {
@@ -103,5 +107,7 @@ public class UserController {
     public List<User> getAllUsers() {
         return userService.getAllUsers(); // 모든 사용자 반환
     }
+
+
 
 }

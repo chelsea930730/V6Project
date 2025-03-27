@@ -3,19 +3,20 @@ package com.realestate.app.cart;
 import com.realestate.app.config.AuthenticatedUser;
 import com.realestate.app.property.Property;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.util.Map;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import java.util.ArrayList;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor

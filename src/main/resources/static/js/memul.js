@@ -2,6 +2,7 @@
 let selectedStation = "";
 let selectedLine = "";
 let currentProperties = [];
+let isAdmin = false;
 
 const stations = {
 	"야마노테": ["신주쿠", "이케부쿠로", "도쿄", "우에노", "시부야", "시나가와", "신바시", "아키하바라", "오사키", "유라쿠쵸", "타마치", "하마마츠초", "에비스", "고탄다", "닛포리", "메구로", "니시닛포리", "칸다", "스가모", "오카치마치", "요요기", "오츠카", "하라주쿠", "코마고메", "타바타", "신오쿠보", "메지로", "우구스이다니"],
@@ -80,6 +81,18 @@ document.addEventListener("DOMContentLoaded", function() {
 	initializePriceSliders();
 	setupEventListeners();
 	setupLinePopup();
+
+	// 사용자 역할 확인
+	fetch('/user/index')
+		.then(response => response.json())
+		.then(data => {
+			isAdmin = data.role === 'ADMIN';
+			console.log('전역 isAdmin 설정:', isAdmin);
+		})
+		.catch(error => {
+			console.error('사용자 정보 확인 실패:', error);
+			isAdmin = false; // 기본적으로 관리자가 아닌 것으로 설정
+		});
 });
 // 매물 데이터 가져오기
 function fetchProperties() {
@@ -365,85 +378,94 @@ function updatePropertyList(properties) {
 	const currentSortValue = document.querySelector('.sort-options select')?.value || 'newest';
 
 	let html = `
-        <h1>매물 리스트</h1>
-        <div class="sort-options">
-            <select class="form-select" style="width: 200px; display: inline-block;">
-                <option value="newest" ${currentSortValue === 'newest' ? 'selected' : ''}>최신순</option>
-                <option value="price-low" ${currentSortValue === 'price-low' ? 'selected' : ''}>가격 낮은순</option>
-                <option value="price-high" ${currentSortValue === 'price-high' ? 'selected' : ''}>가격 높은순</option>
-            </select>
-            <button onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
-                선택한 매물 장바구니에 담기
-            </button>
-        </div>
-        <form id="cartForm" action="/cart/add" method="post" style="display: none;"></form>
-    `;
+		<h1>매물 리스트</h1>
+		<div class="sort-options">
+			<select class="form-select" style="width: 200px; display: inline-block;">
+				<option value="newest" ${currentSortValue === 'newest' ? 'selected' : ''}>최신순</option>
+				<option value="price-low" ${currentSortValue === 'price-low' ? 'selected' : ''}>가격 낮은순</option>
+				<option value="price-high" ${currentSortValue === 'price-high' ? 'selected' : ''}>가격 높은순</option>
+			</select>
+	`;
+	
+	// 관리자가 아닌 경우에만 장바구니 버튼 추가
+	if (!isAdmin) {
+		html += `
+			<button id="cartButton" onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
+				선택한 매물 장바구니에 담기
+			</button>
+		`;
+	}
+	
+	html += `
+	</div>
+	<form id="cartForm" action="/cart/add" method="post" style="display: none;"></form>
+	`;
 
 	if (!properties || properties.length === 0) {
 		html += '<div class="empty-message">검색 결과가 없습니다.</div>';
 	} else {
 		properties.forEach(property => {
 			html += `
-                <div class="property-item">
-                    <div class="property-header">
-                        <div class="header-left">
-                            <input type="checkbox" value="${property.propertyId}">
-                            <span class="property-no">NO.${property.propertyId}</span>
-                            <span>${property.title || ''}</span>
-                        </div>
-                    </div>
-                    <table class="property-info-table">
-                        <thead>
-                            <tr>
-                                <th>사진</th>
-                                <th>월세/관리비</th>
-                                <th>시키킹/레이킹</th>
-                                <th>방 타입/면적</th>
-                                <th>건축년도</th>
-                                <th>예약상태</th>
-                                <th>상세보기</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    ${property.thumbnailImage ? 
-                                        `<img src="${property.thumbnailImage}" alt="매물 이미지" style="width: 150px; height: 100px; object-fit: cover;">` :
-                                        `<div class="no-image-container" style="width: 150px; height: 100px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
-                                            <span>이미지 준비중</span>
-                                        </div>`
-                                    }
-                                </td>
-                                <td>
-                                    <div>${Number(property.monthlyPrice || 0).toLocaleString()}円</div>
-                                    <div>${Number(property.managementFee || 0).toLocaleString()}円</div>
-                                </td>
-                                <td>
-                                    <div>${Number(property.shikikin || 0).toLocaleString()} / ${Number(property.reikin || 0).toLocaleString()}</div>
-                                </td>
-                                <td>
-                                    <div>${property.roomType || ''}</div>
-                                    <div>${property.area || ''}m²</div>
-                                    <div>${property.buildingType || ''}</div>
-                                </td>
-                                <td>${property.builtYear || ''}</td>
-                                <td>
-                                    <div class="status-available">${property.status || ''}</div>
-                                </td>
-                                <td>
-                                    <a href="/property/${property.propertyId}" class="detail-button">상세보기</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="address-info">
-                        <div>${property.location || ''}</div>
-                        <div>${property.subwayLine || ''}</div>
-                        <div>${property.station || ''}</div>
-                        <div>${property.description || ''}</div>
-                    </div>
-                </div>
-            `;
+				<div class="property-item">
+					<div class="property-header">
+						<div class="header-left">
+							<input type="checkbox" value="${property.propertyId}">
+							<span class="property-no">NO.${property.propertyId}</span>
+							<span>${property.title || ''}</span>
+						</div>
+					</div>
+					<table class="property-info-table">
+						<thead>
+							<tr>
+								<th>사진</th>
+								<th>월세/관리비</th>
+								<th>시키킹/레이킹</th>
+								<th>방 타입/면적</th>
+								<th>건축년도</th>
+								<th>예약상태</th>
+								<th>상세보기</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									${property.thumbnailImage ? 
+										`<img src="${property.thumbnailImage}" alt="매물 이미지" style="width: 150px; height: 100px; object-fit: cover;">` :
+										`<div class="no-image-container" style="width: 150px; height: 100px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+											<span>이미지 준비중</span>
+										</div>`
+									}
+								</td>
+								<td>
+									<div>${Number(property.monthlyPrice || 0).toLocaleString()}円</div>
+									<div>${Number(property.managementFee || 0).toLocaleString()}円</div>
+								</td>
+								<td>
+									<div>${Number(property.shikikin || 0).toLocaleString()} / ${Number(property.reikin || 0).toLocaleString()}</div>
+								</td>
+								<td>
+									<div>${property.roomType || ''}</div>
+									<div>${property.area || ''}m²</div>
+									<div>${property.buildingType || ''}</div>
+								</td>
+								<td>${property.builtYear || ''}</td>
+								<td>
+									<div class="status-available">${property.status || ''}</div>
+								</td>
+								<td>
+									<a href="/property/${property.propertyId}" class="detail-button">상세보기</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="address-info">
+						<div>${property.location || ''}</div>
+						<div>${property.subwayLine || ''}</div>
+						<div>${property.station || ''}</div>
+						<div>${property.description || ''}</div>
+					</div>
+				</div>
+			`;
 		});
 	}
 

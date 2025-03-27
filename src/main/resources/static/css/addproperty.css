@@ -79,6 +79,13 @@ body {
 .btn-primary {
     background-color: #4682B4;
     border-color: #4682B4;
+    white-space: nowrap;
+}
+
+#createPropertyBtn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .btn-primary:hover {

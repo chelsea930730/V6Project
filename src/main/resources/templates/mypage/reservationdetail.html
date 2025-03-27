@@ -13,78 +13,78 @@
     <script th:src="@{/js/sangdamsangse.js}" defer></script>
 </head>
 <body>
-    <div id="navbar-placeholder"></div>
+<div id="navbar-placeholder"></div>
 
-    <main class="sangdam-container">
-        <h1>상담 예약 상세보기</h1>
-        
-        <div class="detail-section">
-            <div class="form-group">
-                <label for="status">진행 상태</label>
-                <input type="text" id="status" name="status" th:value="${reservation.status.name() == 'PENDING' ? '상담대기' : 
+<main class="sangdam-container">
+    <h1>상담 예약 상세보기</h1>
+
+    <div class="detail-section">
+        <div class="form-group">
+            <label for="status">진행 상태</label>
+            <input type="text" id="status" name="status" th:value="${reservation.status.name() == 'PENDING' ? '상담대기' :
                                       (reservation.status.name() == 'CONFIRMED' ? '상담확정' : '예약취소')}" readonly>
-            </div>
-            
-            <div class="form-group">
-                <label for="name">성명</label>
-                <input type="text" id="name" name="name" th:value="${reservation.user.name}" readonly>
-            </div>
-
-            <div class="form-group">
-                <label for="email">이메일</label>
-                <input type="email" id="email" name="email" th:value="${reservation.user.email}" readonly>
-            </div>
-
-            <div class="form-group">
-                <label for="phone">연락 가능한 전화번호</label>
-                <input type="tel" id="phone" name="phone" th:value="${reservation.user.phone}" readonly>
-            </div>
-
-            <div class="form-group">
-                <label for="date">상담 날짜</label>
-                <input type="date" id="date" name="date" th:value="${#temporals.format(reservation.reservedDate, 'yyyy-MM-dd')}" readonly>
-            </div>
-
-            <div class="form-group">
-                <label for="message">기타 문의 사항</label>
-                <textarea id="message" name="message" th:text="${reservation.message}" readonly></textarea>
-            </div>
-
-            <button type="button" class="submit-btn" onclick="location.href='/mypage'">마이페이지로 이동하기 →</button>
         </div>
 
-        <h2 class="subheader">상담 하실 물건</h2>
-        <div class="property-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>게시번호</th>
-                        <th>건물명</th>
-                        <th>월세+관리비</th>
-                        <th>시키킹/레이킹</th>
-                        <th>방타입</th>
-                        <th>건축년도</th>
-                        <th>상세보기</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="property : ${properties}">
-                        <td th:text="${'NO.' + property.propertyId}">NO.000001</td>
-                        <td th:text="${property.title}">건물명</td>
-                        <td th:text="${#numbers.formatInteger(property.monthlyPrice,0,'COMMA') + '엔'}">9.7</td>
-                        <td th:text="${#numbers.formatInteger(property.shikikin, 0, 'NONE') + '/' + #numbers.formatInteger(property.reikin, 0, 'NONE')}">1/1</td>
-                        <td th:text="${property.roomType}">1K</td>
-                        <td th:text="${property.builtYear}">2020년</td>
-                        <td>
-                            <button type="button" class="detail-btn" 
+        <div class="form-group">
+            <label for="name">성명</label>
+            <input type="text" id="name" name="name" th:value="${reservation.user.name}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="email">이메일</label>
+            <input type="email" id="email" name="email" th:value="${reservation.user.email}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">연락 가능한 전화번호</label>
+            <input type="tel" id="phone" name="phone" th:value="${reservation.user.phone}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="date">상담 날짜</label>
+            <input type="date" id="date" name="date" th:value="${#temporals.format(reservation.reservedDate, 'yyyy-MM-dd')}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="message">기타 문의 사항</label>
+            <textarea id="message" name="message" th:text="${reservation.message}" readonly></textarea>
+        </div>
+
+        <button type="button" class="submit-btn" onclick="location.href='/mypage'">마이페이지로 이동하기 →</button>
+    </div>
+
+    <h2 class="subheader">상담 하실 물건</h2>
+    <div class="property-table">
+        <table>
+            <thead>
+            <tr>
+                <th>게시번호</th>
+                <th>건물명</th>
+                <th>월세+관리비</th>
+                <th>시키킹/레이킹</th>
+                <th>방타입</th>
+                <th>건축년도</th>
+                <th>상세보기</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="property : ${properties}">
+                <td th:text="${'NO.' + property.propertyId}">NO.000001</td>
+                <td th:text="${property.title}">건물명</td>
+                <td th:text="${#numbers.formatInteger(property.monthlyPrice,0,'COMMA') + '엔'}">9.7</td>
+                <td th:text="${#numbers.formatInteger(property.shikikin, 0, 'NONE') + '/' + #numbers.formatInteger(property.reikin, 0, 'NONE')}">1/1</td>
+                <td th:text="${property.roomType}">1K</td>
+                <td th:text="${property.builtYear}">2020년</td>
+                <td>
+                    <button type="button" class="detail-btn"
                             th:onclick="'location.href=\'/property/' + ${property.propertyId} + '\''">상세보기</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </main>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
 
-    <div id="footer-placeholder"></div>
+<div id="footer-placeholder"></div>
 </body>
 </html>

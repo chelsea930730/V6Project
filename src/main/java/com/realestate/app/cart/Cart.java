@@ -2,12 +2,12 @@ package com.realestate.app.cart;
 
 import com.realestate.app.property.Property;
 import com.realestate.app.user.User;
-
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Getter

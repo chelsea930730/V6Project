@@ -15,6 +15,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -234,9 +236,8 @@ public class AdminApiController {
             return null;
         }
 
-        // static/img 디렉토리에 저장하도록 경로 수정
-        String uploadPath = "src/main/resources/static/img";
-        Path directory = Paths.get(uploadPath);
+        // 외부 디렉토리에 저장 (application.properties에 정의된 경로 사용)
+        Path directory = Paths.get(uploadDirectory);
         if (!Files.exists(directory)) {
             Files.createDirectories(directory);
         }
@@ -250,7 +251,69 @@ public class AdminApiController {
         Path filePath = directory.resolve(filename);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        // 상대 경로 반환 (/img/파일명)
-        return "/img/" + filename;
+        // 상대 경로 반환 (/uploads/파일명)
+        return "/uploads/" + filename;
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getPropertyById(@PathVariable Long id) {
+        try {
+            Property property = propertyService.getPropertyById(id);
+            
+            // 클라이언트가 기대하는 형식으로 응답 데이터 구성
+            Map<String, Object> response = new HashMap<>();
+            response.put("propertyId", property.getPropertyId());
+            response.put("title", property.getTitle());
+            response.put("monthlyPrice", property.getMonthlyPrice());
+            response.put("managementFee", property.getManagementFee());
+            response.put("initialCost", property.getInitialCost());
+            response.put("area", property.getArea());
+            response.put("floor", property.getFloor());  // e.g. "3층"
+            response.put("buildingType", property.getBuildingType().name());  // enum의 name 사용
+            response.put("roomType", property.getRoomType());
+            response.put("station", property.getStation());
+            response.put("subwayLine", property.getSubwayLine());
+            response.put("location", property.getLocation());  // address로 사용될 필드
+            response.put("district", property.getDistrict());
+            response.put("shikikin", property.getShikikin());
+            response.put("reikin", property.getReikin());
+            response.put("status", property.getStatus().name());  // enum의 name 사용
+            response.put("builtYear", property.getBuiltYear());
+            response.put("description", property.getDescription());
+            response.put("nearbyFacilities", property.getNearbyFacilities());
+            
+            // 이미지 URL 추가
+            response.put("thumbnailImage", property.getThumbnailImage());
+            response.put("floorplanImage", property.getFloorplanImage());
+            response.put("buildingImage", property.getBuildingImage());
+            response.put("interiorImage", property.getInteriorImage());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("매물 조회 중 오류 발생", e);
+            return ResponseEntity.badRequest().body("매물 조회에 실패했습니다: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProperty(@PathVariable Long id) {
+        try {
+            // 매물 삭제 전에 존재 여부 확인
+            Property property = propertyService.getPropertyById(id);
+            
+            // 매물 삭제
+            propertyService.deleteProperty(id);
+            
+            return ResponseEntity.ok().body(Map.of(
+                "success", true,
+                "message", "매물이 성공적으로 삭제되었습니다."
+            ));
+        } catch (Exception e) {
+            log.error("매물 삭제 중 오류 발생", e);
+            return ResponseEntity.badRequest().body(Map.of(
+                "success", false,
+                "message", "매물 삭제에 실패했습니다: " + e.getMessage()
+            ));
+        }
     }
 } 

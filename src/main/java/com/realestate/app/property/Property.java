@@ -78,6 +78,9 @@ public class Property {
     @Column(name = "thumbnail_image")
     private String thumbnailImage;  // 썸네일 이미지 URL
 
+    @Column(name = "is_reserved")
+    private Boolean reserved = false;
+
     @Column(name = "floorplan_image")
     private String floorplanImage;  // 평면도 이미지 URL
 
@@ -126,5 +129,13 @@ public class Property {
         public String getValue() {
             return value;
         }
+    }
+
+    public Boolean getReserved() {
+        return reserved == null ? false : reserved;
+    }
+
+    public void setReserved(Boolean reserved) {
+        this.reserved = reserved;
     }
 }

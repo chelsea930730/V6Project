@@ -1,5 +1,6 @@
 package com.realestate.app.property;
 
+import com.realestate.app.geocoding.GeocodingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,9 +11,14 @@ import com.realestate.app.geocoding.GeocodingService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -183,17 +189,17 @@ public class PropertyService {
 
                         // 상세 조건 필터 추가
                         if (detailTypes != null && !detailTypes.isEmpty()) {
-                            // 매물의 description이나 다른 필드에서 상세 조건 검색
+                            // 매물의 description 필드에서 상세 조건 검색
                             String description = property.getDescription();
                             if (description == null) {
                                 return false;
                             }
 
-                            // 하나라도 포함되면 매칭으로 간주
-                            boolean matchesDetail = detailTypes.stream()
-                                    .anyMatch(detail -> description.contains(detail));
+                            // 선택된 모든 조건이 description에 포함되어야 함 (AND 조건)
+                            boolean matchesAllDetails = detailTypes.stream()
+                                    .allMatch(detail -> description.contains(detail));
                             
-                            if (!matchesDetail) {
+                            if (!matchesAllDetails) {
                                 return false;
                             }
                         }
@@ -208,10 +214,15 @@ public class PropertyService {
         }
     }
     public Page<Property> getAllPropertiesWithPaging(Pageable pageable) {
-        return propertyRepository.findAll(pageable);
+        return propertyRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
 
     public List<Property> findByIds(List<Long> propertyIds) {
         return propertyRepository.findAllById(propertyIds);
+    }
+
+    @Transactional
+    public void deleteProperty(Long id) {
+        propertyRepository.deleteById(id);
     }
 }

@@ -131,12 +131,9 @@ body {
 	display: flex;
 	flex-direction: column;
 	font-family: 'Cafe24 Ssurround air OTF Light';
-	height: fit-content;
-	/* ✅ 기존 height 속성 수정 */
-	max-height: calc(100vh - 150px); /* 화면 높이에 맞춰 최대 높이 제한 */
-	overflow-y: auto;
+	height: auto;
+	/* 스크롤 관련 속성 제거 */
 	overflow-x: hidden;
-	direction: rtl;
 }
 
 .filter-box * {

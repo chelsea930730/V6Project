@@ -9,34 +9,75 @@
 <!-- 관리자 네비게이션 바 -->
 <nav th:fragment="nav" class="admin-sidebar">
     <div class="sidebar-header">
-        <h2>LION</h2>
+        <h2 id="lionLogo" style="cursor: pointer;">LION</h2>
     </div>
     <ul class="nav-links">
         <li>
-            <a href="/admin/dashboard">
+            <a href="/admin/dashboard" class="nav-link">
                 <i class="fas fa-home"></i>
                 대시보드
             </a>
         </li>
         <li>
-            <a href="/admin/addproperty">
+            <a href="/admin/addproperty" class="nav-link">
                 <i class="fas fa-building"></i>
                 매물 관리
             </a>
         </li>
         <li>
-            <a href="/admin/consulting">
+            <a href="/admin/consulting" class="nav-link">
                 <i class="fas fa-users"></i>
                 상담 관리
             </a>
         </li>
         <li>
-            <a href="/admin/chatManage">
+            <a href="/mypage/chat-list.html" class="nav-link">
                 <i class="fas fa-comments"></i>
                 <span>채팅 관리</span>
             </a>
         </li>
+        <li class="logout-item">
+            <a href="#" id="logoutBtn" class="nav-link">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>로그아웃</span>
+            </a>
+        </li>
     </ul>
 </nav>
+
+<script th:fragment="nav-script">
+// 로그아웃 기능
+document.addEventListener('DOMContentLoaded', function() {
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            fetch('/user/logout', { method: 'POST' })
+                .then(() => {
+                    window.location.href = '/';
+                })
+                .catch(error => console.error('로그아웃 실패:', error));
+        });
+    }
+
+    // 현재 페이지에 해당하는 메뉴 항목에 active 클래스 추가
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.nav-links .nav-link');
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === currentPath) {
+            link.classList.add('active');
+        }
+    });
+
+    // LION 로고 클릭 시 홈페이지로 이동
+    const lionLogo = document.getElementById('lionLogo');
+    if (lionLogo) {
+        lionLogo.addEventListener('click', function() {
+            window.location.href = '/'; // 루트 경로(홈페이지)로 이동
+        });
+    }
+});
+</script>
 </body>
-</html> 
+</html>

@@ -55,14 +55,12 @@ main p {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 10px 0;
 }
 
 .cart-title {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-start; /* 왼쪽 정렬 */
 }
 
 .delete-cart-btn {
@@ -269,23 +267,4 @@ label {
 
 .close:hover {
   color: #bbb;
-}
-
-/* 전체 선택 체크박스 스타일 */
-.select-all-container {
-    display: flex;
-    align-items: center;
-    margin-right: 20px;
-}
-
-.select-all-container input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
-    cursor: pointer;
-}
-
-.select-all-container label {
-    font-size: 14px;
-    cursor: pointer;
 }
