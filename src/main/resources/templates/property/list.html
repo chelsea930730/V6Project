@@ -28,7 +28,9 @@
            th:text="${filterValue} + ' 노선 매물을 보고 계십니다'"></p>
     </div>
     <br>
-    <a th:href="@{/reservation}" class="cta-btn">상담 예약 페이지 이동</a>
+
+    <!-- ADMIN이 아닐 때만 상담 예약 버튼 표시 -->
+    <a id="reservationBtn" th:href="@{/reservation}" class="cta-btn">상담 예약 페이지 이동</a>
 </section>
 
 
@@ -78,8 +80,9 @@
             <label>건물 타입</label>
             <label><input type="checkbox" name="type" value="맨션"> 맨션</label>
             <label><input type="checkbox" name="type" value="아파트"> 아파트</label>
-            <label><input type="checkbox" name="type" value="LDK 주택"> LDK 주택</label>
-            <label><input type="checkbox" name="type" value="기타"> 기타</label>
+            <label><input type="checkbox" name="type" value="타운하우스"> 타운하우스</label>
+            <label><input type="checkbox" name="type" value="오피스텔"> 오피스텔</label>
+            <label><input type="checkbox" name="type" value="셰어하우스"> 셰어하우스</label>
         </div>
 
         <br>
@@ -115,11 +118,14 @@
         <!-- 상세조건 -->
         <div class="detail-type">
             <label>상세 조건</label>
-            <label><input type="checkbox" name="detail" value="즉시입주"> 즉시입주</label>
+            <label><input type="checkbox" name="detail" value="주차장"> 주차장</label>
             <label><input type="checkbox" name="detail" value="2인 입주"> 2인 입주</label>
-            <label><input type="checkbox" name="detail" value="워홀비자가능"> 워홀비자가능</label>
-            <label><input type="checkbox" name="detail" value="인터넷 무료"> 인터넷 무료</label>
-            <label><input type="checkbox" name="detail" value="펫 가능"> 펫 가능</label>
+            <label><input type="checkbox" name="detail" value="욕실/화장실 분리"> 욕실/화장실 분리</label>
+            <label><input type="checkbox" name="detail" value="즉시 입주"> 즉시 입주</label>
+            <label><input type="checkbox" name="detail" value="학생 가능"> 학생 가능</label>
+            <label><input type="checkbox" name="detail" value="반려동물 가능"> 반려동물 가능</label>
+            <label><input type="checkbox" name="detail" value="가구 포함"> 가구 포함</label>
+            <label><input type="checkbox" name="detail" value="에어컨"> 에어컨</label>
         </div>
 
         <br>
@@ -135,25 +141,25 @@
             <h3>노선 선택</h3>
             <div class="jr">
                 <img th:src="@{/img/jr.png}" alt="jr 로고" class="jr-logo">
-                <span class="line yamanote">야마노테</span>
-                <span class="line chuuo">츄오- 소부</span>
-                <span class="line saikyou">사이쿄</span>
-                <span class="line joban">죠반</span>
-                <span class="line takasaki">타카사키</span>
-                <span class="line yokosuka">요코스카</span>
-                <span class="line keitoku">케이힌토쿠</span>
+                <span class="line yamanote">JR야마노테선</span>
+                <span class="line chuuo">JR츄오소부선</span>
+                <span class="line saikyou">JR사이쿄선</span>
+                <span class="line joban">JR죠반선</span>
+                <span class="line takasaki">JR타카사키선</span>
+                <span class="line yokosuka">JR요코스카선</span>
+                <span class="line keitoku">JR케이힌토쿠선</span>
             </div>
             <div class="tokyometro">
                 <img th:src="@{/img/Tokyo_Metro_logo.svg.png}" alt="도쿄메트로 로고" class="tokyometro-logo" />
-                <span class="line hanzomon">한조몬</span>
-                <span class="line marunouchi">마루노우치</span>
-                <span class="line hibiya">히비야</span>
-                <span class="line chiyoda">치요다</span>
-                <span class="line fukutoshin">후쿠토신</span>
-                <span class="line ginza">긴자</span>
-                <span class="line namboku">난보쿠</span>
-                <span class="line yurakucho">유라쿠쵸</span>
-                <span class="line tozai">토자이</span>
+                <span class="line hanzomon">한조몬선</span>
+                <span class="line marunouchi">마루노우치선</span>
+                <span class="line hibiya">히비야선</span>
+                <span class="line chiyoda">치요다선</span>
+                <span class="line fukutoshin">후쿠토신선</span>
+                <span class="line ginza">긴자선</span>
+                <span class="line namboku">난보쿠선</span>
+                <span class="line yurakucho">유라쿠쵸선</span>
+                <span class="line tozai">토자이선</span>
             </div>
             <h3>역 선택</h3>
             <div id="stationList" class="station-list">
@@ -166,33 +172,21 @@
     <!-- 매물 리스트 -->
     <section class="property-list">
         <h1>매물 리스트</h1>
-
+        
         <!-- 정렬 옵션 -->
         <div class="sort-options">
-            <select class="form-select" style="width: 200px; display: inline-block;">
+            <select class="form-select" id="sortSelect">
                 <option value="newest">최신순</option>
                 <option value="price-low">가격 낮은순</option>
                 <option value="price-high">가격 높은순</option>
             </select>
-
-            <!-- 장바구니 버튼 추가 (detail-button 클래스 사용) -->
-            <button onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
+            <button onclick="addSelectedToCart()" class="add-cart-button">
                 선택한 매물 장바구니에 담기
             </button>
         </div>
 
-        <!-- 폼은 숨김 처리 -->
-        <form id="cartForm" th:action="@{/cart/add}" method="post" style="display: none;">
-            <!-- 선택된 매물 ID들이 여기에 동적으로 추가됨 -->
-        </form>
-
-        <!-- 매물이 없을 경우 -->
-        <div th:if="${#lists.isEmpty(properties)}" class="empty-message">
-            등록된 매물이 없습니다.
-        </div>
-
-        <!-- 매물 목록 -->
-        <div class="property-list">
+        <!-- 매물 목록 컨테이너 - 클래스 이름 변경 -->
+        <div class="property-items-container">
             <div th:each="property : ${properties}" class="property-item">
                 <!-- 매물 헤더 -->
                 <div class="property-header">
@@ -256,8 +250,7 @@
                 <div th:if="${property.description != null}" th:text="${property.description}"></div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 </div>
 
 
@@ -267,6 +260,15 @@
 </script>
 <script th:src="@{/js/memul.js}"></script>
 <script th:src="@{/js/navbar.js}"></script>
+
+<script>
+// 정렬 처리 함수
+function handleSort(sortType) {
+    const filterData = getCurrentFilterData();
+    filterData.sortType = sortType;
+    filterProperties(filterData);
+}
+</script>
 </body>
 </html>
 

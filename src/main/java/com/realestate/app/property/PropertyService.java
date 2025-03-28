@@ -1,5 +1,6 @@
 package com.realestate.app.property;
 
+import com.realestate.app.geocoding.GeocodingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,13 +8,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.realestate.app.geocoding.GeocodingService;
-import com.realestate.app.property.PropertyImageRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,23 +27,10 @@ import java.util.stream.Collectors;
 public class PropertyService {
     private final PropertyRepository propertyRepository;
     private final GeocodingService geocodingService;
-    private final PropertyImageRepository propertyImageRepository;
     private static final Logger log = LoggerFactory.getLogger(PropertyService.class);
 
     public List<Property> getAllProperties() {
-        List<Property> properties = propertyRepository.findAll();
-        
-        // 각 매물의 썸네일 이미지 설정
-        for (Property property : properties) {
-            if (property.getThumbnailImage() == null) {
-                String firstImageUrl = propertyImageRepository.findFirstImageUrlByPropertyId(property.getPropertyId());
-                if (firstImageUrl != null) {
-                    property.setThumbnailImage(firstImageUrl);
-                }
-            }
-        }
-        
-        return properties;
+        return propertyRepository.findAllByOrderByCreatedAtDesc();
     }
 
     @Transactional
@@ -104,141 +96,88 @@ public class PropertyService {
             List<String> roomTypes,
             String buildingYear,
             String station,
+            String line,
             String keyword,
-            List<String> detailTypes) {
-
-        try {
-            List<Property> filteredProperties = getAllProperties().stream()
+        List<String> detailTypes
+    ) {
+        return getAllProperties().stream()
                     .filter(property -> {
-                        // 가격 필터
-                        if (property.getMonthlyPrice() == null ||
-                                property.getMonthlyPrice().compareTo(minPrice) < 0 ||
-                                property.getMonthlyPrice().compareTo(maxPrice) > 0) {
-                            return false;
-                        }
+                // 월세 필터링
+                boolean monthlyPriceMatch = true;
+                if (minPrice != null) {
+                    monthlyPriceMatch = property.getMonthlyPrice() == null || 
+                                      property.getMonthlyPrice().compareTo(minPrice) >= 0;
+                }
+                if (maxPrice != null) {
+                    monthlyPriceMatch = monthlyPriceMatch && (property.getMonthlyPrice() == null || 
+                                      property.getMonthlyPrice().compareTo(maxPrice) <= 0);
+                }
 
-                        // 건물 타입 필터
-                        if (buildingTypes != null && !buildingTypes.isEmpty()) {
-                            boolean matchesType = buildingTypes.stream()
-                                    .anyMatch(type -> property.getBuildingType() != null &&
-                                            property.getBuildingType().name().equals(type));
-                            if (!matchesType) return false;
-                        }
+                // 건물 유형 필터링
+                boolean buildingTypeMatch = buildingTypes == null 
+                    || buildingTypes.isEmpty() 
+                    || buildingTypes.contains(property.getBuildingType().getValue());
 
-                        // 방 타입 필터 - 2K이상 특별 처리
-                        if (roomTypes != null && !roomTypes.isEmpty()) {
-                            if (roomTypes.contains("2K이상")) {
-                                // 1R, 1K, 1DK, 1LDK가 아닌 다른 방 타입을 표시하는 로직
-                                boolean isSpecialMatch = !"1R".equals(property.getRoomType()) && 
-                                                        !"1K".equals(property.getRoomType()) && 
-                                                        !"1DK".equals(property.getRoomType()) && 
-                                                        !"1LDK".equals(property.getRoomType());
-                                
-                                // 다른 방 타입 체크박스도 함께 선택되었다면
-                                boolean otherTypeSelected = roomTypes.stream()
-                                        .filter(type -> !"2K이상".equals(type))
-                                        .anyMatch(type -> type.equals(property.getRoomType()));
-                                
-                                // 2K이상 조건에 맞거나, 다른 선택된 타입과 일치하면 통과
-                                if (!(isSpecialMatch || otherTypeSelected)) {
-                                    return false;
-                                }
-                            } else {
-                                // 2K이상이 선택되지 않았다면 일반적인 필터링
-                                if (!roomTypes.contains(property.getRoomType())) {
-                                    return false;
-                                }
-                            }
-                        }
+                // 방 유형 필터링
+                boolean roomTypeMatch = roomTypes == null
+                    || roomTypes.isEmpty()
+                    || roomTypes.contains(property.getRoomType());
 
-                        // 건축년도 필터
-                        if (buildingYear != null && !buildingYear.isEmpty()) {
-                            String yearStr = property.getBuiltYear().replace("년", "");
-                            try {
-                                int propertyYear = Integer.parseInt(yearStr);
-                                int currentYear = java.time.Year.now().getValue();
-                                int age = currentYear - propertyYear;
+                // 건축년도 필터링
+                boolean buildingYearMatch = buildingYear == null 
+                    || buildingYear.isEmpty() 
+                    || property.getBuiltYear() == null 
+                    || property.getBuiltYear().contains(buildingYear);
 
-                                int limit = switch (buildingYear) {
-                                    case "1년 이내" -> 1;
-                                    case "5년 이내" -> 5;
-                                    case "10년 이내" -> 10;
-                                    case "15년 이내" -> 15;
-                                    case "20년 이내" -> 20;
-                                    case "25년 이내" -> 25;
-                                    case "30년 이내" -> 30;
-                                    default -> Integer.MAX_VALUE;
-                                };
-
-                                if (age > limit) return false;
-                            } catch (NumberFormatException e) {
-                                log.error("건축년도 파싱 오류: {}", yearStr);
-                                return false;
-                            }
-                        }
-
-                        // 역 필터 수정
-                        if (station != null && !station.isEmpty()) {
-                            if (property.getStation() == null && 
-                                (property.getSubwayLine() == null || 
-                                 !property.getSubwayLine().contains(station))) {
-                                return false;
-                            }
-                        }
+                // 상세 정보 필터링
+                boolean detailMatch = detailTypes == null 
+                    || detailTypes.isEmpty() 
+                    || (property.getNearbyFacilities() != null && 
+                        detailTypes.stream()
+                            .anyMatch(detail -> property.getNearbyFacilities().contains(detail)));
 
                         // 키워드 검색
-                        if (keyword != null && !keyword.isEmpty()) {
-                            String lowercaseKeyword = keyword.toLowerCase();
-                            return (property.getLocation() != null &&
-                                    property.getLocation().toLowerCase().contains(lowercaseKeyword)) ||
-                                    (property.getDistrict() != null &&
-                                            property.getDistrict().toLowerCase().contains(lowercaseKeyword));
-                        }
+                boolean keywordMatch = keyword == null 
+                    || keyword.isEmpty() 
+                    || (property.getTitle() != null && property.getTitle().contains(keyword)) 
+                    || (property.getDescription() != null && property.getDescription().contains(keyword));
 
-                        // 상세 조건 필터 추가
-                        if (detailTypes != null && !detailTypes.isEmpty()) {
-                            // 매물의 description이나 다른 필드에서 상세 조건 검색
-                            String description = property.getDescription();
-                            if (description == null) {
-                                return false;
-                            }
+                // 지하철 노선 필터링 수정
+                boolean subwayLineMatch = true;
+                if (line != null && !line.isEmpty()) {
+                    subwayLineMatch = property.getSubwayLine() != null && 
+                                    property.getSubwayLine().contains(line);
+                }
 
-                            // 하나라도 포함되면 매칭으로 간주
-                            boolean matchesDetail = detailTypes.stream()
-                                    .anyMatch(detail -> description.contains(detail));
-                            
-                            if (!matchesDetail) {
-                                return false;
-                            }
-                        }
+                // 역 필터링 수정 (역이 선택된 경우에만 적용)
+                boolean stationMatch = true;
+                if (station != null && !station.isEmpty()) {
+                    // DB에 저장된 형식 (일본어(한글))에 맞춰 검색
+                    String stationPattern = "(" + station + ")";
+                    stationMatch = property.getStation() != null && 
+                                 property.getStation().contains(stationPattern);
+                }
 
-                        return true;
+                return monthlyPriceMatch && buildingTypeMatch && roomTypeMatch && 
+                       buildingYearMatch && detailMatch && keywordMatch && 
+                       subwayLineMatch && stationMatch;
                     })
                     .collect(Collectors.toList());
-
-            // 필터링된 매물들의 썸네일 이미지 설정
-            for (Property property : filteredProperties) {
-                if (property.getThumbnailImage() == null) {
-                    // 첫 번째 이미지를 썸네일로 사용
-                    String firstImageUrl = propertyImageRepository.findFirstImageUrlByPropertyId(property.getPropertyId());
-                    if (firstImageUrl != null) {
-                        property.setThumbnailImage(firstImageUrl);
-                    }
-                }
-            }
-
-            return filteredProperties;
-
-        } catch (Exception e) {
-            log.error("필터링 중 오류 발생: ", e);
-            return getAllProperties();
-        }
     }
+
     public Page<Property> getAllPropertiesWithPaging(Pageable pageable) {
-        return propertyRepository.findAll(pageable);
+        return propertyRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
 
     public List<Property> findByIds(List<Long> propertyIds) {
         return propertyRepository.findAllById(propertyIds);
+    }
+
+    public List<Property> getAllPropertiesByCreatedAtDesc() {
+        return propertyRepository.findAllByOrderByCreatedAtDesc();
+    }
+    @Transactional
+    public void deleteProperty(Long id) {
+        propertyRepository.deleteById(id);
     }
 }

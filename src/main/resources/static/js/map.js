@@ -5,7 +5,53 @@ document.querySelectorAll(".line").forEach(button => {
     });
 });
 
+// 지역 이름 매핑 객체 추가
+const districtMapping = {
+    '足立区': '아다치구',
+    '葛飾区': '가쓰시카구',
+    '江戸川区': '에도가와구',
+    '江東区': '고토구',
+    '墨田区': '스미다구',
+    '荒川区': '아라카와구',
+    '台東区': '다이토구',
+    '北区': '기타구',
+    '文京区': '분쿄구',
+    '豊島区': '도시마구',
+    '板橋区': '이타바시구',
+    '練馬区': '네리마구',
+    '杉並区': '스기나미구',
+    '中野区': '나카노구',
+    '新宿区': '신주쿠구',
+    '千代田区': '지요다구',
+    '中央区': '주오구',
+    '渋谷区': '시부야구',
+    '世田谷区': '세타가야구',
+    '港区': '미나토구',
+    '目黒区': '메구로구',
+    '品川区': '시나가와구',
+    '大田区': '오타구'
+};
 
+// 지역 버튼 클릭 이벤트 처리
+document.addEventListener('DOMContentLoaded', function() {
+    const districtButtons = document.querySelectorAll('.district-button');
+    
+    districtButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // URL에서 일본어 district 파라미터 추출
+            const japaneseDistrict = this.getAttribute('href').split('district=')[1];
+            const decodedJapaneseDistrict = decodeURIComponent(japaneseDistrict);
+            
+            // URL에는 한글 지역명을 사용
+            const koreanDistrict = convertDistrictToKorean(decodedJapaneseDistrict);
+            
+            // 한글 지역명으로 페이지 이동
+            window.location.href = `/property/list?district=${encodeURIComponent(koreanDistrict)}`;
+        });
+    });
+});
 
 function resizeMap() {
     let img = document.getElementById("mapImage");
@@ -91,4 +137,46 @@ function adjustDistrictButtonPositions() {
 function adjustLayoutForLoginState(isLoggedIn) {
     // 더 이상 부분적인 스타일 조정 대신 fixMapImageSize()가 모든 케이스를 처리
     fixMapImageSize();
+}
+
+// 한글-일본어 지역명 매핑
+const districtMappingKorToJp = {
+    '아다치구': '足立区',
+    '가쓰시카구': '葛飾区',
+    '에도가와구': '江戸川区',
+    '고토구': '江東区',
+    '스미다구': '墨田区',
+    '아라카와구': '荒川区',
+    '다이토구': '台東区',
+    '기타구': '北区',
+    '분쿄구': '文京区',
+    '도시마구': '豊島区',
+    '이타바시구': '板橋区',
+    '네리마구': '練馬区',
+    '스기나미구': '杉並区',
+    '나카노구': '中野区',
+    '신주쿠구': '新宿区',
+    '지요다구': '千代田区',
+    '주오구': '中央区',
+    '시부야구': '渋谷区',
+    '세타가야구': '世田谷区',
+    '미나토구': '港区',
+    '메구로구': '目黒区',
+    '시나가와구': '品川区',
+    '오타구': '大田区'
+};
+
+// 일본어-한글 지역명 매핑 (역방향 매핑)
+const districtMappingJpToKor = Object.fromEntries(
+    Object.entries(districtMappingKorToJp).map(([k, v]) => [v, k])
+);
+
+// 지역명 변환 함수 (한글 -> 일본어)
+function convertDistrictToJapanese(koreanDistrict) {
+    return districtMappingKorToJp[koreanDistrict] || koreanDistrict;
+}
+
+// 지역명 변환 함수 (일본어 -> 한글)
+function convertDistrictToKorean(japaneseDistrict) {
+    return districtMappingJpToKor[japaneseDistrict] || japaneseDistrict;
 }

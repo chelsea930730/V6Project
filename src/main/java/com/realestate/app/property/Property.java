@@ -78,6 +78,18 @@ public class Property {
     @Column(name = "thumbnail_image")
     private String thumbnailImage;  // 썸네일 이미지 URL
 
+    @Column(name = "is_reserved")
+    private Boolean reserved = false;
+
+    @Column(name = "floorplan_image")
+    private String floorplanImage;  // 평면도 이미지 URL
+
+    @Column(name = "building_image")
+    private String buildingImage;  // 건물 외관 이미지 URL
+
+    @Column(name = "interior_image")
+    private String interiorImage;  // 내부 이미지 URL
+
     @PrePersist
     public void prePersist() {
         if (this.createdAt == null) {
@@ -117,5 +129,13 @@ public class Property {
         public String getValue() {
             return value;
         }
+    }
+
+    public Boolean getReserved() {
+        return reserved == null ? false : reserved;
+    }
+
+    public void setReserved(Boolean reserved) {
+        this.reserved = reserved;
     }
 }

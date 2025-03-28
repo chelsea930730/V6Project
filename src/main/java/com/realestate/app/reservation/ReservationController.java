@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -235,7 +234,7 @@ public class ReservationController {
         
         List<Reservation> completedReservations = reservationService.findByUserIdAndStatus(
             user.getUserId(), 
-            ReservationStatus.COMPLETED
+            ReservationStatus.COMPL
         );
         
         model.addAttribute("reservations", completedReservations);

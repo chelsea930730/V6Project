@@ -1,3 +1,5 @@
+@import url('../css/consulting.css'); /* consulting.css의 스타일을 가져옴 */
+
 .mypage-container {
     max-width: 1400px;
     margin: 120px auto 80px;
@@ -59,33 +61,21 @@ th:last-child {
     border-right: none;
 }
 
-.detail-btn, .view-btn {
+.view-btn {
     background-color: #6a99cd;
     color: white;
     border: none;
     padding: 8px 16px;
     border-radius: 4px;
     cursor: pointer;
+    display: inline-block;
+    text-decoration: none;
 }
 
-.cancel-btn, .delete-btn {
-    background-color: #6a99cd;
+.view-btn:hover {
+    background-color: #355c86;
+    text-decoration: none;
     color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 4px;
-    cursor: pointer;
-    display: block;
-    margin: 20px auto;
-}
-
-input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-}
-
-tr:hover {
-    background-color: #f9f9f9;
 }
 
 /* 채팅 버튼 스타일 추가 */
@@ -116,19 +106,70 @@ tr:hover {
     background-color: #355c86;
 }
 
-.view-btn {
-    display: inline-block;
-    padding: 6px 12px;
-    background-color: #6a99cd;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
+/* 빈 메시지 스타일 */
+.empty-message {
+    text-align: center;
+    color: #666;
+    padding: 20px 0;
 }
 
-.view-btn:hover {
-    background-color: #355c86;
+/* 상태 셀렉트 박스를 consulting.css와 동일하게 적용 */
+.status-select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    appearance: none;
+    text-align: center;
+    min-width: 110px;
+    cursor: default;
+}
+
+/* PENDING 상태 (예약 대기) */
+.status-select option[value="PENDING"] {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.status-select.pending {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+}
+
+/* CONFIRMED 상태 (예약 중) */
+.status-select option[value="CONFIRMED"] {
+    background-color: #007bff;
     color: white;
-    text-decoration: none;
+}
+
+.status-select.confirmed {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+/* COMPL 상태 (계약 완료) */
+.status-select option[value="COMPL"] {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-select.compl {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+/* CANCELLED 상태 (계약 불가) - 주황색으로 변경 */
+.status-select option[value="CANCELLED"] {
+    background-color: #ff9800;
+    color: white;
+}
+
+.status-select.cancelled {
+    background-color: #ff9800;
+    border-color: #ff9800;
+    color: white;
 }

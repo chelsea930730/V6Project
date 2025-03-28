@@ -58,55 +58,54 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .headers(headers -> headers
-                        .frameOptions(frame -> frame.sameOrigin())
-                )
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/user/login", "/user/register", "/error","/property/**",
-                                "/css/**", "/js/**", "/img/**", "/static/**", "/navi.html",
-                                "/webjars/**", "/fonts/**", "/images/**").permitAll()
-                        .requestMatchers("/admin/dashboard", "/admin/addproperty", "/admin/create", "/admin/create/**", "/admin/consulting").hasRole("ADMIN")
-                        .requestMatchers("/oauth2/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .loginPage("/user/login")
-                        .loginProcessingUrl("/user/login")
-                        .usernameParameter("email")
-                        .passwordParameter("password")
-                        .successHandler(authenticationSuccessHandler())
-                        .failureUrl("/user/login?error=true")
-                        .permitAll()
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/user/login")
-                        .successHandler(authenticationSuccessHandler())
-                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuthUserService))
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/user/logout")
-                        .logoutSuccessUrl("/")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                );
+            .csrf(AbstractHttpConfigurer::disable)
+            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/", "/user/login", "/user/register", "/error",
+                    "/property/**", "/css/**", "/js/**", "/img/**", "/static/**",
+                    "/navi.html", "/webjars/**", "/fonts/**", "/images/**",
+                    "/api/properties/filter",
+                    "/property/filter"
+                ).permitAll()
+                .requestMatchers(
+                    "/admin/dashboard", "/admin/addproperty", "/admin/create", 
+                    "/admin/create/**", "/admin/consulting"
+                ).hasRole("ADMIN")
+                .requestMatchers("/oauth2/**").permitAll()
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/user/login")
+                .loginProcessingUrl("/user/login")
+                .usernameParameter("email")
+                .passwordParameter("password")
+                .successHandler(authenticationSuccessHandler())
+                .failureUrl("/user/login?error=true")
+                .permitAll()
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/user/login")
+                .successHandler(authenticationSuccessHandler())
+                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuthUserService))
+            )
+            .logout(logout -> logout
+                .logoutUrl("/user/logout")
+                .logoutSuccessUrl("/")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+            );
 
         return http.authenticationProvider(customAuthenticationProvider()).build();
     }
 
-
-    // ✅ PasswordEncoder를 반드시 @Bean으로 등록해야 함
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ CustomAuthenticationProvider를 @Bean으로 등록
     @Bean
     public AuthenticationProvider customAuthenticationProvider() {
         return new CustomAuthenticationProvider(userDetailsService, passwordEncoder());
     }
 }
-
-
-

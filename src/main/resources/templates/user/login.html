@@ -4,51 +4,55 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>로그인</title>
+
   <!-- Bootstrap CSS -->
   <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
   <!-- Bootstrap JS -->
   <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
-  <!-- CSS -->
-  <link rel="stylesheet" th:href="@{/css/login.css}" />
-<!-- 구글 아이콘 -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+  <!-- 사용자 정의 CSS -->
+  <link rel="stylesheet" th:href="@{/css/login.css}" />
+
+  <!-- 구글 아이콘 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+
 <body>
-<!-- 로그인 폼 -->
 <div class="login-container">
   <div class="login-box">
     <h2>로그인</h2>
 
-    <!-- ✅ 로그인 실패 메시지 출력 (추가된 부분) -->
+    <!-- 로그인 실패 메시지 -->
     <div th:if="${param.loginErrorMessage}" class="alert alert-danger">
       <p th:text="${param.loginErrorMessage}"></p>
     </div>
 
     <form action="/user/login" method="post" th:object="${userLoginDto}">
+
       <!-- 아이디 입력 -->
-      <div class="input-group">
+      <div class="input-wrapper">
         <input type="text" th:field="*{email}" class="form-control" placeholder="아이디" id="username" />
       </div>
 
       <!-- 비밀번호 입력 -->
-      <div class="input-group mt-2">
+      <div class="input-wrapper mt-2">
         <input type="password" th:field="*{password}" class="form-control" placeholder="비밀번호" id="password" />
       </div>
 
-      <!-- 일반 로그인 버튼 -->
+      <!-- 로그인 버튼 -->
       <button type="submit" class="login-btn mt-3">로그인</button>
     </form>
-    
-    <!-- 로그인 옵션 구분선 -->
+
+    <!-- 로그인 구분선 -->
     <div class="login-divider">
       <span>또는</span>
     </div>
-    
-    <!-- Google 로그인 버튼 -->
+
+    <!-- Google 로그인 -->
     <a href="/oauth2/authorization/google" class="google-btn">
       <i class="fab fa-google"></i> Google 계정으로 로그인
     </a>
+
     <p class="signup-link">계정이 없나요? <a th:href="@{/user/register}">회원가입</a></p>
   </div>
 </div>

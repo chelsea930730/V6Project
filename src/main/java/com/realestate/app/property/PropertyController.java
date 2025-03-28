@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,7 @@ public class PropertyController {
         List<Property> properties;
         
         // 모든 매물 가져오기 (나중에 필터링을 위해)
-        List<Property> allProperties = propertyService.getAllProperties();
+        List<Property> allProperties = propertyService.getAllPropertiesByCreatedAtDesc();
         System.out.println("전체 매물 수: " + allProperties.size() + "개");
         
         // 필터링된 매물 목록
@@ -148,55 +149,5 @@ public class PropertyController {
         return result;
     }
 
-    @PostMapping("/filter")
-    @ResponseBody
-    public ResponseEntity<List<Property>> filterProperties(@RequestBody Map<String, Object> filters) {
-        try {
-            log.info("받은 필터 데이터: {}", filters);
 
-            // 필수값 처리
-            BigDecimal minPrice = null;
-            BigDecimal maxPrice = null;
-            if (filters.get("minPrice") != null) {
-                minPrice = new BigDecimal(filters.get("minPrice").toString());
-            }
-            if (filters.get("maxPrice") != null) {
-                maxPrice = new BigDecimal(filters.get("maxPrice").toString());
-            }
-
-            // 선택적 필터값 처리
-            String keyword = (String) filters.get("keyword");
-
-            @SuppressWarnings("unchecked")
-            List<String> buildingTypes = (List<String>) filters.get("buildingTypes");
-
-            @SuppressWarnings("unchecked")
-            List<String> roomTypes = (List<String>) filters.get("roomTypes");
-
-            // 상세 조건 필터
-            @SuppressWarnings("unchecked")
-            List<String> detailTypes = (List<String>) filters.get("detailTypes");
-
-            String buildingYear = (String) filters.get("buildingYear");
-            String station = (String) filters.get("station");
-
-            List<Property> filteredProperties = propertyService.filterProperties(
-                    minPrice,
-                    maxPrice,
-                    buildingTypes,
-                    roomTypes,
-                    buildingYear,
-                    station,
-                    keyword,
-                    detailTypes  // 상세 조건 추가
-            );
-
-            log.info("필터링된 매물 수: {}", filteredProperties.size());
-            return ResponseEntity.ok(filteredProperties);
-
-        } catch (Exception e) {
-            log.error("필터링 중 오류 발생: ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
 }

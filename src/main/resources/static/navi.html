@@ -20,10 +20,10 @@
 <footer class="footer">
 	<div class="footer-container">
 		<div class="footer-left">
-			<strong><a href="/templates/index.html" class="footer-logo">LION</a></strong>
+			<strong><a href="#" onclick="scrollToTop(); return false;" class="footer-logo">LION</a></strong>
 		</div>
 		<div class="footer-right">
-			<strong><a href="/*" class="kakao-link">상담원 카카오톡 문의</a></strong>
+			<strong><a href="https://open.kakao.com/o/s3I8uMnh" target="_blank" class="kakao-link">상담원 카카오톡 문의</a></strong>
 			<p class="account">비니니: BBBBB</p>
 		</div>
 	</div>
@@ -36,7 +36,7 @@
 		flex-direction: column;
 		margin: 0;
 		padding: 0;
-		padding-top: 80px;
+		padding-top: 80px; /* 고정된 값으로 설정 */
 	}
 
 	header {
@@ -48,16 +48,16 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 15px 50px;
+		padding: 0 50px; /* top/bottom 패딩 제거하고 left/right만 유지 */
 		border-bottom: 1px solid #ddd;
 		z-index: 1000; /* 다른 요소보다 위에 표시 */
-		height: 70px;
+		height: 80px; /* 헤더 높이 고정 */
+		box-sizing: border-box; /* 패딩을 포함한 높이 계산 */
 	}
 
 	/* 푸터 */
 
 	.footer {
-
 		width: 100%;
 		background-color: white;
 		padding: 15px 50px;
@@ -81,6 +81,7 @@
 		font-size: 20px;
 		color: #355c86;
 		text-decoration: none;
+		cursor: pointer;
 	}
 
 	.footer-left {
@@ -97,6 +98,11 @@
 		text-decoration: none;
 		color: #2d5be3;
 		font-size: 14px;
+		transition: color 0.3s;
+	}
+
+	.kakao-link:hover {
+		color: #FEE500; /* 카카오톡 노란색으로 변경 */
 	}
 
 	.account {
@@ -113,10 +119,9 @@
 		width: 100%;
 		max-width: 1200px;
 		margin: 0 auto;
-		padding: 15px 10px;
-		/*border-bottom: 1px solid #ddd;*/
+		padding: 0 10px; /* top/bottom 패딩 제거 */
 		background-color: white;
-		height: 70px; /* 네비게이션 높이 고정 */
+		height: 100%; /* 네비게이션이 헤더 높이를 채우도록 설정 */
 		box-sizing: border-box;
 	}
 
@@ -202,5 +207,17 @@
 		font-weight: bold;
 	}
 </style>
+
+<!-- 네비게이션 스크립트 추가 -->
+<script src="/js/navbar.js"></script>
+<script>
+// 페이지 상단으로 스크롤하는 함수
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+</script>
 </body>
 </html>

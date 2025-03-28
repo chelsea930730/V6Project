@@ -1,73 +1,318 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Room</title>
     <link rel="stylesheet" href="/css/chat.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- 관리자일 경우에만 nav_admin.css 로드 - 역할 기반으로 확인 -->
+    <link th:if="${role == 'ADMIN'}" rel="stylesheet" href="/css/nav_admin.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        /* URL 입력 컨테이너 스타일 */
+        .attachment-container {
+            display: none;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .attachment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .attachment-content {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .attachment-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        .attachment-button {
+            background-color: #4682B4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+        
+        .close-attachment {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #888;
+        }
+        
+        .close-attachment:hover {
+            color: #555;
+        }
+        
+        /* 버튼 활성화 스타일 */
+        .media-btn.active {
+            background-color: #4682B4;
+            color: white;
+        }
+        
+        /* 채팅 컨테이너 너비 고정 스타일 */
+        #chat-container {
+            width: 100%;
+            box-sizing: border-box;
+        }
+    </style>
 </head>
-<body>
+<body th:class="${role == 'ADMIN'} ? 'admin-layout' : ''">
     <div id="navbar-placeholder"></div>
 
-    <h1 id="chatRoomTitle">채팅</h1>
+    <div id="chat-content" th:class="${role == 'ADMIN'} ? 'chat-content-admin' : ''">
+        <h1 id="chatRoomTitle">채팅</h1>
 
-    <div id="chat-container">
-        <div id="user-selection" class="user-selection"></div>
-        <div id="messages" class="messages"></div>
-    </div>
-
-    <!-- URL 입력 영역 (토글) -->
-    <div id="urlInputContainer" class="attachment-container">
-        <div class="attachment-header">
-            <span>URL 입력</span>
-            <button id="closeUrlInput" class="close-attachment"><i class="fas fa-times"></i></button>
+        <div id="chat-container">
+            <div id="user-selection" class="user-selection"></div>
+            <div id="messages" class="messages"></div>
         </div>
-        <div class="attachment-content">
-            <input type="text" id="urlInput" placeholder="https://..." class="attachment-input">
-            <button id="addUrlBtn" class="attachment-button">추가</button>
+
+        <!-- URL 입력 영역 (토글) -->
+        <div id="urlInputContainer" class="attachment-container">
+            <div class="attachment-header">
+                <span>URL 입력</span>
+                <button id="closeUrlInput" class="close-attachment"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="attachment-content">
+                <input type="text" id="urlInput" placeholder="https://..." class="attachment-input">
+                <button id="addUrlBtn" class="attachment-button">추가</button>
+            </div>
+        </div>
+
+        <div class="input-container">
+            <div class="media-buttons">
+                <button id="urlButton" class="media-btn" title="URL 첨부">
+                    <i class="fas fa-link"></i>
+                </button>
+            </div>
+            <input id="message" type="text" placeholder="메시지를 입력하세요..." />
+            <button id="sendButton" onclick="sendMessage()">전송</button>
         </div>
     </div>
-
-    <!-- 이미지 미리보기 영역 (토글) -->
-    <div id="imagePreviewContainer" class="attachment-container">
-        <div class="attachment-header">
-            <span>이미지 미리보기</span>
-            <button id="closeImagePreview" class="close-attachment"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="attachment-content">
-            <img id="imagePreview" src="" alt="이미지 미리보기">
-        </div>
-    </div>
-
-    <div class="input-container">
-        <div class="media-buttons">
-            <button id="imageButton" class="media-btn" title="이미지 첨부">
-                <i class="fas fa-image"></i>
-            </button>
-            <button id="urlButton" class="media-btn" title="URL 첨부">
-                <i class="fas fa-link"></i>
-            </button>
-            <input type="file" id="imageInput" accept="image/*" style="display: none;">
-        </div>
-        <input id="message" type="text" placeholder="메시지를 입력하세요..." />
-        <button id="sendButton" onclick="sendMessage()">전송</button>
-    </div>
-
-    <!-- 이미지 확대 모달 -->
-    <div id="imageModal" class="image-modal">
-        <img src="" alt="확대 이미지">
-    </div>
-
 
     <input type="hidden" id="currentUserEmail" th:value="${currentUserEmail}" />
+    <input type="hidden" id="userRole" th:value="${role}" />
 
-    <script src="/js/navbar.js" defer></script>
+    <script>
+        // 역할에 따른 네비게이션 로드 함수
+        function loadNavigationByRole() {
+            // HTML 요소에서 역할 값을 가져옴
+            const roleElement = document.getElementById('userRole');
+            if (roleElement && roleElement.value === 'ADMIN') {
+                console.log("관리자용 네비게이션 로드");
+                // 관리자인 경우 - 사이드바 형태의 nav_admin.html 로드
+                loadAdminNavigation();
+            } else {
+                console.log("일반 사용자용 네비게이션 로드");
+                // 일반 사용자인 경우 - 상단 네비게이션 navi.html 로드
+                loadUserNavigation();
+            }
+        }
+        
+        // 관리자용 네비게이션 로드 함수
+        function loadAdminNavigation() {
+            fetch("/nav_admin.html")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("관리자 네비게이션 파일을 찾을 수 없습니다.");
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    // body에 admin-layout 클래스 추가
+                    document.body.classList.add('admin-layout');
+                    
+                    // 네비게이션 삽입
+                    document.getElementById("navbar-placeholder").innerHTML = html;
+                    
+                    // nav_admin.css 추가 (이미 추가되어 있지 않은 경우)
+                    if (!document.querySelector('link[href="/css/nav_admin.css"]')) {
+                        const cssLink = document.createElement('link');
+                        cssLink.rel = 'stylesheet';
+                        cssLink.href = '/css/nav_admin.css';
+                        document.head.appendChild(cssLink);
+                    }
+                    
+                    // nav_admin.js 스크립트 추가
+                    const script = document.createElement('script');
+                    script.src = '/js/nav_admin.js';
+                    document.body.appendChild(script);
+                    
+                    // 관리자 사이드바 레이아웃에 맞게 스타일 조정
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        .admin-layout {
+                            min-height: 100vh;
+                            display: flex;
+                        }
+                        
+                        #navbar-placeholder {
+                            flex: 0 0 250px;
+                            position: fixed;
+                            height: 100vh;
+                            z-index: 100;
+                        }
+                        
+                        #chat-content {
+                            flex: 1;
+                            margin-left: 250px; /* 사이드바 너비와 동일하게 설정 */
+                            padding: 20px;
+                            width: calc(100% - 250px);
+                        }
+                        
+                        #chat-container {
+                            width: 100%;
+                            max-width: 1200px;
+                        }
+                        
+                        .input-container {
+                            width: 100%;
+                            max-width: 1200px;
+                        }
+                        
+                        /* 사이드바 스타일 보완 */
+                        .admin-sidebar {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 250px;
+                            height: 100vh;
+                            background-color: #6a99cd;
+                            color: white;
+                            padding: 20px 0;
+                            z-index: 1000;
+                        }
+                    `;
+                    document.head.appendChild(style);
+                })
+                .catch(error => {
+                    console.error("관리자 네비게이션 로딩 오류:", error);
+                    // 에러 발생 시 일반 네비게이션 로드
+                    loadUserNavigation();
+                });
+        }
+        
+        // 일반 사용자용 네비게이션 로드 함수
+        function loadUserNavigation() {
+            fetch("/navi.html")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("네비게이션 파일을 찾을 수 없습니다.");
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data, 'text/html');
+                    
+                    const header = doc.querySelector('header');
+                    const footer = doc.querySelector('footer');
+                    const style = doc.querySelector('style');
+                    
+                    document.getElementById("navbar-placeholder").innerHTML = header.outerHTML;
+                    document.body.insertAdjacentHTML('beforeend', footer.outerHTML);
+                    
+                    if (!document.querySelector('style[data-navi-styles]')) {
+                        style.setAttribute('data-navi-styles', '');
+                        document.head.appendChild(style);
+                    }
+                    
+                    // 네비게이션 로드 후 로그인 상태 확인
+                    fetch("/user/index")
+                        .then(response => response.json())
+                        .then(data => {
+                            const navMenu = document.getElementById("nav-menu");
+                            // 관리자 여부를 역할로 확인
+                            const isAdmin = data.role === "ADMIN";
+                            
+                            if (data.isLoggedIn) {
+                                // 로그인된 경우
+                                if (isAdmin) {
+                                    // 관리자용 네비게이션 메뉴
+                                    navMenu.innerHTML = `
+                                        <div class="nav-links">
+                                            <a href="/admin/dashboard" class="nav-link">⚙️ Dashboard</a>
+                                            <a href="/mypage/chat-list.html" class="nav-link" id="chat-link">채팅 관리</a>
+                                            <a href="/mypage/mypage.html" class="nav-link">마이페이지</a>
+                                            <button class="logout-btn">LOGOUT</button>
+                                        </div>
+                                    `;
+                                } else {
+                                    // 일반 사용자용 네비게이션 메뉴
+                                    navMenu.innerHTML = `
+                                        <div class="nav-links">
+                                            <a href="/cart" class="nav-link">🛒 Cart</a>
+                                            <a href="/mypage/chat.html?user=admin@realestate.com" class="nav-link" id="chat-link">채팅</a>
+                                            <a href="/mypage/mypage.html" class="nav-link">마이페이지</a>
+                                            <button class="logout-btn">LOGOUT</button>
+                                        </div>
+                                    `;
+                                }
+                                
+                                // 로그아웃 이벤트 리스너 추가
+                                document.querySelector('.logout-btn').addEventListener('click', function() {
+                                    fetch("/user/logout", { method: "POST" })
+                                        .then(() => {
+                                            window.location.href = "/";
+                                        })
+                                        .catch(error => console.error("로그아웃 실패:", error));
+                                });
+                            } else {
+                                // 로그아웃 상태
+                                navMenu.innerHTML = `
+                                    <div class="auth-buttons">
+                                        <a href="/user/login" class="login-btn">LOGIN</a>
+                                    </div>
+                                `;
+                            }
+                            
+                            // 일반 사용자 레이아웃 스타일 적용
+                            const normalUserStyle = document.createElement('style');
+                            normalUserStyle.textContent = `
+                                body {
+                                    padding-top: 80px;
+                                }
+                            `;
+                            document.head.appendChild(normalUserStyle);
+                        })
+                        .catch(error => {
+                            console.error("로그인 상태 확인 실패:", error);
+                            // 에러 발생 시 기본적으로 로그인 버튼을 표시
+                            const navMenu = document.getElementById("nav-menu");
+                            if (navMenu) {
+                                navMenu.innerHTML = `
+                                    <div class="auth-buttons">
+                                        <a href="/user/login" class="login-btn">LOGIN</a>
+                                    </div>
+                                `;
+                            }
+                        });
+                })
+                .catch(error => console.error("네비게이션 로딩 오류:", error));
+        }
+        
+        // 페이지 로드 시 역할에 맞는 네비게이션 로드
+        document.addEventListener("DOMContentLoaded", loadNavigationByRole);
+    </script>
+
     <script src="/js/chat.js" defer></script>
 </body>
 </html>
-
-
-

@@ -328,6 +328,14 @@ document.addEventListener('DOMContentLoaded', function() {
 	const urlParams = new URLSearchParams(window.location.search);
 	const propertyId = urlParams.get('id');
 
+	// 수정 모드인 경우 버튼 텍스트 변경
+	if (propertyId) {
+		const submitButton = document.getElementById('submitButton');
+		if (submitButton) {
+			submitButton.textContent = '매물 수정하기';
+		}
+	}
+
 	// 매물 ID가 있으면 기존 데이터 불러오기
 	if (propertyId) {
 			loadPropertyData(propertyId);
@@ -391,20 +399,59 @@ document.addEventListener('DOMContentLoaded', function() {
 			if (thumbnailInput && thumbnailInput.files.length > 0) {
 					formData.append('thumbnailImage', thumbnailInput.files[0]);
 			}
+
+			// 평면도 이미지들
+			const floorplanInput = document.getElementById('floorplanImages');
+			if (floorplanInput && floorplanInput.files.length > 0) {
+					for (let i = 0; i < floorplanInput.files.length; i++) {
+							formData.append('floorplanImages', floorplanInput.files[i]);
+					}
+			}
+
+			// 건물 이미지들
+			const buildingInput = document.getElementById('buildingImages');
+			if (buildingInput && buildingInput.files.length > 0) {
+					for (let i = 0; i < buildingInput.files.length; i++) {
+							formData.append('buildingImages', buildingInput.files[i]);
+					}
+			}
+
+			// 내부 이미지들
+			const interiorInput = document.getElementById('interiorImages');
+			if (interiorInput && interiorInput.files.length > 0) {
+					for (let i = 0; i < interiorInput.files.length; i++) {
+							formData.append('interiorImages', interiorInput.files[i]);
+					}
+			}
 			
 			// API 요청
-			fetch('/api/properties', {
-					method: 'POST',
+			const url = propertyId ? `/api/properties/${propertyId}` : '/api/properties';
+			const method = propertyId ? 'PUT' : 'POST';
+			
+			fetch(url, {
+					method: method,
 					body: formData
 			})
 			.then(response => {
 					if (!response.ok) {
-							throw new Error('매물 등록에 실패했습니다.');
+							return response.text().then(text => {
+									try {
+											// JSON 응답일 경우 파싱
+											const errorData = JSON.parse(text);
+											throw new Error(errorData.message || (propertyId ? '매물 수정에 실패했습니다.' : '매물 등록에 실패했습니다.'));
+									} catch (e) {
+											// JSON이 아니거나 파싱 실패한 경우
+											if (e instanceof SyntaxError) {
+													throw new Error(text || (propertyId ? '매물 수정에 실패했습니다.' : '매물 등록에 실패했습니다.'));
+											}
+											throw e;
+									}
+							});
 					}
 					return response.json();
 			})
 			.then(data => {
-					alert('매물이 성공적으로 등록되었습니다.');
+					alert(propertyId ? '매물이 성공적으로 수정되었습니다.' : '매물이 성공적으로 등록되었습니다.');
 					window.parent.location.reload(); // 부모 창 새로고침
 					window.frameElement.parentElement.parentElement.querySelector('.btn-close').click(); // 팝업 닫기
 			})
@@ -425,46 +472,75 @@ document.addEventListener('DOMContentLoaded', function() {
 							return response.json();
 					})
 					.then(data => {
+							console.log('Loaded property data:', data);
 							// 폼 필드 채우기
 							form.querySelector('[name="monthlyPrice"]').value = data.monthlyPrice;
 							form.querySelector('[name="managementFee"]').value = data.managementFee;
 							form.querySelector('[name="initialCost"]').value = data.initialCost;
 							form.querySelector('[name="area"]').value = data.area;
-							form.querySelector('[name="floor"]').value = data.floor;
+							form.querySelector('[name="floor"]').value = data.floor ? data.floor.replace('층', '') : '';
 							form.querySelector('[name="title"]').value = data.title;
-							form.querySelector('[name="address"]').value = data.address;
-							form.querySelector('[name="status"]').value = data.status;
-							form.querySelector('[name="builtYear"]').value = data.builtYear;
-							form.querySelector('[name="description"]').value = data.description;
+							form.querySelector('[name="address"]').value = data.location || '';  // location을 address로 매핑
+							form.querySelector('[name="district"]').value = data.district || '';
+							form.querySelector('[name="shikikin"]').value = data.shikikin || '';
+							form.querySelector('[name="reikin"]').value = data.reikin || '';
+							form.querySelector('[name="status"]').value = data.status || '';
+							form.querySelector('[name="builtYear"]').value = data.builtYear || '';
 							
-							// 라디오 버튼 설정
-							const buildingTypeRadio = form.querySelector(`[name="buildingType"][value="${data.buildingType}"]`);
-							if (buildingTypeRadio) buildingTypeRadio.checked = true;
+							// description에서 features 부분을 제외한 텍스트 추출
+							let descriptionText = data.description || '';
+							const featureIndex = descriptionText.indexOf('\n\n특징:');
+							if (featureIndex !== -1) {
+									descriptionText = descriptionText.substring(0, featureIndex);
+							}
+							form.querySelector('[name="description"]').value = descriptionText;
+							form.querySelector('[name="nearbyFacilities"]').value = data.nearbyFacilities || '';
 							
-							const roomTypeRadio = form.querySelector(`[name="roomType"][value="${data.roomType}"]`);
-							if (roomTypeRadio) roomTypeRadio.checked = true;
+							// buildingType은 객체이므로 name 속성 사용
+							const buildingTypeValue = data.buildingType;
+							if (buildingTypeValue) {
+									const buildingTypeRadio = form.querySelector(`[name="buildingType"][value="${buildingTypeValue}"]`);
+									if (buildingTypeRadio) {
+											buildingTypeRadio.checked = true;
+									}
+							}
 							
-							// 체크박스 설정
-							if (data.features && Array.isArray(data.features)) {
-									data.features.forEach(feature => {
-											const featureCheckbox = form.querySelector(`[name="features"][value="${feature}"]`);
-											if (featureCheckbox) featureCheckbox.checked = true;
-									});
+							// roomType 설정
+							const roomTypeValue = data.roomType;
+							if (roomTypeValue) {
+									const roomTypeRadio = form.querySelector(`[name="roomType"][value="${roomTypeValue}"]`);
+									if (roomTypeRadio) {
+											roomTypeRadio.checked = true;
+									}
+							}
+							
+							// description에서 features 추출
+							if (data.description) {
+									const featuresMatch = data.description.match(/특징:[\s\S]*?-\s(.*?)$/gm);
+									if (featuresMatch) {
+											featuresMatch.forEach(featureText => {
+													const feature = featureText.replace(/특징:[\s\S]*?-\s/, '').trim();
+													const featureCheckbox = form.querySelector(`[name="features"][value="${feature}"]`);
+													if (featureCheckbox) {
+															featureCheckbox.checked = true;
+													}
+											});
+									}
 							}
 							
 							// 노선 및 역 설정
-							if (data.line && data.station) {
-									selectedLine = data.line;
-									lineInput.value = data.line;
+							if (data.station && data.subwayLine) {  // subwayLine을 line으로 사용
+									selectedLine = data.subwayLine;
+									lineInput.value = data.subwayLine;
 									stationInput.value = data.station;
 									
 									// 표시 업데이트
-									const lineItem = document.querySelector(`.line-item[data-line="${data.line}"]`);
+									const lineItem = document.querySelector(`.line-item[data-line="${data.subwayLine}"]`);
 									if (lineItem) {
 											const color = lineItem.dataset.color;
-											document.querySelector('.selected-line').textContent = data.line;
+											document.querySelector('.selected-line').textContent = data.subwayLine;
 											document.querySelector('.selected-line').style.color = color;
-											selectedLineName.textContent = data.line;
+											selectedLineName.textContent = data.subwayLine;
 											selectedLineName.style.color = color;
 									}
 									
@@ -476,28 +552,42 @@ document.addEventListener('DOMContentLoaded', function() {
 									createImagePreview('thumbnailPreview', data.thumbnailImage);
 							}
 							
-							// 이미지 유형별로 미리보기 생성
-							if (data.images) {
-									data.images.forEach(image => {
-											let previewId = '';
-											switch(image.imageType) {
-													case 'FLOORPLAN':
-															previewId = 'floorplanPreview';
-															break;
-													case 'BUILDING':
-															previewId = 'buildingPreview';
-															break;
-													case 'INTERIOR':
-															previewId = 'interiorPreview';
-															break;
-											}
-											if (previewId) {
-													createImagePreview(previewId, image.imageUrl);
-											}
-									});
+							// 평면도 이미지 처리
+							if (data.floorplanImage) {
+									if (data.floorplanImage.includes(',')) {
+											// 여러 이미지 URL이 콤마로 구분되어 있는 경우
+											data.floorplanImage.split(',').forEach(url => {
+													createImagePreview('floorplanPreview', url.trim());
+											});
+									} else {
+											createImagePreview('floorplanPreview', data.floorplanImage);
+									}
+							}
+							
+							// 건물 이미지 처리
+							if (data.buildingImage) {
+									if (data.buildingImage.includes(',')) {
+											data.buildingImage.split(',').forEach(url => {
+													createImagePreview('buildingPreview', url.trim());
+											});
+									} else {
+											createImagePreview('buildingPreview', data.buildingImage);
+									}
+							}
+							
+							// 내부 이미지 처리
+							if (data.interiorImage) {
+									if (data.interiorImage.includes(',')) {
+											data.interiorImage.split(',').forEach(url => {
+													createImagePreview('interiorPreview', url.trim());
+											});
+									} else {
+											createImagePreview('interiorPreview', data.interiorImage);
+									}
 							}
 					})
 					.catch(error => {
+							console.error('Error loading property data:', error);
 							alert(error.message);
 					});
 	}
