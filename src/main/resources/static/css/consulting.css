@@ -1,21 +1,24 @@
 /* 테이블 스타일 */
 .table {
 	font-size: 0.95rem;
+	border-radius: 8px;
+	overflow: hidden;
 }
 
 .table thead th {
 	background-color: #f8f9fa;
-	font-weight: 500;
-	border-bottom: 1px solid #dee2e6;
-	color: #495057;
-}
-
-.table tbody tr {
-	border-bottom: 1px solid #dee2e6;
+	border-bottom: 1px solid #eaeaea;
+	font-weight: 600;
+	padding: 12px 20px;
 }
 
 .table tbody tr:hover {
-	background-color: #f8f9fa;
+	background-color: #f0f7ff;
+}
+
+.table tbody td {
+	padding: 16px 20px;
+	vertical-align: middle;
 }
 
 /* 체크박스 스타일 */
@@ -32,11 +35,13 @@
 
 /* 상태 버튼 스타일 */
 .status-btn {
-	min-width: 90px;
-	border-radius: 15px;
-	font-size: 0.85rem;
-	padding: 0.3rem 0.8rem;
-	cursor: pointer;
+	width: 120px;
+	border-radius: 20px;
+	padding: 6px 0;
+	font-weight: 500;
+	font-size: 14px;
+	text-align: center;
+	transition: all 0.3s ease;
 }
 
 .btn-warning {
@@ -52,9 +57,25 @@
 }
 
 .btn-danger {
-	background-color: #dc3545;
-	border-color: #dc3545;
-	color: #fff;
+	background-color: #ff5a5f;
+	border-color: #ff5a5f;
+}
+
+.btn-danger:hover {
+	background-color: #e04147;
+	border-color: #e04147;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(255, 90, 95, 0.25);
+}
+
+.btn-outline-secondary {
+	border-color: #ddd;
+}
+
+.btn-outline-secondary:hover {
+	background-color: #f8f9fa;
+	color: #333;
+	border-color: #ccc;
 }
 
 /* 상태 변경 드롭다운 메뉴 */
@@ -85,168 +106,385 @@
 /* 카드 스타일 */
 .card {
 	border: none;
-	box-shadow: 0 0 15px rgba(0,0,0,0.05);
-	border-radius: 10px;
+	box-shadow: 0 0 20px rgba(0,0,0,0.08);
+	border-radius: 12px;
+	margin-bottom: 24px;
+	transition: all 0.3s ease;
+}
+
+.card:hover {
+	box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+}
+
+.card-body {
+	padding: 24px;
 }
 
 /* 추가할 스타일 - 상태 셀렉트 박스 스타일 */
 .status-select, .status-btn {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 15px;
-    font-size: 0.9rem;
-    appearance: none; /* 브라우저 기본 드롭다운 화살표 제거 */
-    text-align: center;
-    min-width: 120px;
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid #ddd;
+	border-radius: 15px;
+	font-size: 0.9rem;
+	appearance: none; /* 브라우저 기본 드롭다운 화살표 제거 */
+	text-align: center;
+	min-width: 120px;
 }
 
 .status-select {
-    cursor: default; /* 편집 불가능한 셀렉트 박스용 */
+	cursor: default; /* 편집 불가능한 셀렉트 박스용 */
 }
 
 .status-btn {
-    cursor: pointer; /* 클릭 가능한 버튼용 */
+	cursor: pointer; /* 클릭 가능한 버튼용 */
 }
 
 /* 셀렉트 박스 옵션 스타일 */
 .status-select option[value="PENDING"],
 .btn-warning {
-    background-color: #ffc107;
-    border-color: #ffc107;
-    color: #000;
+	background-color: #ffc107;
+	border-color: #ffc107;
+	color: #000;
 }
 
 .status-select option[value="CONFIRMED"],
 .btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-    color: white;
+	background-color: #007bff;
+	border-color: #007bff;
+	color: white;
 }
 
 .status-select option[value="COMPLETED"],
 .btn-success {
-    background-color: #28a745;
-    border-color: #28a745;
-    color: white;
+	background-color: #28a745;
+	border-color: #28a745;
+	color: white;
 }
 
 .status-select option[value="CANCELLED"],
 .btn-danger {
-    background-color: #ff9800;
-    border-color: #ff9800;
-    color: white;
+	background-color: #ff9800;
+	border-color: #ff9800;
+	color: white;
 }
 
 /* 선택된 상태에 따라 셀렉트 박스/버튼 배경색 변경 */
 .status-select.pending,
 .status-btn.pending {
-    background-color: #ffc107;
-    border-color: #ffc107;
-    color: #000;
+	background-color: #ffc107;
+	border-color: #ffc107;
+	color: #000;
 }
 
 .status-select.confirmed,
 .status-btn.confirmed {
-    background-color: #007bff;
-    border-color: #007bff;
-    color: white;
+	background-color: #007bff;
+	border-color: #007bff;
+	color: white;
 }
 
 .status-select.completed,
 .status-btn.completed {
-    background-color: #28a745;
-    border-color: #28a745;
-    color: white;
+	background-color: #28a745;
+	border-color: #28a745;
+	color: white;
 }
 
 .status-select.cancelled,
 .status-btn.cancelled {
-    background-color: #ff9800;
-    border-color: #ff9800;
-    color: white;
+	background-color: #ff9800;
+	border-color: #ff9800;
+	color: white;
 }
 
 /* 필터 섹션 스타일 */
 .filter-section {
-    padding: 10px 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    align-items: flex-end;
+	background-color: #ffffff;
+	border-radius: 8px;
+	padding: 16px;
+	gap: 16px;
 }
 
 .filter-section .form-label {
-    font-size: 0.85rem;
-    font-weight: 500;
-    margin-bottom: 5px;
-    color: #495057;
+	font-size: 0.85rem;
+	font-weight: 500;
+	margin-bottom: 5px;
+	color: #495057;
 }
 
 .filter-section .form-control,
 .filter-section .form-select {
-    font-size: 0.9rem;
-    padding: 6px 10px;
-    height: 38px;
+	font-size: 0.9rem;
+	padding: 6px 10px;
+	height: 38px;
 }
 
 /* 상태 필터 스타일 */
 #statusFilter {
-    min-width: 140px;
+	min-width: 140px;
 }
 
 /* 검색 영역 스타일 */
 .search-area {
-    display: flex;
-    align-items: flex-end;
-    gap: 10px;
-    flex-wrap: wrap;
+	display: flex;
+	align-items: flex-end;
+	gap: 10px;
+	flex-wrap: wrap;
 }
 
 /* 취소 버튼 스타일 */
 #cancelSelectedBtn {
-    min-width: 140px;
+	background-color: #ff5a5f;
+	border-color: #ff5a5f;
+	color: white;
+	font-weight: 500;
+	transition: all 0.3s ease;
 }
 
-/* 상태 버튼 통일된 크기 */
-.status-btn {
-    min-width: 110px;
-    text-align: center;
-    padding: 0.35rem 0.8rem;
-    font-size: 0.85rem;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
+#cancelSelectedBtn:hover {
+	background-color: #e04147;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(255, 90, 95, 0.25);
+}
+
+#cancelSelectedBtn:disabled {
+	background-color: #ffcdce;
+	border-color: #ffcdce;
+	color: #7d7d7d;
+	cursor: not-allowed;
+	transform: none;
+	box-shadow: none;
+}
+
+/* 활성화된 필터 배지 */
+.filter-badge {
+	display: inline-flex;
+	align-items: center;
+	background-color: #e7f0ff;
+	color: #355c86;
+	border-radius: 20px;
+	padding: 6px 12px;
+	font-size: 13px;
+	font-weight: 500;
+	margin-right: 8px;
+	margin-bottom: 8px;
+	transition: all 0.2s ease;
+}
+
+.filter-badge i {
+	margin-left: 6px;
+	cursor: pointer;
+	font-size: 12px;
+	transition: all 0.2s ease;
+}
+
+.filter-badge i:hover {
+	color: #ff5a5f;
+	transform: scale(1.2);
+}
+
+.filter-badge:hover {
+	background-color: #d8e6f9;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 필터 정보 요약 영역 */
+.filter-summary {
+	margin-top: 15px;
+	padding: 8px 12px;
+	background-color: #f8f9fa;
+	border-radius: 8px;
+	border-left: 3px solid #6a99cd;
+}
+
+.filter-info {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	font-size: 14px;
+}
+
+.filter-count {
+	font-weight: 600;
+	color: #355c86;
+}
+
+.filter-text {
+	color: #555;
+}
+
+/* 필터 배지 컨테이너 */
+.filter-badges {
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: 12px;
+}
+
+/* 검색 버튼 스타일 개선 */
+#searchButton {
+	border-top-right-radius: 20px;
+	border-bottom-right-radius: 20px;
+	background-color: #6a99cd;
+	color: white;
+	border-color: #6a99cd;
+}
+
+#searchButton:hover {
+	background-color: #355c86;
+	border-color: #355c86;
+}
+
+/* 필터 버튼 그룹 스타일 */
+.filter-buttons {
+	display: flex;
+	gap: 8px;
+}
+
+/* 마이페이지 스타일과 일치하는 셀렉트 박스 */
+.form-select {
+	border-radius: 20px;
+	padding: 8px 16px;
+	border: 1px solid #e0e0e0;
+	font-size: 14px;
+	transition: all 0.2s ease;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+	cursor: pointer;
+}
+
+.form-select:hover {
+	border-color: #6a99cd;
+}
+
+.form-select:focus {
+	border-color: #6a99cd;
+	box-shadow: 0 0 0 2px rgba(106, 153, 205, 0.25);
+}
+
+/* 검색 입력 필드 디자인 */
+.form-control {
+	border-radius: 20px;
+	padding: 8px 16px;
+	border: 1px solid #e0e0e0;
+	font-size: 14px;
+	transition: all 0.2s ease;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.form-control:focus {
+	border-color: #6a99cd;
+	box-shadow: 0 0 0 2px rgba(106, 153, 205, 0.25);
+}
+
+/* 버튼 스타일 개선 */
+.btn {
+	border-radius: 20px;
+	font-weight: 500;
+	padding: 8px 16px;
+	transition: all 0.3s ease;
+}
+
+.btn-primary {
+	background-color: #6a99cd;
+	border-color: #6a99cd;
+}
+
+.btn-primary:hover {
+	background-color: #355c86;
+	border-color: #355c86;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(106, 153, 205, 0.25);
 }
 
 /* 상태 메뉴 아이템 스타일 */
 .status-menu-item {
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    width: 100px;
-    text-align: center;
+	padding: 8px 16px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+	width: 100px;
+	text-align: center;
 }
 
 .status-menu-item:hover {
-    background-color: #f5f5f5;
+	background-color: #f5f5f5;
 }
 
 /* 계약 불가 버튼 - 주황색 버전 */
 .btn-orange {
-    background-color: #ff9800;
-    border-color: #ff9800;
-    color: white;
+	background-color: #ff9800;
+	border-color: #ff9800;
+	color: white;
 }
 
 .btn-orange:hover {
-    background-color: #e68a00;
-    border-color: #e68a00;
-    color: white;
+	background-color: #e68a00;
+	border-color: #e68a00;
+	color: white;
 }
 
 /* 모달 내 상태 셀렉트 박스 색상 */
 #reservationStatus option[value="CANCELLED"] {
-    background-color: #ff9800;
-    color: white;
+	background-color: #ff9800;
+	color: white;
+}
+
+/* 필터 활성화 및 요약 정보 스타일 */
+.filter-active {
+	background-color: #e7f0ff;
+	border-color: #6a99cd;
+	color: #355c86;
+	font-weight: 500;
+}
+
+/* 필터 조건 스타일 */
+.filter-condition {
+	padding: 8px 12px;
+	background-color: #f8f9fa;
+	border-radius: 8px;
+	margin-bottom: 10px;
+	border-left: 3px solid #ddd;
+}
+
+.filter-condition-and {
+	border-left-color: #6a99cd;
+}
+
+.filter-condition-or {
+	border-left-color: #ffc107;
+}
+
+.filter-condition .form-check-label {
+	font-size: 0.9rem;
+}
+
+.filter-condition .form-check-input:checked {
+	background-color: #6a99cd;
+	border-color: #6a99cd;
+}
+
+/* 필터 메시지 스타일 */
+.filter-message {
+	margin-bottom: 20px;
+}
+
+.filter-message .alert {
+	font-size: 0.9rem;
+	padding: 8px 16px;
+	margin-bottom: 0;
+	border-left-width: 4px;
+}
+
+.filter-message .alert-info {
+	background-color: #e7f0ff;
+	border-color: #6a99cd;
+	color: #355c86;
+}
+
+/* 필터 활성화 표시 */
+.filter-active {
+	background-color: #e7f0ff;
+	border-color: #6a99cd;
+	color: #355c86;
+	font-weight: 500;
 }

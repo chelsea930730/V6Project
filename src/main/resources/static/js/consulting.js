@@ -119,6 +119,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const resetFilterButton = document.getElementById('resetFilterButton');
     if (resetFilterButton) {
         resetFilterButton.addEventListener('click', function() {
+            // 모든 필터 입력 필드 초기화
+            const statusFilter = document.getElementById('statusFilter');
+            const startDateFilter = document.getElementById('startDateFilter');
+            const endDateFilter = document.getElementById('endDateFilter');
+            const searchType = document.getElementById('searchType');
+            const searchQuery = document.getElementById('searchQuery');
+            
+            if (statusFilter) statusFilter.value = '';
+            if (startDateFilter) startDateFilter.value = '';
+            if (endDateFilter) endDateFilter.value = '';
+            if (searchType) searchType.value = 'name';
+            if (searchQuery) searchQuery.value = '';
+            
+            // 페이지 리로드 (모든 파라미터 제거)
             window.location.href = window.location.pathname;
         });
     }
@@ -150,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // 필터 적용 함수
+    // 필터 적용 함수 수정 - 모든 조건을 충족해야만 결과가 나오도록 변경 (AND 조건)
     function applyFilters() {
         const status = document.getElementById('statusFilter').value;
         const startDate = document.getElementById('startDateFilter').value;
@@ -161,26 +175,34 @@ document.addEventListener('DOMContentLoaded', function() {
         // 현재 URL 가져오기
         let url = new URL(window.location.href);
         
-        // 쿼리 파라미터 설정
-        if (status) url.searchParams.set('status', status);
-        else url.searchParams.delete('status');
+        // 모든 검색 파라미터 초기화 (페이지 번호는 항상 0으로 초기화)
+        url.search = '';
+        url.searchParams.set('page', '0'); // 필터 변경 시 항상 첫 페이지로
         
-        if (startDate) url.searchParams.set('startDate', startDate);
-        else url.searchParams.delete('startDate');
-        
-        if (endDate) url.searchParams.set('endDate', endDate);
-        else url.searchParams.delete('endDate');
-        
-        if (searchType && search) {
-            url.searchParams.set('searchType', searchType);
-            url.searchParams.set('search', search);
-        } else {
-            url.searchParams.delete('searchType');
-            url.searchParams.delete('search');
+        // 각 조건별로 파라미터 추가 - 값이 있는 경우에만
+        if (status) {
+            url.searchParams.set('status', status);
         }
         
-        // 페이지 파라미터 초기화
-        url.searchParams.set('page', '0');
+        if (startDate) {
+            url.searchParams.set('startDate', startDate);
+        }
+        
+        if (endDate) {
+            url.searchParams.set('endDate', endDate);
+        }
+        
+        if (search) {
+            url.searchParams.set('search', search);
+            if (searchType) {
+                url.searchParams.set('searchType', searchType);
+            } else {
+                url.searchParams.set('searchType', 'name'); // 기본값 설정
+            }
+        }
+        
+        // 무조건 AND 조건으로 검색
+        url.searchParams.set('filterCondition', 'AND');
         
         // 변경된 URL로 이동
         window.location.href = url.toString();
@@ -224,6 +246,528 @@ document.addEventListener('DOMContentLoaded', function() {
             const event = new Event('change');
             searchTypeSelect.dispatchEvent(event);
         }
+    }
+
+    // 날짜 필터 및 검색 입력 필드에 Enter 키 이벤트 추가
+    function setupEnterKeyListeners() {
+        const filterInputs = [
+            'startDateFilter',
+            'endDateFilter',
+            'searchQuery'
+        ];
+        
+        filterInputs.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        applyFilters();
+                    }
+                });
+            }
+        });
+    }
+
+    // 날짜 범위 유효성 검사
+    function validateDateRange() {
+        const startDateInput = document.getElementById('startDateFilter');
+        const endDateInput = document.getElementById('endDateFilter');
+        
+        if (startDateInput && endDateInput) {
+            endDateInput.addEventListener('change', function() {
+                const startDate = new Date(startDateInput.value);
+                const endDate = new Date(this.value);
+                
+                if (startDateInput.value && this.value && endDate < startDate) {
+                    alert('종료일은 시작일보다 이후여야 합니다.');
+                    this.value = '';
+                }
+            });
+            
+            startDateInput.addEventListener('change', function() {
+                const endDate = new Date(endDateInput.value);
+                const startDate = new Date(this.value);
+                
+                if (endDateInput.value && this.value && endDate < startDate) {
+                    alert('시작일은 종료일보다 이전이어야 합니다.');
+                    this.value = '';
+                }
+            });
+        }
+    }
+
+    // 필터 결과 요약 정보 표시
+    function updateFilterSummary() {
+        const summaryElement = document.createElement('div');
+        summaryElement.className = 'filter-summary mt-2';
+        
+        const url = new URL(window.location.href);
+        const params = url.searchParams;
+        
+        let filterCount = 0;
+        let summaryText = '';
+        
+        // 상태 필터
+        if (params.has('status') && params.get('status')) {
+            filterCount++;
+            const statusText = getStatusText(params.get('status'));
+            summaryText += `상태: ${statusText}, `;
+        }
+        
+        // 날짜 필터
+        if (params.has('startDate') && params.get('startDate')) {
+            filterCount++;
+            summaryText += `시작일: ${params.get('startDate')}, `;
+        }
+        
+        if (params.has('endDate') && params.get('endDate')) {
+            filterCount++;
+            summaryText += `종료일: ${params.get('endDate')}, `;
+        }
+        
+        // 검색 필터
+        if (params.has('search') && params.get('search')) {
+            filterCount++;
+            const searchTypeText = params.has('searchType') ? 
+                getSearchTypeText(params.get('searchType')) : '전체';
+            summaryText += `검색(${searchTypeText}): ${params.get('search')}, `;
+        }
+        
+        // 필터 요약 정보가 있는 경우에만 표시
+        if (filterCount > 0) {
+            summaryText = summaryText.slice(0, -2); // 마지막 쉼표와 공백 제거
+            
+            const filterSection = document.querySelector('.filter-section');
+            if (filterSection) {
+                summaryElement.innerHTML = `
+                    <div class="filter-info">
+                        <span class="filter-count">${filterCount}개의 필터 적용됨:</span>
+                        <span class="filter-text">${summaryText}</span>
+                    </div>
+                `;
+                
+                // 기존 요약 정보가 있으면 제거
+                const existingSummary = filterSection.querySelector('.filter-summary');
+                if (existingSummary) {
+                    existingSummary.remove();
+                }
+                
+                // 새 요약 정보 추가
+                filterSection.appendChild(summaryElement);
+            }
+        }
+    }
+
+    // 상태 텍스트 변환 함수
+    function getStatusText(status) {
+        switch(status) {
+            case 'PENDING': return '예약 대기';
+            case 'CONFIRMED': return '예약 중';
+            case 'COMPL': return '계약 완료';
+            case 'CANCELLED': return '계약 불가';
+            default: return status;
+        }
+    }
+
+    // 검색 유형 텍스트 변환 함수
+    function getSearchTypeText(searchType) {
+        switch(searchType) {
+            case 'name': return '이름';
+            case 'email': return '이메일';
+            case 'reservationId': return '예약번호';
+            case 'property': return '매물정보';
+            default: return searchType;
+        }
+    }
+
+    // 날짜 형식 변환 함수 (YYYY-MM-DD)
+    function formatDate(date) {
+        const d = new Date(date);
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${d.getFullYear()}-${month}-${day}`;
+    }
+
+    // 페이지 로드시 실행되는 초기화 함수
+    document.addEventListener('DOMContentLoaded', function() {
+        // ... (기존 코드)
+        
+        // 필터 적용 버튼 클릭 이벤트
+        const applyFilterButton = document.getElementById('applyFilterButton');
+        if (applyFilterButton) {
+            applyFilterButton.addEventListener('click', function() {
+                applyFilters();
+            });
+        }
+        
+        // 필터 초기화 버튼
+        const resetFilterButton = document.getElementById('resetFilterButton');
+        if (resetFilterButton) {
+            resetFilterButton.addEventListener('click', function() {
+                // 모든 필터 입력 필드 초기화
+                document.getElementById('statusFilter').value = '';
+                document.getElementById('startDateFilter').value = '';
+                document.getElementById('endDateFilter').value = '';
+                document.getElementById('searchType').value = 'name'; // 기본값
+                document.getElementById('searchQuery').value = '';
+                
+                // 페이지 리로드 (모든 파라미터 제거)
+                window.location.href = window.location.pathname;
+            });
+        }
+        
+        // 상태 필터 변경 시 스타일 업데이트
+        const statusFilter = document.getElementById('statusFilter');
+        if (statusFilter) {
+            statusFilter.addEventListener('change', function() {
+                highlightActiveFilter(this);
+            });
+        }
+        
+        // 날짜 필터 변경 시 스타일 업데이트
+        const dateFilters = ['startDateFilter', 'endDateFilter'];
+        dateFilters.forEach(id => {
+            const filter = document.getElementById(id);
+            if (filter) {
+                filter.addEventListener('change', function() {
+                    highlightActiveFilter(this);
+                });
+            }
+        });
+        
+        // 검색 타입 변경 시 스타일 업데이트
+        const searchType = document.getElementById('searchType');
+        if (searchType) {
+            searchType.addEventListener('change', function() {
+                highlightActiveFilter(this);
+                // 검색 유형에 맞게 placeholder 업데이트
+                updateSearchPlaceholder();
+            });
+        }
+        
+        // 검색어 입력 시 스타일 업데이트
+        const searchQuery = document.getElementById('searchQuery');
+        if (searchQuery) {
+            searchQuery.addEventListener('input', function() {
+                highlightActiveFilter(this);
+            });
+            
+            // Enter 키로 검색 가능하도록
+            searchQuery.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    applyFilters();
+                }
+            });
+        }
+        
+        // 날짜 범위 유효성 검사 설정
+        validateDateRange();
+        
+        // 엔터 키 이벤트 리스너 설정
+        setupEnterKeyListeners();
+        
+        // 활성화된 필터에 스타일 적용
+        styleActiveFilters();
+        
+        // 활성화된 필터 배지 표시
+        displayActiveFilters();
+        
+        // 필터 요약 정보 업데이트
+        updateFilterSummary();
+        
+        // 선택한 예약 삭제 버튼 텍스트 수정
+        const cancelSelectedBtn = document.getElementById('cancelSelectedBtn');
+        if (cancelSelectedBtn) {
+            cancelSelectedBtn.innerHTML = `<i class="fas fa-trash-alt"></i> 선택한 예약 삭제`;
+            
+            // 버튼 클릭 이벤트
+            cancelSelectedBtn.addEventListener('click', function() {
+                const selectedCheckboxes = document.querySelectorAll('tbody .form-check-input:checked');
+                const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+                
+                if (selectedIds.length === 0) {
+                    return;
+                }
+                
+                if (confirm(`선택한 ${selectedIds.length}개의 예약을 목록에서 삭제하시겠습니까? (데이터베이스에서는 삭제되지 않습니다)`)) {
+                    hideReservations(selectedIds);
+                }
+            });
+        }
+        
+        // 필터 조건 라디오 버튼 이벤트 리스너
+        const filterConditionRadios = document.querySelectorAll('input[name="filterCondition"]');
+        if (filterConditionRadios.length > 0) {
+            filterConditionRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // 조건 변경 시 CSS 클래스 업데이트
+                    if (this.value === 'AND') {
+                        document.querySelector('.filter-condition').classList.add('filter-condition-and');
+                        document.querySelector('.filter-condition').classList.remove('filter-condition-or');
+                    } else {
+                        document.querySelector('.filter-condition').classList.add('filter-condition-or');
+                        document.querySelector('.filter-condition').classList.remove('filter-condition-and');
+                    }
+                });
+            });
+        }
+    });
+
+    // 필터 요소에 활성화 스타일 적용
+    function highlightActiveFilter(element) {
+        if (element.value) {
+            element.classList.add('filter-active');
+        } else {
+            element.classList.remove('filter-active');
+        }
+    }
+
+    // 검색 유형에 따라 placeholder 업데이트
+    function updateSearchPlaceholder() {
+        const searchType = document.getElementById('searchType');
+        const searchQuery = document.getElementById('searchQuery');
+        
+        if (searchType && searchQuery) {
+            switch(searchType.value) {
+                case 'name':
+                    searchQuery.placeholder = '고객 이름 검색...';
+                    break;
+                case 'email':
+                    searchQuery.placeholder = '이메일 검색...';
+                    break;
+                case 'reservationId':
+                    searchQuery.placeholder = '예약번호 입력...';
+                    break;
+                case 'property':
+                    searchQuery.placeholder = '매물 제목 또는 위치 검색...';
+                    break;
+                default:
+                    searchQuery.placeholder = '검색어 입력...';
+            }
+        }
+    }
+
+    // 활성화된 필터에 스타일 적용
+    function styleActiveFilters() {
+        const url = new URL(window.location.href);
+        const params = url.searchParams;
+        
+        // 상태 필터
+        if (params.has('status') && params.get('status')) {
+            const statusFilter = document.getElementById('statusFilter');
+            if (statusFilter) {
+                statusFilter.classList.add('filter-active');
+                statusFilter.value = params.get('status');
+            }
+        }
+        
+        // 날짜 필터
+        if (params.has('startDate') && params.get('startDate')) {
+            const startDateFilter = document.getElementById('startDateFilter');
+            if (startDateFilter) {
+                startDateFilter.classList.add('filter-active');
+                startDateFilter.value = params.get('startDate');
+            }
+        }
+        
+        if (params.has('endDate') && params.get('endDate')) {
+            const endDateFilter = document.getElementById('endDateFilter');
+            if (endDateFilter) {
+                endDateFilter.classList.add('filter-active');
+                endDateFilter.value = params.get('endDate');
+            }
+        }
+        
+        // 검색 필터
+        if (params.has('search') && params.get('search')) {
+            const searchQuery = document.getElementById('searchQuery');
+            if (searchQuery) {
+                searchQuery.classList.add('filter-active');
+                searchQuery.value = params.get('search');
+            }
+            
+            if (params.has('searchType')) {
+                const searchType = document.getElementById('searchType');
+                if (searchType) {
+                    searchType.classList.add('filter-active');
+                    searchType.value = params.get('searchType');
+                }
+            }
+        }
+        
+        // 검색 placeholder 업데이트
+        updateSearchPlaceholder();
+    }
+
+    // 활성화된 필터 배지 표시
+    function displayActiveFilters() {
+        const activeFiltersContainer = document.getElementById('activeFilters');
+        if (!activeFiltersContainer) return;
+        
+        activeFiltersContainer.innerHTML = '';
+        
+        const url = new URL(window.location.href);
+        const params = url.searchParams;
+        
+        // 상태 필터
+        if (params.has('status') && params.get('status')) {
+            addFilterBadge('상태: ' + getStatusText(params.get('status')), () => {
+                params.delete('status');
+                url.search = params.toString();
+                window.location.href = url.toString();
+            });
+        }
+        
+        // 날짜 필터
+        if (params.has('startDate') && params.get('startDate')) {
+            addFilterBadge('시작일: ' + params.get('startDate'), () => {
+                params.delete('startDate');
+                url.search = params.toString();
+                window.location.href = url.toString();
+            });
+        }
+        
+        if (params.has('endDate') && params.get('endDate')) {
+            addFilterBadge('종료일: ' + params.get('endDate'), () => {
+                params.delete('endDate');
+                url.search = params.toString();
+                window.location.href = url.toString();
+            });
+        }
+        
+        // 검색 필터
+        if (params.has('search') && params.get('search')) {
+            const searchTypeText = params.has('searchType') ? 
+                getSearchTypeText(params.get('searchType')) : '전체';
+            addFilterBadge(`${searchTypeText}: ${params.get('search')}`, () => {
+                params.delete('search');
+                params.delete('searchType');
+                url.search = params.toString();
+                window.location.href = url.toString();
+            });
+        }
+        
+        // 필터 배지 추가 함수
+        function addFilterBadge(text, removeCallback) {
+            const badge = document.createElement('span');
+            badge.className = 'filter-badge';
+            badge.innerHTML = `${text} <i class="fas fa-times"></i>`;
+            
+            badge.querySelector('i').addEventListener('click', removeCallback);
+            
+            activeFiltersContainer.appendChild(badge);
+        }
+    }
+
+    // 예약 항목 숨기기 함수 (실제 삭제가 아닌 화면에서만 숨김)
+    function hideReservations(reservationIds) {
+        // 선택된 행들을 화면에서 숨김
+        reservationIds.forEach(id => {
+            const checkboxes = document.querySelectorAll(`tbody .form-check-input[value="${id}"]`);
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                if (row) {
+                    row.style.transition = 'opacity 0.5s ease, height 0.5s ease, padding 0.5s ease';
+                    row.style.opacity = '0';
+                    row.style.height = '0';
+                    row.style.padding = '0';
+                    row.style.overflow = 'hidden';
+                    
+                    // 애니메이션 후 완전히 제거
+                    setTimeout(() => {
+                        row.remove();
+                    }, 500);
+                }
+            });
+        });
+        
+        // 선택 상태 초기화
+        updateSelectedCount();
+        updateCancelButtonState();
+        
+        // 성공 메시지 표시
+        showNotification('선택한 예약이 목록에서 제거되었습니다.', 'success');
+        
+        // 테이블이 비어있는지 확인
+        setTimeout(() => {
+            const remainingRows = document.querySelectorAll('tbody tr:not([style*="height: 0"])');
+            if (remainingRows.length === 0) {
+                const tbody = document.querySelector('tbody');
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = '<td colspan="9" class="text-center">예약된 상담이 없습니다.</td>';
+                tbody.appendChild(emptyRow);
+            }
+        }, 500);
+    }
+
+    // 페이지 링크의 URL에도 filterCondition=AND를 추가하는 함수
+    function updatePaginationLinks() {
+        const paginationLinks = document.querySelectorAll('.pagination .page-link');
+        if (paginationLinks.length > 0) {
+            paginationLinks.forEach(link => {
+                const url = new URL(link.href);
+                url.searchParams.set('filterCondition', 'AND');
+                link.href = url.toString();
+            });
+        }
+    }
+
+    // 필터 적용 시 메시지를 표시하는 함수
+    function showFilterMessage() {
+        const url = new URL(window.location.href);
+        const params = url.searchParams;
+        
+        let hasFilters = false;
+        let filterCount = 0;
+        
+        if (params.has('status') && params.get('status')) {
+            hasFilters = true;
+            filterCount++;
+        }
+        
+        if (params.has('startDate') && params.get('startDate')) {
+            hasFilters = true;
+            filterCount++;
+        }
+        
+        if (params.has('endDate') && params.get('endDate')) {
+            hasFilters = true;
+            filterCount++;
+        }
+        
+        if (params.has('search') && params.get('search')) {
+            hasFilters = true;
+            filterCount++;
+        }
+        
+        if (hasFilters) {
+            const filterSection = document.querySelector('.filter-section');
+            if (filterSection) {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'filter-message mt-2';
+                messageElement.innerHTML = `
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>${filterCount}개의 필터</strong>가 적용되었습니다. 모든 조건을 충족하는 결과만 표시됩니다.
+                    </div>
+                `;
+                
+                const existingMessage = document.querySelector('.filter-message');
+                if (existingMessage) {
+                    existingMessage.replaceWith(messageElement);
+                } else {
+                    filterSection.parentNode.insertBefore(messageElement, filterSection.nextSibling);
+                }
+            }
+        }
+    }
+
+    // 필터 조건 라디오 버튼 영역 제거 (항상 AND 조건을 사용하므로 불필요)
+    const filterConditionArea = document.querySelector('.filter-condition');
+    if (filterConditionArea) {
+        filterConditionArea.remove();
     }
 });
 

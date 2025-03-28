@@ -504,4 +504,14 @@ public class ReservationService {
     public List<Reservation> findByUser(User user) {
         return reservationRepository.findByUser(user);
     }
+    
+    // 날짜 범위 내 전체 예약 수 - 반환 타입을 long으로 변경
+    public long countReservationsByDateRange(LocalDate startDate, LocalDate endDate) {
+        return reservationRepository.countByReservedDateBetween(startDate, endDate);
+    }
+    
+    // 날짜 범위와 상태에 따른 예약 수 - 반환 타입을 long으로 변경 
+    public long countReservationsByDateRangeAndStatuses(LocalDate startDate, LocalDate endDate, List<ReservationStatus> statuses) {
+        return reservationRepository.countByReservedDateBetweenAndStatusIn(startDate, endDate, statuses);
+    }
 }
