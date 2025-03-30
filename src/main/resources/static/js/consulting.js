@@ -901,6 +901,51 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('DOMContentLoaded', function() {
         addCustomStyles();
     });
+
+    // 미래 기간 필터 셀렉트 이벤트 처리
+    const futureDateFilter = document.getElementById('futureDateFilter');
+    if (futureDateFilter) {
+        futureDateFilter.addEventListener('change', function() {
+            applyFutureDateFilter();
+        });
+    }
+    
+    // 미래 기간 필터 적용 함수
+    function applyFutureDateFilter() {
+        const filterValue = document.getElementById('futureDateFilter').value;
+        
+        if (!filterValue) {
+            // 전체 기간 선택 시 날짜 필터 초기화
+            document.getElementById('startDateFilter').value = '';
+            document.getElementById('endDateFilter').value = '';
+            applyFilters();
+            return;
+        }
+        
+        // 오늘 날짜 가져오기
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // 오늘 자정으로 설정
+        
+        // 시작일은 항상 오늘
+        const formattedToday = formatDate(today);
+        document.getElementById('startDateFilter').value = formattedToday;
+        
+        // 종료일 설정
+        let endDate = new Date(today);
+        
+        if (filterValue === 'today') {
+            // 오늘만 보기
+            document.getElementById('endDateFilter').value = formattedToday;
+        } else {
+            // 지정된 일수만큼 더하기
+            const days = parseInt(filterValue);
+            endDate.setDate(today.getDate() + days);
+            document.getElementById('endDateFilter').value = formatDate(endDate);
+        }
+        
+        // 필터 적용
+        applyFilters();
+    }
 });
 
 // 상태 버튼 설정

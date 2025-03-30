@@ -163,21 +163,34 @@
                     </div>
                   </div>
                 </div>
-              </div>
-              
-              <!-- 필터 섹션 내에 필터 조건 선택 추가 -->
-              <div class="filter-condition mt-2">
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="filterCondition" id="conditionAnd" value="AND" th:checked="${filterCondition == 'AND'}">
-                  <label class="form-check-label" for="conditionAnd">
-                    모든 조건 충족 (AND)
-                  </label>
+                
+                <!-- 초기화 버튼 아래에 미래 기간 필터 추가 -->
+                <div class="d-flex align-items-center mt-3">
+                  <h6 class="mb-0 me-3">일정관리</h6>
+                  <select id="futureDateFilter" class="form-select form-select-sm" style="min-width: 150px;">
+                    <option value="">전체 기간</option>
+                    <option value="today">오늘</option>
+                    <option value="3">3일 이내</option>
+                    <option value="5">5일 이내</option>
+                    <option value="7">7일 이내</option>
+                    <option value="14">14일 이내</option>
+                  </select>
                 </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="filterCondition" id="conditionOr" value="OR" th:checked="${filterCondition != 'AND'}">
-                  <label class="form-check-label" for="conditionOr">
-                    하나라도 충족 (OR)
-                  </label>
+                
+                <!-- 필터 조건 영역 -->
+                <div class="filter-condition mt-2">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="filterCondition" id="conditionAnd" value="AND" th:checked="${filterCondition == 'AND'}">
+                    <label class="form-check-label" for="conditionAnd">
+                      모든 조건 충족 (AND)
+                    </label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="filterCondition" id="conditionOr" value="OR" th:checked="${filterCondition != 'AND'}">
+                    <label class="form-check-label" for="conditionOr">
+                      하나라도 충족 (OR)
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>

@@ -26,6 +26,8 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 
 import org.springframework.data.jpa.domain.Specification;
+import com.realestate.app.reservation.SecurityUtils;
+import com.realestate.app.property.PropertyDto;
 
 @Service
 @AllArgsConstructor
@@ -587,5 +589,103 @@ public class ReservationService {
         spec = spec.and(distinctSpec);
         
         return reservationRepository.findAll(spec, pageable);
+    }
+
+    public List<ReservationDto> getReservationsByUserAndDateRange(String userEmail, LocalDate startDate, LocalDate endDate) {
+        // 수정된 메서드 이름으로 호출
+        List<Reservation> reservations = reservationRepository.findByUser_EmailAndReservedDateBetween(userEmail, startDate, endDate);
+        
+        return reservations.stream().map(reservation -> {
+            ReservationDto dto = new ReservationDto();
+            dto.setReservationId(Long.valueOf(String.valueOf(reservation.getReservationId())));
+            dto.setReservedDate(reservation.getReservedDate().atStartOfDay());
+            dto.setStatus(reservation.getStatus().name());
+            dto.setMessage(reservation.getMessage());
+            // 사용자 정보 설정
+            if (reservation.getUser() != null) {
+                dto.setName(reservation.getUser().getName());
+                dto.setEmail(reservation.getUser().getEmail());
+                dto.setPhone(reservation.getUser().getPhone());
+            }
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    public int countReservationsByUser(String userEmail) {
+        // 사용자 이메일로 예약 수 조회
+        return (int) reservationRepository.countByUser_Email(userEmail);
+    }
+
+    public List<ReservationDto> getUpcomingReservationsByUser(String userEmail, LocalDate startDate, LocalDate endDate) {
+        List<Reservation> reservations = reservationRepository.findByUser_EmailAndReservedDateBetween(userEmail, startDate, endDate);
+        
+        return reservations.stream().map(reservation -> {
+            ReservationDto dto = new ReservationDto();
+            dto.setReservationId(Long.valueOf(String.valueOf(reservation.getReservationId())));
+            dto.setReservedDate(reservation.getReservedDate().atStartOfDay());
+            dto.setStatus(reservation.getStatus().name());
+            dto.setMessage(reservation.getMessage());
+            
+            // 매물 정보가 있는 경우 설정
+            if (reservation.getProperties() != null && !reservation.getProperties().isEmpty()) {
+                List<PropertyDto> propertyDtos = reservation.getProperties().stream()
+                    .map(property -> {
+                        PropertyDto propertyDto = new PropertyDto();
+                        propertyDto.setTitle(property.getTitle());
+                        // 필요한 경우 다른 속성도 설정
+                        return propertyDto;
+                    })
+                    .collect(Collectors.toList());
+                dto.setProperties(propertyDtos);
+            }
+            
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    public List<ReservationDto> getAllUpcomingReservations(LocalDate today, LocalDate endDate) {
+        // LocalDate를 LocalDateTime으로 변환
+        LocalDateTime startDateTime = today.atStartOfDay();
+        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay().minusNanos(1); // 날짜의 마지막 순간으로 설정
+        
+        // LocalDateTime을 사용하여 메서드 호출
+        // 기존 메서드 사용:
+        List<Reservation> reservations = reservationRepository.findByReservedDateBetween(startDateTime, endDateTime);
+        
+        // 또는 새로 추가한 메서드 사용:
+        // List<Reservation> reservations = reservationRepository.findByDateRange(today, endDate);
+        
+        // 예약 정보를 DTO로 변환
+        return reservations.stream().map(reservation -> {
+            ReservationDto dto = new ReservationDto();
+            dto.setReservationId(reservation.getReservationId());
+            dto.setReservedDate(reservation.getReservedDate().atStartOfDay());
+            dto.setStatus(reservation.getStatus().name());
+            dto.setMessage(reservation.getMessage());
+            
+            // 사용자 정보 설정
+            if (reservation.getUser() != null) {
+                dto.setName(reservation.getUser().getName());
+                dto.setEmail(reservation.getUser().getEmail());
+                dto.setPhone(reservation.getUser().getPhone());
+            }
+            
+            // 매물 정보가 있는 경우 설정
+            if (reservation.getProperties() != null && !reservation.getProperties().isEmpty()) {
+                List<PropertyDto> propertyDtos = reservation.getProperties().stream()
+                    .map(property -> {
+                        PropertyDto propertyDto = new PropertyDto();
+                        propertyDto.setId(property.getPropertyId());
+                        propertyDto.setTitle(property.getTitle());
+                        propertyDto.setLocation(property.getLocation());
+                        // 필요한 경우 다른 속성도 설정
+                        return propertyDto;
+                    })
+                    .collect(Collectors.toList());
+                dto.setProperties(propertyDtos);
+            }
+            
+            return dto;
+        }).collect(Collectors.toList());
     }
 }

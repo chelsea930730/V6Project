@@ -159,4 +159,11 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
 
   // 날짜 범위와 상태에 따른 예약 수 조회
   int countByReservedDateBetweenAndStatusIn(LocalDate startDate, LocalDate endDate, List<ReservationStatus> statuses);
+
+  List<Reservation> findByUser_EmailAndReservedDateBetween(String userEmail, LocalDate startDate, LocalDate endDate);
+
+  long countByUser_Email(String email);
+
+  @Query("SELECT r FROM Reservation r WHERE r.reservedDate >= :startDate AND r.reservedDate <= :endDate")
+  List<Reservation> findByDateRange(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }

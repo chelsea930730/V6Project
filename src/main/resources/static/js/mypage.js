@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 모든 예약 날짜 수집하여 달력에 표시
+    // 모든 예약 날짜를 수집하여 달력에 표시
     const reservationDates = collectReservationDates();
     
     // 달력 초기화 - today 파라미터 제거
@@ -80,15 +80,13 @@ function initializeCalendar(reservationDates = []) {
     const nextMonthBtn = document.getElementById('nextMonth');
 
     if (prevMonthBtn) {
-        // 이전 클릭 이벤트 리스너 제거 후 다시 추가 (중복 방지)
-        prevMonthBtn.removeEventListener('click', handlePrevMonth);
-        prevMonthBtn.addEventListener('click', handlePrevMonth);
+        prevMonthBtn.removeEventListener('click', handlePrevMonthWithEvent);
+        prevMonthBtn.addEventListener('click', handlePrevMonthWithEvent);
     }
 
     if (nextMonthBtn) {
-        // 다음 클릭 이벤트 리스너 제거 후 다시 추가 (중복 방지)
-        nextMonthBtn.removeEventListener('click', handleNextMonth);
-        nextMonthBtn.addEventListener('click', handleNextMonth);
+        nextMonthBtn.removeEventListener('click', handleNextMonthWithEvent);
+        nextMonthBtn.addEventListener('click', handleNextMonthWithEvent);
     }
 }
 
@@ -98,6 +96,12 @@ function handlePrevMonth() {
     if (currentMonth < 0) {
         currentMonth = 11;
         currentYear--;
+    }
+    
+    // 해당 달의 마지막 날짜 확인하여 currentDate 조정
+    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    if (currentDate > lastDayOfMonth) {
+        currentDate = lastDayOfMonth;
     }
     
     // 달력 업데이트
@@ -116,6 +120,12 @@ function handleNextMonth() {
         currentYear++;
     }
     
+    // 해당 달의 마지막 날짜 확인하여 currentDate 조정
+    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    if (currentDate > lastDayOfMonth) {
+        currentDate = lastDayOfMonth;
+    }
+    
     // 달력 업데이트
     const reservationDates = collectReservationDates();
     updateCalendar(reservationDates);
@@ -128,7 +138,15 @@ function handleNextMonth() {
 function updateDateDisplay() {
     const dateDisplay = document.querySelector('.calendar-header h6');
     if (dateDisplay) {
-        const displayDate = new Date(currentYear, currentMonth, currentDate);
+        // 해당 달의 마지막 날짜 확인
+        const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        
+        // 현재 선택된 날짜가 해당 월의 마지막 날짜보다 크면 조정
+        const adjustedDate = Math.min(currentDate, lastDayOfMonth);
+        
+        // 조정된 날짜로 표시 날짜 생성
+        const displayDate = new Date(currentYear, currentMonth, adjustedDate);
+        
         const options = { 
             year: 'numeric', 
             month: '2-digit', 
@@ -152,6 +170,11 @@ function updateCalendar(reservationDates = []) {
 
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+    
+    // 현재 선택된 날짜가 이 달의 마지막 날짜보다 크면 조정
+    if (currentDate > lastDate) {
+        currentDate = lastDate;
+    }
     
     // 오늘 날짜 파싱 (실제 오늘 날짜)
     const today = new Date();
@@ -363,4 +386,17 @@ function loadDayReservations(dateStr) {
     });
     
     dayReservationsContainer.innerHTML = reservationsHTML;
+}
+
+// 이벤트 객체를 받는 핸들러
+function handlePrevMonthWithEvent(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    handlePrevMonth();
+}
+
+function handleNextMonthWithEvent(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    handleNextMonth();
 }
