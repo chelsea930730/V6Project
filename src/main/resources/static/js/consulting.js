@@ -44,11 +44,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedCount = document.querySelectorAll('tbody .form-check-input:checked').length;
             cancelSelectedBtn.disabled = selectedCount === 0;
             
-            // 선택된 항목이 있을 때만 텍스트 업데이트
+            // 버튼 텍스트는 항상 "선택한 예약 삭제"로 유지
             if (selectedCount > 0) {
-                cancelSelectedBtn.innerHTML = `<i class="fas fa-trash-alt"></i> 선택한 예약 취소 (${selectedCount})`;
+                cancelSelectedBtn.innerHTML = `<i class="fas fa-trash-alt"></i> 선택한 예약 삭제 (${selectedCount})`;
             } else {
-                cancelSelectedBtn.innerHTML = `<i class="fas fa-trash-alt"></i> 선택한 예약 취소`;
+                cancelSelectedBtn.innerHTML = `<i class="fas fa-trash-alt"></i> 선택한 예약 삭제`;
             }
         }
     }
@@ -172,6 +172,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const searchType = document.getElementById('searchType').value;
         const search = document.getElementById('searchQuery').value;
         
+        // 날짜 유효성 검증 (시작일이 종료일보다 이후면 제출 불가)
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            
+            if (start > end) {
+                alert('종료일은 시작일보다 이후여야 합니다.');
+                return; // 함수 종료
+            }
+        }
+        
         // 현재 URL 가져오기
         let url = new URL(window.location.href);
         
@@ -196,12 +207,12 @@ document.addEventListener('DOMContentLoaded', function() {
             url.searchParams.set('search', search);
             if (searchType) {
                 url.searchParams.set('searchType', searchType);
-            } else {
+        } else {
                 url.searchParams.set('searchType', 'name'); // 기본값 설정
             }
         }
         
-        // 무조건 AND 조건으로 검색
+        // 항상 AND 조건을 적용
         url.searchParams.set('filterCondition', 'AND');
         
         // 변경된 URL로 이동
@@ -269,32 +280,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 날짜 범위 유효성 검사
+    // 날짜 범위 유효성 검사 함수
     function validateDateRange() {
         const startDateInput = document.getElementById('startDateFilter');
         const endDateInput = document.getElementById('endDateFilter');
         
-        if (startDateInput && endDateInput) {
-            endDateInput.addEventListener('change', function() {
-                const startDate = new Date(startDateInput.value);
-                const endDate = new Date(this.value);
-                
-                if (startDateInput.value && this.value && endDate < startDate) {
-                    alert('종료일은 시작일보다 이후여야 합니다.');
-                    this.value = '';
-                }
-            });
+        if (!startDateInput || !endDateInput) return;
+        
+        // 종료일 변경 시 유효성 검사
+        endDateInput.addEventListener('change', function() {
+            if (!startDateInput.value) return; // 시작일이 비어있으면 검사하지 않음
             
-            startDateInput.addEventListener('change', function() {
-                const endDate = new Date(endDateInput.value);
-                const startDate = new Date(this.value);
-                
-                if (endDateInput.value && this.value && endDate < startDate) {
-                    alert('시작일은 종료일보다 이전이어야 합니다.');
-                    this.value = '';
-                }
-            });
-        }
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(this.value);
+            
+            if (endDate < startDate) {
+                alert('종료일은 시작일보다 이후여야 합니다.');
+                this.value = ''; // 종료일 입력값 초기화
+            }
+        });
+        
+        // 시작일 변경 시 유효성 검사
+        startDateInput.addEventListener('change', function() {
+            if (!endDateInput.value) return; // 종료일이 비어있으면 검사하지 않음
+            
+            const startDate = new Date(this.value);
+            const endDate = new Date(endDateInput.value);
+            
+            if (startDate > endDate) {
+                alert('시작일은 종료일보다 이전이어야 합니다.');
+                this.value = ''; // 시작일 입력값 초기화
+            }
+        });
     }
 
     // 필터 결과 요약 정보 표시
@@ -769,6 +786,121 @@ document.addEventListener('DOMContentLoaded', function() {
     if (filterConditionArea) {
         filterConditionArea.remove();
     }
+
+    // 날짜 범위 필터 개선 함수
+    function enhanceDateRangeFilter() {
+        const startDateInput = document.getElementById('startDateFilter');
+        const endDateInput = document.getElementById('endDateFilter');
+        
+        if (!startDateInput || !endDateInput) return;
+        
+        // 날짜 캘린더가 닫히도록 하는 함수
+        function closeDatepicker(input) {
+            // input 요소의 focus를 제거하여 캘린더 닫기
+            input.blur();
+        }
+        
+        // 시작일 선택 시 처리
+        startDateInput.addEventListener('change', function() {
+            // 시작일 캘린더 닫기
+            closeDatepicker(this);
+            
+            if (this.value) {
+                // 종료일 최소값을 시작일로 설정
+                endDateInput.min = this.value;
+                
+                // 종료일 입력 필드 활성화
+                endDateInput.disabled = false;
+                
+                // 종료일 캘린더 자동으로 열기
+                setTimeout(() => {
+                    endDateInput.focus();
+                }, 100);
+            }
+        });
+        
+        // 종료일 선택 시 처리
+        endDateInput.addEventListener('change', function() {
+            // 종료일 캘린더 닫기
+            closeDatepicker(this);
+            
+            if (startDateInput.value && this.value) {
+                const startDate = new Date(startDateInput.value);
+                const endDate = new Date(this.value);
+                
+                // 종료일이 시작일보다 이전이면 경고
+                if (endDate < startDate) {
+                    alert('종료일은 시작일보다 이후여야 합니다.');
+                    this.value = '';
+                    
+                    // 캘린더 다시 열기
+                    setTimeout(() => {
+                        this.focus();
+                    }, 100);
+                }
+            }
+        });
+        
+        // 초기 상태 설정
+        if (!startDateInput.value) {
+            endDateInput.disabled = true;
+        } else {
+            endDateInput.min = startDateInput.value;
+        }
+        
+        // 날짜 필드에 직접 입력 시 유효성 검사
+        [startDateInput, endDateInput].forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.value && startDateInput.value && endDateInput.value) {
+                    const startDate = new Date(startDateInput.value);
+                    const endDate = new Date(endDateInput.value);
+                    
+                    if (this === endDateInput && endDate < startDate) {
+                        alert('종료일은 시작일보다 이후여야 합니다.');
+                        this.value = '';
+                    }
+                }
+            });
+        });
+    }
+
+    // DOM이 로드된 후 실행하는 함수들
+    document.addEventListener('DOMContentLoaded', function() {
+        // ... 기존 코드 ...
+        
+        // 날짜 범위 필터 개선 적용
+        enhanceDateRangeFilter();
+        
+        // ... 기존 코드 ...
+    });
+
+    // 추가 스타일 적용
+    function addCustomStyles() {
+        const styleElement = document.createElement('style');
+        styleElement.textContent = `
+            /* 날짜 필터 스타일 개선 */
+            #startDateFilter, #endDateFilter {
+                transition: border-color 0.3s, box-shadow 0.3s;
+            }
+            
+            #endDateFilter:disabled {
+                background-color: #f5f5f5;
+                cursor: not-allowed;
+            }
+            
+            /* 활성화된 날짜 필드에 시각적 표시 */
+            #startDateFilter:focus, #endDateFilter:focus {
+                border-color: #4682B4;
+                box-shadow: 0 0 0 0.2rem rgba(70, 130, 180, 0.25);
+            }
+        `;
+        document.head.appendChild(styleElement);
+    }
+
+    // 페이지 로드 시 스타일 추가
+    document.addEventListener('DOMContentLoaded', function() {
+        addCustomStyles();
+    });
 });
 
 // 상태 버튼 설정

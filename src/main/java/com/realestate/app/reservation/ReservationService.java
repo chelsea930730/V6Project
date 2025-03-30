@@ -22,6 +22,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+
+import org.springframework.data.jpa.domain.Specification;
+
 @Service
 @AllArgsConstructor
 @Transactional
@@ -513,5 +518,74 @@ public class ReservationService {
     // 날짜 범위와 상태에 따른 예약 수 - 반환 타입을 long으로 변경 
     public long countReservationsByDateRangeAndStatuses(LocalDate startDate, LocalDate endDate, List<ReservationStatus> statuses) {
         return reservationRepository.countByReservedDateBetweenAndStatusIn(startDate, endDate, statuses);
+    }
+
+    // 모든 필터를 AND 조건으로 적용하는 메서드
+    public Page<Reservation> findAllWithAllFilters(
+            String status, String startDate, String endDate, 
+            String searchType, String search, Pageable pageable) {
+        
+        Specification<Reservation> spec = Specification.where(null);
+        
+        // 상태 필터 추가
+        if (status != null && !status.isEmpty()) {
+            spec = spec.and((root, query, cb) -> 
+                cb.equal(root.get("status"), ReservationStatus.valueOf(status)));
+        }
+        
+        // 날짜 범위 필터 추가
+        if (startDate != null && !startDate.isEmpty()) {
+            LocalDate start = LocalDate.parse(startDate);
+            spec = spec.and((root, query, cb) -> 
+                cb.greaterThanOrEqualTo(root.get("reservedDate"), start));
+        }
+        
+        if (endDate != null && !endDate.isEmpty()) {
+            LocalDate end = LocalDate.parse(endDate);
+            spec = spec.and((root, query, cb) -> 
+                cb.lessThanOrEqualTo(root.get("reservedDate"), end));
+        }
+        
+        // 검색어 필터 추가
+        if (search != null && !search.isEmpty()) {
+            if ("name".equals(searchType)) {
+                spec = spec.and((root, query, cb) -> {
+                    Join<Reservation, User> userJoin = root.join("user");
+                    return cb.like(userJoin.get("name"), "%" + search + "%");
+                });
+            } else if ("email".equals(searchType)) {
+                spec = spec.and((root, query, cb) -> {
+                    Join<Reservation, User> userJoin = root.join("user");
+                    return cb.like(userJoin.get("email"), "%" + search + "%");
+                });
+            } else if ("reservationId".equals(searchType)) {
+                try {
+                    Long id = Long.parseLong(search);
+                    spec = spec.and((root, query, cb) -> 
+                        cb.equal(root.get("reservationId"), id));
+                } catch (NumberFormatException e) {
+                    // 숫자가 아닌 경우 무시
+                }
+            } else if ("property".equals(searchType)) {
+                spec = spec.and((root, query, cb) -> {
+                    Join<Reservation, Property> propertyJoin = root.join("properties", JoinType.LEFT);
+                    return cb.or(
+                        cb.like(propertyJoin.get("title"), "%" + search + "%"),
+                        cb.like(propertyJoin.get("location"), "%" + search + "%")
+                    );
+                });
+            }
+        }
+        
+        // distinct 설정을 위한 추가 Specification
+        Specification<Reservation> distinctSpec = (root, query, cb) -> {
+            query.distinct(true);
+            return cb.conjunction();
+        };
+        
+        // 기존 조건과 distinct 조건 결합
+        spec = spec.and(distinctSpec);
+        
+        return reservationRepository.findAll(spec, pageable);
     }
 }

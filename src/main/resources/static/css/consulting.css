@@ -33,60 +33,183 @@
 	border-color: #4682B4;
 }
 
+/* 상태 버튼 스타일을 마이페이지 스타일과 일치시키기 */
+.status-select {
+	width: 100%;
+	padding: 8px 12px;
+	border: none;
+	border-radius: 20px;
+	font-size: 14px;
+	appearance: none;
+	text-align: center;
+	min-width: 120px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+/* 상태별 색상 - 마이페이지와 동일하게 적용 */
+.status-select.pending {
+	background-color: #ffdb9a !important;
+	color: #885800 !important;
+	border-color: transparent !important;
+}
+
+.status-select.confirmed {
+	background-color: #6a99cd !important;
+	color: white !important;
+	border-color: transparent !important;
+}
+
+.status-select.compl {
+	background-color: #c8e6c9 !important;
+	color: #2e7d32 !important;
+	border-color: transparent !important;
+}
+
+.status-select.cancelled {
+	background-color: #ffcdd2 !important;
+	color: #c62828 !important;
+	border-color: transparent !important;
+}
+
+/* 상태 버튼의 기존 스타일 재정의하여 충돌 방지 */
+.status-btn.btn-warning, 
+.status-btn.btn-primary, 
+.status-btn.btn-success, 
+.status-btn.btn-orange {
+	background-color: transparent;
+	border-color: transparent;
+}
+
+/* hover 효과 추가 */
+.status-select:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* 드롭다운 메뉴 스타일 */
+.status-dropdown {
+	position: absolute;
+	background-color: white;
+	border: 1px solid #dee2e6;
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+	z-index: 1000;
+	overflow: hidden;
+}
+
+.status-dropdown-item {
+	padding: 10px 16px;
+	cursor: pointer;
+	transition: all 0.2s;
+	font-size: 14px;
+}
+
+.status-dropdown-item:hover {
+	background-color: #f0f7ff;
+}
+
+/* 모달 내 상태 셀렉트 박스 스타일도 일관되게 수정 */
+#reservationStatus {
+	border-radius: 20px;
+	padding: 8px 16px;
+	cursor: pointer;
+}
+
+#reservationStatus option {
+	padding: 8px;
+}
+
+/* 모달 내 상태 셀렉트 박스 옵션 색상 */
+#reservationStatus option[value="PENDING"] {
+	background-color: #ffdb9a;
+	color: #885800;
+}
+
+#reservationStatus option[value="CONFIRMED"] {
+	background-color: #6a99cd;
+	color: white;
+}
+
+#reservationStatus option[value="COMPL"] {
+	background-color: #c8e6c9;
+	color: #2e7d32;
+}
+
+#reservationStatus option[value="CANCELLED"] {
+	background-color: #ffcdd2;
+	color: #c62828;
+}
+
+/* 예약 상태를 위한 변수 정의 */
+:root {
+	--pending-color: #ffdb9a;
+	--pending-text: #885800;
+	--confirmed-color: #6a99cd;
+	--confirmed-text: white;
+	--completed-color: #c8e6c9;
+	--completed-text: #2e7d32;
+	--cancelled-color: #ffcdd2;
+	--cancelled-text: #c62828;
+}
+
 /* 상태 버튼 스타일 */
 .status-btn {
 	width: 120px;
+	height: 38px;
 	border-radius: 20px;
-	padding: 6px 0;
+	padding: 8px 12px;
 	font-weight: 500;
 	font-size: 14px;
 	text-align: center;
 	transition: all 0.3s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
-.btn-warning {
-	background-color: #ffc107;
-	border-color: #ffc107;
-	color: #000;
+.status-btn.btn-warning {
+	background-color: #ffdb9a !important;
+	color: #885800 !important;
+	border-color: transparent !important;
 }
 
-.btn-success {
-	background-color: #28a745;
-	border-color: #28a745;
-	color: #fff;
+.status-btn.btn-primary {
+	background-color: #6a99cd !important;
+	color: white !important;
+	border-color: transparent !important;
 }
 
-.btn-danger {
-	background-color: #ff5a5f;
-	border-color: #ff5a5f;
+.status-btn.btn-success {
+	background-color: #c8e6c9 !important;
+	color: #2e7d32 !important;
+	border-color: transparent !important;
 }
 
-.btn-danger:hover {
-	background-color: #e04147;
-	border-color: #e04147;
+.status-btn.btn-orange {
+	background-color: #ffcdd2 !important;
+	color: #c62828 !important;
+	border-color: transparent !important;
+}
+
+/* hover 효과 추가 */
+.status-btn:hover {
 	transform: translateY(-2px);
-	box-shadow: 0 4px 8px rgba(255, 90, 95, 0.25);
-}
-
-.btn-outline-secondary {
-	border-color: #ddd;
-}
-
-.btn-outline-secondary:hover {
-	background-color: #f8f9fa;
-	color: #333;
-	border-color: #ccc;
+	box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 /* 상태 변경 드롭다운 메뉴 */
 .status-dropdown {
 	position: absolute;
 	background-color: white;
-	border: 1px solid #dee2e6;
-	border-radius: 5px;
-	box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+	border: none;
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 	display: none;
 	z-index: 1000;
+	overflow: hidden;
+	min-width: 120px;
 }
 
 .status-dropdown.show {
@@ -94,13 +217,16 @@
 }
 
 .status-dropdown-item {
-	padding: 0.5rem 1rem;
+	padding: 8px 16px;
 	cursor: pointer;
-	transition: background-color 0.2s;
+	transition: all 0.2s;
+	font-size: 14px;
+	color: var(--text-medium);
 }
 
 .status-dropdown-item:hover {
-	background-color: #f8f9fa;
+	background-color: #f0f7ff;
+	color: #355c86;
 }
 
 /* 카드 스타일 */
@@ -121,81 +247,8 @@
 }
 
 /* 추가할 스타일 - 상태 셀렉트 박스 스타일 */
-.status-select, .status-btn {
-	width: 100%;
-	padding: 8px 12px;
-	border: 1px solid #ddd;
-	border-radius: 15px;
-	font-size: 0.9rem;
-	appearance: none; /* 브라우저 기본 드롭다운 화살표 제거 */
-	text-align: center;
-	min-width: 120px;
-}
-
 .status-select {
-	cursor: default; /* 편집 불가능한 셀렉트 박스용 */
-}
-
-.status-btn {
-	cursor: pointer; /* 클릭 가능한 버튼용 */
-}
-
-/* 셀렉트 박스 옵션 스타일 */
-.status-select option[value="PENDING"],
-.btn-warning {
-	background-color: #ffc107;
-	border-color: #ffc107;
-	color: #000;
-}
-
-.status-select option[value="CONFIRMED"],
-.btn-primary {
-	background-color: #007bff;
-	border-color: #007bff;
-	color: white;
-}
-
-.status-select option[value="COMPLETED"],
-.btn-success {
-	background-color: #28a745;
-	border-color: #28a745;
-	color: white;
-}
-
-.status-select option[value="CANCELLED"],
-.btn-danger {
-	background-color: #ff9800;
-	border-color: #ff9800;
-	color: white;
-}
-
-/* 선택된 상태에 따라 셀렉트 박스/버튼 배경색 변경 */
-.status-select.pending,
-.status-btn.pending {
-	background-color: #ffc107;
-	border-color: #ffc107;
-	color: #000;
-}
-
-.status-select.confirmed,
-.status-btn.confirmed {
-	background-color: #007bff;
-	border-color: #007bff;
-	color: white;
-}
-
-.status-select.completed,
-.status-btn.completed {
-	background-color: #28a745;
-	border-color: #28a745;
-	color: white;
-}
-
-.status-select.cancelled,
-.status-btn.cancelled {
-	background-color: #ff9800;
-	border-color: #ff9800;
-	color: white;
+	transition: all 0.3s ease;
 }
 
 /* 필터 섹션 스타일 */
@@ -408,25 +461,6 @@
 
 .status-menu-item:hover {
 	background-color: #f5f5f5;
-}
-
-/* 계약 불가 버튼 - 주황색 버전 */
-.btn-orange {
-	background-color: #ff9800;
-	border-color: #ff9800;
-	color: white;
-}
-
-.btn-orange:hover {
-	background-color: #e68a00;
-	border-color: #e68a00;
-	color: white;
-}
-
-/* 모달 내 상태 셀렉트 박스 색상 */
-#reservationStatus option[value="CANCELLED"] {
-	background-color: #ff9800;
-	color: white;
 }
 
 /* 필터 활성화 및 요약 정보 스타일 */

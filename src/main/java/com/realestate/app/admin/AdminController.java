@@ -39,6 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.ArrayList;
 import java.time.format.DateTimeFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Controller
 @RequestMapping("/admin")
@@ -46,8 +47,10 @@ import java.time.format.DateTimeFormatter;
 public class AdminController {
 
     private final PropertyService propertyService;
-    private final ReservationService reservationService;
     private final CancellationCounterRepository cancellationCounterRepository;
+
+    @Autowired
+    private ReservationService reservationService;
 
     @GetMapping("/dashboard")
     public String dashboard(
@@ -194,69 +197,39 @@ public class AdminController {
     }
 
     @GetMapping("/consulting")
-    public String consulting(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size,
-            @RequestParam(value = "status", required = false) String status,
-            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam(value = "searchType", required = false) String searchType,
-            @RequestParam(value = "search", required = false) String search,
+    public String getConsultingPage(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String searchType,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "AND") String filterCondition,
+            @RequestParam(defaultValue = "0") int page,
             Model model) {
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by("reservedDate").descending());
+        
+        // Pageable 설정
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("reservedDate").descending());
+        
+        // 결과 페이지
         Page<Reservation> reservationsPage;
-
-        // 검색어와 필터 조건 적용
-        if (search != null && !search.isEmpty() && searchType != null) {
-            // 검색 유형에 따른 처리
-            switch (searchType) {
-                case "name":
-                    reservationsPage = reservationService.findByUserNameContaining(search, pageable);
-                    break;
-                case "email":
-                    reservationsPage = reservationService.findByUserEmailContaining(search, pageable);
-                    break;
-                case "reservationId":
-                    try {
-                        Long id = Long.parseLong(search);
-                        reservationsPage = reservationService.findByReservationId(id, pageable);
-                    } catch (NumberFormatException e) {
-                        reservationsPage = Page.empty(pageable);
-                    }
-                    break;
-                case "property":
-                    // 매물 정보로 검색
-                    reservationsPage = reservationService.findByPropertyTitleContaining(search, pageable);
-                    break;
-                default:
-                    reservationsPage = reservationService.findAll(pageable);
-            }
-        } else if (status != null && !status.isEmpty()) {
-            // 상태별 필터링
-            try {
-                ReservationStatus statusEnum = ReservationStatus.valueOf(status);
-                reservationsPage = reservationService.findByStatus(statusEnum, pageable);
-            } catch (IllegalArgumentException e) {
-                reservationsPage = reservationService.findAll(pageable);
-            }
-        } else if (startDate != null && endDate != null) {
-            // 날짜 범위 필터링
-            reservationsPage = reservationService.findByReservedDateBetween(startDate, endDate, pageable);
-        } else {
-            // 모든 예약 표시 (계약 불가 포함)
-            reservationsPage = reservationService.findAll(pageable);
-        }
-
+        
+        // 항상 AND 조건으로 모든 필터 적용 (기존 서비스 객체 사용)
+        reservationsPage = this.reservationService.findAllWithAllFilters(
+                status, startDate, endDate, searchType, search, pageable);
+        
+        // 모델에 데이터 추가
         model.addAttribute("reservations", reservationsPage.getContent());
         model.addAttribute("currentPage", reservationsPage.getNumber());
         model.addAttribute("totalPages", reservationsPage.getTotalPages());
-        model.addAttribute("status", status == null ? "" : status);
+        
+        // 필터 파라미터 추가 (뷰에서 사용)
+        model.addAttribute("status", status);
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
         model.addAttribute("searchType", searchType);
         model.addAttribute("search", search);
-
+        model.addAttribute("filterCondition", "AND"); // 항상 AND로 설정
+        
         return "admin/consulting";
     }
 

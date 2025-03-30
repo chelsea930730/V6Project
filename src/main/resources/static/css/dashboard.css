@@ -318,8 +318,6 @@ main.col-md-10 {
 }
 
 #reservationChart::before {
-    content: '월을 클릭하면 해당 월의 통계가 표시됩니다';
-    position: absolute;
     top: 10px;
     right: 10px;
     background-color: rgba(255, 255, 255, 0.8);
