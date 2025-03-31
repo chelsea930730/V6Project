@@ -372,3 +372,110 @@ h2 {
 	text-decoration: none; /* 호버 시에도 밑줄 제거 */
 	color: white; /* 호버 시에도 텍스트 색상 유지 */
 }
+
+/* 이미지 슬라이더 스타일 */
+.slider-container {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    border-radius: 8px;
+    min-height: 300px;
+}
+
+.image-slider {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.slide {
+    width: 100%;
+    flex-shrink: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+}
+
+.slide.active {
+    display: flex;
+}
+
+.slider-image {
+    max-width: 100%;
+    max-height: 400px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.slider-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.slider-control:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.slider-control.prev {
+    left: 10px;
+}
+
+.slider-control.next {
+    right: 10px;
+}
+
+.slider-indicators {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+}
+
+.indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.indicator.active {
+    background-color: white;
+}
+
+.no-image-container {
+    width: 100%;
+    min-height: 300px;
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 1.1em;
+}
+
+/* 메인 이미지 섹션 조정 */
+.building-photos {
+    flex: 0.4;
+    padding: 20px;
+}

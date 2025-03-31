@@ -121,17 +121,48 @@
           <!-- 왼쪽: 사진 섹션 -->
           <section class="building-photos">
                 <div class="photo-container" style="background: #fff; border-radius: 10px; padding: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
-                    <div class="photo-grid" id="propertyPhotos">
-                          <div th:if="${property.thumbnailImage != null and !#strings.isEmpty(property.thumbnailImage)}" class="property-images" style="display: flex; justify-content: center; align-items: center; min-height: 300px;">
-                                <img th:src="${property.thumbnailImage}" 
-                                     alt="매물 대표 이미지" 
-                                     style="max-width: 100%; width: auto; height: auto;">
-                          </div>
-                          <div th:unless="${property.thumbnailImage != null and !#strings.isEmpty(property.thumbnailImage)}" 
-                               class="no-image-container"
-                               style="width: 100%; min-height: 300px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
-                                <span>이미지 준비중</span>
-                          </div>
+                    <div class="slider-container">
+                        <div class="image-slider" id="propertyImagesSlider">
+                            <!-- 썸네일 이미지 -->
+                            <div class="slide active" th:if="${property.thumbnailImage != null and !#strings.isEmpty(property.thumbnailImage)}">
+                                <img th:src="${property.thumbnailImage}" alt="매물 대표 이미지" class="slider-image">
+                            </div>
+                            
+                            <!-- 평면도 이미지들 -->
+                            <th:block th:if="${property.floorplanImage != null}">
+                                <div class="slide" th:each="url : ${#strings.arraySplit(property.floorplanImage, ',')}">
+                                    <img th:src="${url}" alt="평면도" class="slider-image">
+                                </div>
+                            </th:block>
+                            
+                            <!-- 건물 이미지들 -->
+                            <th:block th:if="${property.buildingImage != null}">
+                                <div class="slide" th:each="url : ${#strings.arraySplit(property.buildingImage, ',')}">
+                                    <img th:src="${url}" alt="건물 외관" class="slider-image">
+                                </div>
+                            </th:block>
+                            
+                            <!-- 내부 이미지들 -->
+                            <th:block th:if="${property.interiorImage != null}">
+                                <div class="slide" th:each="url : ${#strings.arraySplit(property.interiorImage, ',')}">
+                                    <img th:src="${url}" alt="내부 사진" class="slider-image">
+                                </div>
+                            </th:block>
+                            
+                            <!-- 이미지가 없는 경우 -->
+                            <div class="slide no-image" th:unless="${(property.thumbnailImage != null and !#strings.isEmpty(property.thumbnailImage)) or property.floorplanImage != null or property.buildingImage != null or property.interiorImage != null}">
+                                <div class="no-image-container">
+                                    <span>이미지 준비중</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 슬라이더 컨트롤 버튼 -->
+                        <button class="slider-control prev" id="prevSlide">&lt;</button>
+                        <button class="slider-control next" id="nextSlide">&gt;</button>
+                        
+                        <!-- 슬라이더 인디케이터 -->
+                        <div class="slider-indicators" id="sliderIndicators"></div>
                     </div>
                 </div>
           </section>

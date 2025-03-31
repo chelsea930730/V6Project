@@ -35,7 +35,87 @@ function updatePropertyDetails() {
 }
 
 // 페이지 로드 시 실행
-window.addEventListener("DOMContentLoaded", updatePropertyDetails);
+window.addEventListener("DOMContentLoaded", function() {
+    updatePropertyDetails();
+    initImageSlider();
+});
+
+// 이미지 슬라이더 초기화
+function initImageSlider() {
+    const slider = document.getElementById('propertyImagesSlider');
+    if (!slider) return;
+    
+    const slides = slider.querySelectorAll('.slide');
+    if (slides.length === 0) return;
+
+    const prevBtn = document.getElementById('prevSlide');
+    const nextBtn = document.getElementById('nextSlide');
+    const indicators = document.getElementById('sliderIndicators');
+    
+    // 슬라이드 인덱스 초기화
+    let currentIndex = 0;
+    
+    // 인디케이터 생성
+    slides.forEach((_, index) => {
+        const indicator = document.createElement('div');
+        indicator.classList.add('indicator');
+        if (index === currentIndex) {
+            indicator.classList.add('active');
+        }
+        indicator.addEventListener('click', () => {
+            goToSlide(index);
+        });
+        indicators.appendChild(indicator);
+    });
+    
+    // 이전 슬라이드로 이동
+    prevBtn.addEventListener('click', () => {
+        goToSlide(currentIndex - 1);
+    });
+    
+    // 다음 슬라이드로 이동
+    nextBtn.addEventListener('click', () => {
+        goToSlide(currentIndex + 1);
+    });
+    
+    // 특정 슬라이드로 이동
+    function goToSlide(index) {
+        // 슬라이드 범위 체크
+        if (index < 0) {
+            index = slides.length - 1;
+        } else if (index >= slides.length) {
+            index = 0;
+        }
+        
+        // 이전 슬라이드 비활성화
+        slides[currentIndex].classList.remove('active');
+        indicators.children[currentIndex].classList.remove('active');
+        
+        // 새 슬라이드 활성화
+        slides[index].classList.add('active');
+        indicators.children[index].classList.add('active');
+        
+        // 인덱스 업데이트
+        currentIndex = index;
+    }
+    
+    // 자동 슬라이드 기능 (3초마다)
+    let slideInterval = setInterval(() => {
+        goToSlide(currentIndex + 1);
+    }, 5000);
+    
+    // 마우스 오버시 자동 슬라이드 중지
+    slider.parentElement.addEventListener('mouseenter', () => {
+        clearInterval(slideInterval);
+    });
+    
+    // 마우스 나갈 때 자동 슬라이드 재시작
+    slider.parentElement.addEventListener('mouseleave', () => {
+        slideInterval = setInterval(() => {
+            goToSlide(currentIndex + 1);
+        }, 5000);
+    });
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     // Bootstrap 모달 초기화
