@@ -51,9 +51,24 @@
             class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3"
           >
             <h2>매물 관리</h2>
-            <button id="createPropertyBtn" class="btn btn-primary">
-              <i class="fas fa-plus"></i><span>매물 등록</span>
-            </button>
+            <div class="d-flex align-items-center">
+              <!-- 검색 폼 수정 -->
+              <form th:action="@{/admin/addproperty}" method="get" class="d-flex me-2" style="width: 600px;">
+                <select name="searchType" class="form-select me-2" style="width: 120px;">
+                  <option value="all" th:selected="${searchType == 'all'}">전체</option>
+                  <option value="id" th:selected="${searchType == 'id'}">매물 ID</option>
+                  <option value="title" th:selected="${searchType == 'title'}">매물명</option>
+                </select>
+                <input type="text" name="keyword" class="form-control me-2" 
+                       th:value="${keyword}" placeholder="검색어를 입력하세요">
+                <button type="submit" class="btn btn-primary" style="width: 100px;">
+                  <i class="fas fa-search"></i> 검색
+                </button>
+              </form>
+              <button id="createPropertyBtn" class="btn btn-primary">
+                <i class="fas fa-plus"></i><span>매물 등록</span>
+              </button>
+            </div>
           </div>
 
           <!-- 매물 목록 테이블 -->
@@ -138,7 +153,9 @@
               <ul class="pagination">
                 <!-- 이전 페이지 그룹으로 이동 -->
                 <li class="page-item" th:if="${hasPrevious}">
-                  <a class="page-link" th:href="@{/admin/addproperty(page=${previousPageGroup})}" aria-label="Previous group">
+                  <a class="page-link" 
+                     th:href="@{/admin/addproperty(page=${previousPageGroup}, searchType=${searchType}, keyword=${keyword})}" 
+                     aria-label="Previous group">
                     <span aria-hidden="true">&laquo;</span>
                   </a>
                 </li>
@@ -146,13 +163,16 @@
                 <!-- 페이지 번호 -->
                 <li class="page-item" th:each="pageNumber : ${pageNumbers}" 
                     th:classappend="${pageNumber == currentPage} ? 'active'">
-                  <a class="page-link" th:href="@{/admin/addproperty(page=${pageNumber})}" 
+                  <a class="page-link" 
+                     th:href="@{/admin/addproperty(page=${pageNumber}, searchType=${searchType}, keyword=${keyword})}" 
                      th:text="${pageNumber}">1</a>
                 </li>
                 
                 <!-- 다음 페이지 그룹으로 이동 -->
                 <li class="page-item" th:if="${hasNext}">
-                  <a class="page-link" th:href="@{/admin/addproperty(page=${nextPageGroup})}" aria-label="Next group">
+                  <a class="page-link" 
+                     th:href="@{/admin/addproperty(page=${nextPageGroup}, searchType=${searchType}, keyword=${keyword})}" 
+                     aria-label="Next group">
                     <span aria-hidden="true">&raquo;</span>
                   </a>
                 </li>

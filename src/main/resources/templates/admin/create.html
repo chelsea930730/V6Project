@@ -7,79 +7,107 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" th:href="@{/css/create.css}" />
+    <style>
+      .error {
+        color: red;
+        font-size: 0.8em;
+        margin-top: 5px;
+      }
+      .input-error {
+        border: 1px solid red;
+      }
+    </style>
   </head>
   <body>
     <main class="create-container">
+      <!-- 에러 메시지 표시 영역 -->
+      <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+      <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
       
-      <form class="create-form" id="propertyForm">
+      <form class="create-form" id="propertyForm" 
+            th:action="${propertyDto != null and propertyDto.propertyId != null} ? @{/admin/property/edit/{id}(id=${propertyDto.propertyId})} : @{/admin/property/create}" 
+            th:object="${propertyDto}" 
+            method="post" 
+            enctype="multipart/form-data">
+            
         <div class="form-layout">
           <!-- 좌측 체크박스 영역 -->
           <div class="checkbox-section">
             <div class="form-group">
               <label>월세(¥)</label>
-              <input type="text" name="monthlyPrice" placeholder="숫자만" required />
+              <input type="text" th:field="*{monthlyPrice}" th:errorclass="input-error" placeholder="숫자만" required />
+              <div class="error" th:errors="*{monthlyPrice}"></div>
             </div>
             <div class="form-group">
               <label>관리비(¥)</label>
-              <input type="text" name="managementFee" placeholder="숫자만" required />
+              <input type="text" th:field="*{managementFee}" th:errorclass="input-error" placeholder="숫자만" required />
+              <div class="error" th:errors="*{managementFee}"></div>
             </div>
             <div class="form-group">
               <label>초기비용</label>
-              <textarea name="initialCost" rows="3" placeholder="초기비용 상세 내역을 입력하세요" required></textarea>
+              <textarea th:field="*{initialCost}" th:errorclass="input-error" rows="3" placeholder="초기비용 상세 내역을 입력하세요"></textarea>
+              <div class="error" th:errors="*{initialCost}"></div>
             </div>
             <div class="form-group">
               <label>레이킹</label>
-              <input type="text" name="reikin" placeholder="예: 1개월" required />
+              <input type="text" th:field="*{reikin}" th:errorclass="input-error" placeholder="예: 1개월" />
+              <div class="error" th:errors="*{reikin}"></div>
             </div>
             <div class="form-group">
               <label>시키킹</label>
-              <input type="text" name="shikikin" placeholder="예: 2개월" required />
+              <input type="text" th:field="*{shikikin}" th:errorclass="input-error" placeholder="예: 2개월" />
+              <div class="error" th:errors="*{shikikin}"></div>
             </div>
             <div class="form-group">
               <label>주거 면적(m²)</label>
-              <input type="text" name="area" placeholder="숫자만" required />
+              <input type="text" th:field="*{area}" th:errorclass="input-error" placeholder="숫자만" required />
+              <div class="error" th:errors="*{area}"></div>
             </div>
             <div class="form-group">
               <label>층수</label>
-              <input type="text" name="floor" placeholder="숫자만" required />
+              <input type="text" th:field="*{floor}" th:errorclass="input-error" placeholder="숫자만" required />
+              <div class="error" th:errors="*{floor}"></div>
             </div>
             
             <div class="checkbox-area">
               <h3>건물 타입</h3>
               <div class="checkbox-list">
-                <label><input type="radio" name="buildingType" value="아파트" required /> 아파트</label>
-                <label><input type="radio" name="buildingType" value="맨션" /> 맨션</label>
-                <label><input type="radio" name="buildingType" value="타운하우스" /> 타운하우스</label>
-                <label><input type="radio" name="buildingType" value="오피스텔" /> 오피스텔</label>
-                <label><input type="radio" name="buildingType" value="셰어하우스" /> 셰어하우스</label>
+                <th:block th:each="type : ${buildingTypes}">
+                  <label>
+                    <input type="radio" th:field="*{buildingType}" th:value="${type.name()}" required /> 
+                    <span th:text="${type.getValue()}"></span>
+                  </label>
+                </th:block>
               </div>
+              <div class="error" th:errors="*{buildingType}"></div>
             </div>
             
             <div class="checkbox-area">
               <h3>방 타입</h3>
               <div class="checkbox-list">
-                <label><input type="radio" name="roomType" value="1R" required /> 1R</label>
-                <label><input type="radio" name="roomType" value="1K" /> 1K</label>
-                <label><input type="radio" name="roomType" value="1DK" /> 1DK</label>
-                <label><input type="radio" name="roomType" value="1LDK" /> 1LDK</label>
-                <label><input type="radio" name="roomType" value="2K" /> 2K</label>
-                <label><input type="radio" name="roomType" value="2DK" /> 2DK</label>
-                <label><input type="radio" name="roomType" value="2LDK" /> 2LDK</label>
-                <label><input type="radio" name="roomType" value="3K이상" /> 3K이상</label>
+                <label><input type="radio" th:field="*{roomType}" value="1R" required /> 1R</label>
+                <label><input type="radio" th:field="*{roomType}" value="1K" /> 1K</label>
+                <label><input type="radio" th:field="*{roomType}" value="1DK" /> 1DK</label>
+                <label><input type="radio" th:field="*{roomType}" value="1LDK" /> 1LDK</label>
+                <label><input type="radio" th:field="*{roomType}" value="2K" /> 2K</label>
+                <label><input type="radio" th:field="*{roomType}" value="2DK" /> 2DK</label>
+                <label><input type="radio" th:field="*{roomType}" value="2LDK" /> 2LDK</label>
+                <label><input type="radio" th:field="*{roomType}" value="3K이상" /> 3K이상</label>
               </div>
+              <div class="error" th:errors="*{roomType}"></div>
             </div>
             
             <div class="checkbox-area">
               <h3>상세조건</h3>
               <div class="checkbox-list">
-                <label><input type="checkbox" name="features" value="주차장" /> 주차장</label>
-                <label><input type="checkbox" name="features" value="2인 입주" /> 2인 입주</label>
-                <label><input type="checkbox" name="features" value="욕실/화장실 분리" /> 욕실/화장실 분리</label>
-                <label><input type="checkbox" name="features" value="즉시 입주" /> 즉시 입주</label>
-                <label><input type="checkbox" name="features" value="학생 가능" /> 학생 가능</label>
-                <label><input type="checkbox" name="features" value="반려동물 가능" /> 반려동물 가능</label>
-                <label><input type="checkbox" name="features" value="가구 포함" /> 가구 포함</label>
-                <label><input type="checkbox" name="features" value="에어컨" /> 에어컨</label>
+                <label><input type="checkbox" name="features" value="주차장" th:checked="${selectedFeatures != null && selectedFeatures.contains('주차장')}" /> 주차장</label>
+                <label><input type="checkbox" name="features" value="2인 입주" th:checked="${selectedFeatures != null && selectedFeatures.contains('2인 입주')}" /> 2인 입주</label>
+                <label><input type="checkbox" name="features" value="욕실/화장실 분리" th:checked="${selectedFeatures != null && selectedFeatures.contains('욕실/화장실 분리')}" /> 욕실/화장실 분리</label>
+                <label><input type="checkbox" name="features" value="즉시 입주" th:checked="${selectedFeatures != null && selectedFeatures.contains('즉시 입주')}" /> 즉시 입주</label>
+                <label><input type="checkbox" name="features" value="학생 가능" th:checked="${selectedFeatures != null && selectedFeatures.contains('학생 가능')}" /> 학생 가능</label>
+                <label><input type="checkbox" name="features" value="반려동물 가능" th:checked="${selectedFeatures != null && selectedFeatures.contains('반려동물 가능')}" /> 반려동물 가능</label>
+                <label><input type="checkbox" name="features" value="가구 포함" th:checked="${selectedFeatures != null && selectedFeatures.contains('가구 포함')}" /> 가구 포함</label>
+                <label><input type="checkbox" name="features" value="에어컨" th:checked="${selectedFeatures != null && selectedFeatures.contains('에어컨')}" /> 에어컨</label>
               </div>
             </div>
           </div>
@@ -89,25 +117,28 @@
             <div class="station-info">
               <h3>역/노선 정보</h3>
               <div class="station-display" id="selectedStationDisplay">
-                <span class="selected-line">노선을 선택해주세요</span>
-                <span class="selected-station">역을 선택해주세요</span>
+                <span class="selected-line" th:text="${selectedLine != null ? selectedLine : '노선을 선택해주세요'}">노선을 선택해주세요</span>
+                <span class="selected-station" th:text="${selectedStation != null ? selectedStation : '역을 선택해주세요'}">역을 선택해주세요</span>
               </div>
               <div class="button-group">
                 <button type="button" class="btn-normal" id="lineChangeBtn">노선 변경</button>
                 <button type="button" class="btn-primary" id="stationChangeBtn">역 변경</button>
               </div>
-              <input type="hidden" name="station" id="stationInput" />
-              <input type="hidden" name="line" id="lineInput" />
+              <input type="hidden" th:field="*{station}" id="stationInput" th:value="${selectedStation}" />
+              <div class="error" th:errors="*{station}"></div>
+              <input type="hidden" th:field="*{subwayLine}" id="lineInput" th:value="${selectedLine}" />
+              <div class="error" th:errors="*{subwayLine}"></div>
             </div>
 
             <div class="form-group">
               <label>주소</label>
-              <input type="text" name="address" placeholder="도쿄도 신주쿠구 니시신주쿠 2-8-1" required />
+              <input type="text" th:field="*{location}" th:errorclass="input-error" placeholder="도쿄도 신주쿠구 니시신주쿠 2-8-1" required />
+              <div class="error" th:errors="*{location}"></div>
             </div>
 
             <div class="form-group">
               <label>지역구(District)</label>
-              <select name="district" required>
+              <select th:field="*{district}" th:errorclass="input-error" required>
                 <option value="">선택하세요</option>
                 <option value="千代田区">千代田区 (치요다구)</option>
                 <option value="中央区">中央区 (츄오구)</option>
@@ -133,38 +164,44 @@
                 <option value="葛飾区">葛飾区 (카츠시카구)</option>
                 <option value="江戸川区">江戸川区 (에도가와구)</option>
               </select>
+              <div class="error" th:errors="*{district}"></div>
             </div>
 
             <div class="form-group">
               <label>게시글 제목</label>
-              <input type="text" name="title" placeholder="야마노테선 신주쿠역, 4층, 맨션" required />
+              <input type="text" th:field="*{title}" th:errorclass="input-error" placeholder="야마노테선 신주쿠역, 4층, 맨션" required />
+              <div class="error" th:errors="*{title}"></div>
             </div>
 
             <div class="form-group">
               <label>매물 상태</label>
-              <select name="status" required>
+              <select th:field="*{status}" th:errorclass="input-error" required>
                 <option value="">선택하세요</option>
-                <option value="예약가능">공실</option>
-                <option value="예약중">계약 진행중</option>
-                <option value="거래완료">계약 완료</option>
+                <th:block th:each="status : ${statusTypes}">
+                  <option th:value="${status.name()}" th:text="${status.getValue()}"></option>
+                </th:block>
               </select>
+              <div class="error" th:errors="*{status}"></div>
             </div>
 
             <div class="form-group">
               <label>건축년도</label>
-              <select name="builtYear" id="building-age" required>
+              <select th:field="*{builtYear}" th:errorclass="input-error" id="building-age" required>
                 <option value="">선택하세요</option>
               </select>
+              <div class="error" th:errors="*{builtYear}"></div>
             </div>
             
             <div class="form-group">
               <label>비고 사항</label>
-              <textarea name="description" rows="4" placeholder="추가 정보를 입력하세요"></textarea>
+              <textarea th:field="*{description}" th:errorclass="input-error" rows="4" placeholder="추가 정보를 입력하세요"></textarea>
+              <div class="error" th:errors="*{description}"></div>
             </div>
 
             <div class="form-group">
               <label>주변시설</label>
-              <textarea name="nearbyFacilities" rows="4" placeholder="주변 편의시설, 교통시설 등을 입력하세요"></textarea>
+              <textarea th:field="*{nearbyFacilities}" th:errorclass="input-error" rows="4" placeholder="주변 편의시설, 교통시설 등을 입력하세요"></textarea>
+              <div class="error" th:errors="*{nearbyFacilities}"></div>
             </div>
 
             <!-- 이미지 업로드 섹션 -->
@@ -205,6 +242,24 @@
                   <div class="preview-container" id="interiorPreview"></div>
                 </div>
                 <small class="form-text text-muted">매물 내부 이미지를 업로드하세요.</small>
+              </div>
+
+              <div class="image-upload-group">
+                <label>추가 이미지 1</label>
+                <div class="file-input-container">
+                  <input type="file" id="extraImage1" name="extraImage1" accept="image/*" multiple>
+                  <div class="preview-container" id="extraImage1Preview"></div>
+                </div>
+                <small class="form-text text-muted">추가 이미지를 업로드하세요.</small>
+              </div>
+
+              <div class="image-upload-group">
+                <label>추가 이미지 2</label>
+                <div class="file-input-container">
+                  <input type="file" id="extraImage2" name="extraImage2" accept="image/*" multiple>
+                  <div class="preview-container" id="extraImage2Preview"></div>
+                </div>
+                <small class="form-text text-muted">추가 이미지를 업로드하세요.</small>
               </div>
             </div>
 

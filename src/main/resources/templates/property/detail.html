@@ -183,7 +183,7 @@
 <!-- 추가 사진 섹션 -->
 <section class="building-photos2">
     <h2>건물 사진</h2>
-    <div class="photo-grid2" id="propertyPhotos2">
+    <div class="photo-grid2" id="propertyPhotos2" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; max-width: 1200px; margin: 0 auto;">
         <!-- 썸네일 이미지 -->
         <div class="photo-item" th:if="${property.thumbnailImage != null}">
             <img th:src="${property.thumbnailImage}" alt="썸네일 이미지" class="property-image">
@@ -199,7 +199,7 @@
         <!-- 건물 이미지들 -->
         <th:block th:if="${property.buildingImage != null}">
             <div class="photo-item" th:each="url : ${#strings.arraySplit(property.buildingImage, ',')}">
-                <img th:src="${url}" alt="건물 외관" class="property-image">
+                <img th:src="${url}" alt="건물 사진" class="property-image">
             </div>
         </th:block>
         
@@ -209,29 +209,40 @@
                 <img th:src="${url}" alt="내부 사진" class="property-image">
             </div>
         </th:block>
+
+        <!-- 추가 이미지 1 -->
+        <th:block th:if="${property.extraImage1 != null}">
+            <div class="photo-item" th:each="url : ${#strings.arraySplit(property.extraImage1, ',')}">
+                <img th:src="${url}" alt="추가 이미지 1" class="property-image">
+            </div>
+        </th:block>
+
+        <!-- 추가 이미지 2 -->
+        <th:block th:if="${property.extraImage2 != null}">
+            <div class="photo-item" th:each="url : ${#strings.arraySplit(property.extraImage2, ',')}">
+                <img th:src="${url}" alt="추가 이미지 2" class="property-image">
+            </div>
+        </th:block>
     </div>
 </section>
 
 <style>
 .building-photos2 {
-    padding: 20px;
-    margin: 20px 0;
+    margin: 20px auto;
+    max-width: 1200px;
 }
 
 .photo-grid2 {
-    display: flex;
-    flex-wrap: nowrap;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    overflow-x: auto;
-    padding: 10px 0;
+    padding: 20px;
 }
 
 .photo-item {
-    flex: 0 0 auto;
-    width: 300px;
-    height: 200px;
-    border-radius: 8px;
+    aspect-ratio: 4/3;
     overflow: hidden;
+    border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -246,23 +257,16 @@
     transform: scale(1.05);
 }
 
-/* 스크롤바 스타일링 */
-.photo-grid2::-webkit-scrollbar {
-    height: 8px;
+@media (max-width: 768px) {
+    .photo-grid2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
-.photo-grid2::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-.photo-grid2::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-}
-
-.photo-grid2::-webkit-scrollbar-thumb:hover {
-    background: #555;
+@media (max-width: 480px) {
+    .photo-grid2 {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 
@@ -276,6 +280,10 @@
           <tr>
                 <th>건물 타입</th>
                 <td colspan="3" id="buildingType" th:text="${property.buildingType}"></td>
+          </tr>
+          <tr>
+            <th>층수</th>
+            <td colspan="3" id="floor" th:text="${property.floor}"></td>
           </tr>
           <tr>
                 <th>등록일</th>

@@ -52,7 +52,7 @@ public class Property {
     private BigDecimal area;
 
     @Column(name = "built_year")
-    private String builtYear; // '2001년'과 같은 문자열 형태 저장
+    private String builtYear;  // '2001년'과 같은 문자열 형태 저장
 
     @Column(precision = 20, scale = 7)
     private BigDecimal latitude;
@@ -89,7 +89,11 @@ public class Property {
 
     @Column(name = "interior_image")
     private String interiorImage;  // 내부 이미지 URL
-
+    @Column(name = "extra_image1")
+    private String extraImage1;  // 내부 이미지 URL
+    @Column(name = "extra_image2")
+    private String extraImage2;  // 내부 이미지 URL
+    
     @PrePersist
     public void prePersist() {
         if (this.createdAt == null) {

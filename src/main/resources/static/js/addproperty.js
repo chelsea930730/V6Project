@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <h3>${propertyId ? "매물 수정" : "매물 등록"}</h3>
                 <button type="button" class="btn-close" aria-label="Close"></button>
             </div>
-            <iframe src="/admin/create${propertyId ? '?id=' + propertyId : ''}" 
+            <iframe src="${propertyId ? `/admin/property/edit/${propertyId}` : '/admin/property/create'}" 
                     style="width: 100%; height: calc(100% - 60px); border: none;"></iframe>
         `;
 
