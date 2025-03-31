@@ -1,7 +1,8 @@
 // 전역 변수 설정
-let selectedStations = [];
+let selectedStation = "";
 let selectedLine = "";
 let currentProperties = [];
+let isAdmin = false;
 
 const stations = {
 	"야마노테": ["신주쿠", "이케부쿠로", "도쿄", "우에노", "시부야", "시나가와", "신바시", "아키하바라", "오사키", "유라쿠쵸", "타마치", "하마마츠초", "에비스", "고탄다", "닛포리", "메구로", "니시닛포리", "칸다", "스가모", "오카치마치", "요요기", "오츠카", "하라주쿠", "코마고메", "타바타", "신오쿠보", "메지로", "우구스이다니"],
@@ -15,7 +16,7 @@ const stations = {
 	"한조몬": ["시부야", "오모테산도", "아오야마잇초메","나카타쵸", "한조몬", "쿠단시타", "진보초", "오테마치", "미츠코시마에", "스이텐구마에", "키요스미시라카와", "스미요시", "킨시초", "오시아게"],
 	"마루노우치": ["오기쿠보","미나미아사가야","신코엔지","히가시코엔지","신나카노","나카노사카우에","니시신주쿠", "신주쿠","신주쿠산초메","신주쿠교엔마에","요츠야산초메", "요츠야", "아카사카미츠케","콧카이기지도마에","카스미가세키","긴자","도쿄","오테마치","아와지초","오차노미즈","혼고산초메","코라쿠엔", "묘가다니","신오츠카","이케부쿠로로"],
 	"히비야": ["나카메구로", "에비스", "히로오", "롯폰기", "카미야쵸", "토라노몬힐즈", "카스미가세키", "히비야", "긴자", "히가시긴자", "츠키지", "핫쵸보리", "카야바쵸", "닌교초", "코덴마쵸", "아키하바라", "나카오카치마치", "우에노", "이리야", "미노와", "미나미센주", "키타센주"],
-	"치요다": ["요요기우에하라", "요요기코엔", "메이지진구마에", "오모테산도", "노기자카", "아카사카", "콧카이기지도마에", "카스미가세키", "히비야", "니주바시마에", "오테마치", "신오차노미즈", "유시마", "네즈", "센다기", "니시닛포리", "마치야", "키타센주", "아야세", "키타아야세"],
+	"치요다": ["요요기우에하라", "요요기코엔", "메이지진구마에", "오모테산도", "노기자카", "아카사카", "콧카이기지도마에", "카스미가세키", "히비야", "니주바시마에", "오테마치", "신오차노미즈", "유시마", "네즈", "센다기", "니시닛포리", "마치야", "키타센주", "아야세", "키타야세"],
 	"후쿠토신": ["치카테츠나리마스", "치카테츠아카츠카", "헤이와다이","히카와다이", "코타케무카이하라", "센카와", "카나메초", "이케부쿠로", "조시가야","니시와세다","히가시신주쿠","신주쿠산초메", "키타산도", "메이지진구마에","시부야"],
 	"긴자": ["시부야", "오모테산도","가이엔마에", "아오야마잇초메", "아카사카미츠케", "타메이케산노", "토라노몬", "신바시", "긴자", "쿄바시", "니혼바시", "미츠코시마에", "칸다", "스에히로쵸", "우에노히로코지", "우에노", "이나리초", "타와라마치", "아사쿠사"],
 	"난보쿠": ["메구로", "시로카네다이", "시로카네타카나와", "아자주부반", "롯폰기잇초메", "타메이케산노", "나가타쵸", "요츠야","이치가야", "이다바시", "코라쿠엔", "토다이마에", "혼코마고메", "코마고메", "니시가하라", "오지", "오지카미야", "시모", "아카바네이와부치"],
@@ -80,6 +81,18 @@ document.addEventListener("DOMContentLoaded", function() {
 	initializePriceSliders();
 	setupEventListeners();
 	setupLinePopup();
+
+	// 사용자 역할 확인
+	fetch('/user/index')
+		.then(response => response.json())
+		.then(data => {
+			isAdmin = data.role === 'ADMIN';
+			console.log('전역 isAdmin 설정:', isAdmin);
+		})
+		.catch(error => {
+			console.error('사용자 정보 확인 실패:', error);
+			isAdmin = false; // 기본적으로 관리자가 아닌 것으로 설정
+		});
 });
 // 매물 데이터 가져오기
 function fetchProperties() {
@@ -97,12 +110,38 @@ function fetchProperties() {
 function initializePriceSliders() {
 	const minPrice = document.getElementById("minPrice");
 	const maxPrice = document.getElementById("maxPrice");
-	const minValue = document.getElementById("minValue");
-	const maxValue = document.getElementById("maxValue");
+	const priceLabel = document.getElementById("priceLabel");
 
 	// 초기값 설정
-	minValue.textContent = Number(minPrice.value).toLocaleString() + "円";
-	maxValue.textContent = Number(maxPrice.value).toLocaleString() + "円";
+	updatePriceLabel(minPrice.value, maxPrice.value);
+
+	// 라벨 위치 업데이트 (슬라이더 범위의 중앙에 위치하도록)
+	updateLabelPosition(minPrice.value, maxPrice.value);
+}
+
+// 가격 라벨 업데이트 함수
+function updatePriceLabel(min, max) {
+	const priceLabel = document.getElementById("priceLabel");
+	priceLabel.textContent = `${Number(min).toLocaleString()}円 ~ ${Number(max).toLocaleString()}円`;
+}
+
+// 라벨 위치 업데이트 함수
+function updateLabelPosition(min, max) {
+	const priceLabel = document.getElementById("priceLabel");
+	const minPrice = document.getElementById("minPrice");
+
+	const minVal = parseInt(min);
+	const maxVal = parseInt(max);
+	const minRange = parseInt(minPrice.min);
+	const maxRange = parseInt(minPrice.max);
+
+	// 슬라이더 범위에서의 상대적 위치 계산
+	const minPercent = ((minVal - minRange) / (maxRange - minRange)) * 100;
+	const maxPercent = ((maxVal - minRange) / (maxRange - minRange)) * 100;
+
+	// 라벨 위치를 두 슬라이더 사이의 중앙에 배치
+	const labelPos = (minPercent + maxPercent) / 2;
+	priceLabel.style.left = `${labelPos}%`;
 }
 
 // 이벤트 리스너 설정
@@ -110,16 +149,24 @@ function setupEventListeners() {
 	// 가격 슬라이더 이벤트
 	const minPrice = document.getElementById("minPrice");
 	const maxPrice = document.getElementById("maxPrice");
-	const minValue = document.getElementById("minValue");
-	const maxValue = document.getElementById("maxValue");
 
 	minPrice.addEventListener("input", function() {
-		minValue.textContent = Number(this.value).toLocaleString() + "円";
+		// 최소값이 최대값을 넘지 않도록
+		if(parseInt(minPrice.value) > parseInt(maxPrice.value)) {
+			minPrice.value = maxPrice.value;
+		}
+		updatePriceLabel(minPrice.value, maxPrice.value);
+		updateLabelPosition(minPrice.value, maxPrice.value);
 		filterProperties();
 	});
 
 	maxPrice.addEventListener("input", function() {
-		maxValue.textContent = Number(this.value).toLocaleString() + "円";
+		// 최대값이 최소값보다 작지 않도록
+		if(parseInt(maxPrice.value) < parseInt(minPrice.value)) {
+			maxPrice.value = minPrice.value;
+		}
+		updatePriceLabel(minPrice.value, maxPrice.value);
+		updateLabelPosition(minPrice.value, maxPrice.value);
 		filterProperties();
 	});
 
@@ -212,92 +259,30 @@ function setupLinePopup() {
 	});
 }
 
+// 역 목록 HTML 생성
 function generateStationListHTML(lineName, stations, lineClass) {
 	return `
-    <h3>${lineName} 노선의 역 선택</h3>
-    <div class="station-list-inner">
-      ${stations.map(station => `<span class="station ${lineClass}">${station}</span>`).join('')}
-    </div>
-    <div style="margin-top: 15px;">
-      <button id="selectAllStationsBtn" class="station-search-btn">전체 선택</button>
-      <button id="searchStationsBtn" class="station-search-btn2">검색</button>
-      <button id="resetStationsBtn" class="station-search-btn">초기화</button>
-    </div>
-  `;
+        <h3>${lineName} 노선 역 선택</h3>
+        <div class="station-list">
+            ${stations.map(station => `
+                <span class="station ${lineClass}">${station}</span>
+            `).join('')}
+        </div>
+    `;
 }
 
+// 역 클릭 이벤트 설정
 function setupStationClickEvents(popup) {
-	const stationElements = document.querySelectorAll('.station');
-	selectedStations = []; // 초기화
-
-	stationElements.forEach(stationEl => {
-		stationEl.addEventListener('click', function () {
-			const stationName = this.textContent;
-
-			// 선택/해제 toggle
-			if (selectedStations.includes(stationName)) {
-				selectedStations = selectedStations.filter(s => s !== stationName);
-				this.classList.remove('selected');
-			} else {
-				selectedStations.push(stationName);
-				this.classList.add('selected');
-			}
+	document.querySelectorAll('.station').forEach(station => {
+		station.addEventListener('click', function() {
+			selectedStation = this.textContent;
+			updateFilterMessage();
+			filterProperties();
+			popup.style.display = "none";
+			document.body.style.overflow = "auto";
 		});
-	});
-
-	// ✅ 전체 선택 버튼
-	const selectAllBtn = document.getElementById("selectAllStationsBtn");
-	if (selectAllBtn) {
-		selectAllBtn.addEventListener('click', () => {
-			selectedStations = [];
-			stationElements.forEach(el => {
-				const name = el.textContent;
-				if (!selectedStations.includes(name)) {
-					selectedStations.push(name);
-					el.classList.add('selected');
-				}
-			});
-		});
-	}
-
-	// ✅ 초기화 버튼
-	const resetBtn = document.getElementById("resetStationsBtn");
-	if (resetBtn) {
-		resetBtn.addEventListener('click', () => {
-			selectedStations = [];
-			stationElements.forEach(el => el.classList.remove('selected'));
-		});
-	}
-
-	// ✅ 검색 버튼
-	const searchBtn = document.getElementById("searchStationsBtn");
-	searchBtn.addEventListener('click', () => {
-		popup.style.display = "none";
-		document.body.style.overflow = "auto";
-
-		updateFilterMessage();
-		filterProperties(); // 필터 실행
 	});
 }
-
-
-// // 역 클릭 이벤트 설정
-// function setupStationClickEvents(popup) {
-// 	document.querySelectorAll('.station').forEach(station => {
-// 		station.addEventListener('click', function() {
-// 			selectedStation = this.textContent;
-// 			updateFilterMessage();
-// 			filterProperties();
-// 			popup.style.display = "none";
-// 			document.body.style.overflow = "auto";
-// 		});
-// 	});
-// }
-
-document.getElementById("resetStationsBtn").addEventListener('click', () => {
-	selectedStations = [];
-	document.querySelectorAll('.station.selected').forEach(el => el.classList.remove('selected'));
-});
 
 // 필터 메시지 업데이트 함수
 function updateFilterMessage() {
@@ -305,19 +290,22 @@ function updateFilterMessage() {
 	if (!filterMessageContainer) return;
 
 	let message = '';
-	if (selectedLine && selectedStations.length > 0) {
-		message = `<p>${selectedLine} 노선의 ${selectedStations.join(', ')} 역 매물을 보고 계십니다</p>`;
+	if (selectedStation) {
+		message = `<p>${selectedLine} ${selectedStation}역 매물을 보고 계십니다</p>`;
 	} else if (selectedLine) {
 		message = `<p>${selectedLine} 노선 매물을 보고 계십니다</p>`;
 	}
-	filterMessageContainer.innerHTML = message;
+
+	if (message) {
+		filterMessageContainer.innerHTML = message;
+	}
 }
 
 // 필터링 함수
 function filterProperties() {
 	let keyword = document.getElementById('searchInput')?.value || '';
 	const savedKeyword = keyword;
-	const currentSortValue = document.querySelector('.sort-options')?.value || 'newest';
+	const currentSortValue = document.querySelector('.sort-options select')?.value || 'newest';
 
 	// 한글 구 이름을 일본어로 변환
 	const koreanToJapanese = {};
@@ -341,9 +329,12 @@ function filterProperties() {
 		roomTypes: Array.from(document.querySelectorAll('input[name="room"]:checked'))
 			.map(cb => cb.value),
 		buildingYear: document.getElementById('building-year').value,
-		stations: selectedStations || [], // 선택된 역 정보
-		line: selectedLine || '', // 선택된 노선 정보
-		keyword: keyword || ''
+		station: selectedStation || '',
+		line: selectedLine || '',
+		keyword: keyword || '',
+		// 상세 조건 필터 추가
+		detailTypes: Array.from(document.querySelectorAll('input[name="detail"]:checked'))
+			.map(cb => cb.value)
 	};
 
 	fetch('/property/filter', {
@@ -386,108 +377,101 @@ function updatePropertyList(properties) {
 	const propertyList = document.querySelector('.property-list');
 	const currentSortValue = document.querySelector('.sort-options select')?.value || 'newest';
 
-	// properties가 비어있지 않다면 현재 정렬 상태에 따라 정렬
-	if (properties && properties.length > 0) {
-		switch (currentSortValue) {
-			case 'price-low':
-				properties.sort((a, b) => a.monthlyPrice - b.monthlyPrice);
-				break;
-			case 'price-high':
-				properties.sort((a, b) => b.monthlyPrice - a.monthlyPrice);
-				break;
-			case 'newest':
-				properties.sort((a, b) => b.propertyId - a.propertyId);
-				break;
-		}
+	let html = `
+		<h1>매물 리스트</h1>
+		<div class="sort-options">
+			<select class="form-select" style="width: 200px; display: inline-block;">
+				<option value="newest" ${currentSortValue === 'newest' ? 'selected' : ''}>최신순</option>
+				<option value="price-low" ${currentSortValue === 'price-low' ? 'selected' : ''}>가격 낮은순</option>
+				<option value="price-high" ${currentSortValue === 'price-high' ? 'selected' : ''}>가격 높은순</option>
+			</select>
+	`;
+
+	// 관리자가 아닌 경우에만 장바구니 버튼 추가
+	if (!isAdmin) {
+		html += `
+			<button id="cartButton" onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
+				선택한 매물 장바구니에 담기
+			</button>
+		`;
 	}
+
+	html += `
+	</div>
+	<form id="cartForm" action="/cart/add" method="post" style="display: none;"></form>
+	`;
 
 	if (!properties || properties.length === 0) {
-		propertyList.innerHTML = `
-            <h1>매물 리스트</h1>
-            <!-- 정렬 옵션 -->
-            <div class="sort-options">
-                <select class="form-select" style="width: 200px; display: inline-block;">
-                    <option value="newest" ${currentSortValue === 'newest' ? 'selected' : ''}>최신순</option>
-                    <option value="price-low" ${currentSortValue === 'price-low' ? 'selected' : ''}>가격 낮은순</option>
-                    <option value="price-high" ${currentSortValue === 'price-high' ? 'selected' : ''}>가격 높은순</option>
-                </select>
-                <!-- 장바구니 버튼 -->
-                <button onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
-                    선택한 매물 장바구니에 담기
-                </button>
-            </div>
-            <!-- 폼 -->
-            <form id="cartForm" action="/cart/add" method="post" style="display: none;"></form>
-            <div class="empty-message">검색 결과가 없습니다.</div>`;
-		return;
+		html += '<div class="empty-message">검색 결과가 없습니다.</div>';
+	} else {
+		properties.forEach(property => {
+			html += `
+				<div class="property-item">
+					<div class="property-header">
+						<div class="header-left">
+							<input type="checkbox" value="${property.propertyId}">
+							<span class="property-no">NO.${property.propertyId}</span>
+							<span>${property.title || ''}</span>
+						</div>
+					</div>
+					<table class="property-info-table">
+						<thead>
+							<tr>
+								<th>사진</th>
+								<th>월세/관리비</th>
+								<th>시키킹/레이킹</th>
+								<th>방 타입/면적</th>
+								<th>건축년도</th>
+								<th>예약상태</th>
+								<th>상세보기</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									${property.thumbnailImage ? 
+										`<img src="${property.thumbnailImage}" alt="매물 이미지" style="width: 150px; height: 100px; object-fit: cover;">` :
+										`<div class="no-image-container" style="width: 150px; height: 100px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+											<span>이미지 준비중</span>
+										</div>`
+									}
+								</td>
+								<td>
+									<div>${Number(property.monthlyPrice || 0).toLocaleString()}円</div>
+									<div>${Number(property.managementFee || 0).toLocaleString()}円</div>
+								</td>
+								<td>
+									<div>${Number(property.shikikin || 0).toLocaleString()} / ${Number(property.reikin || 0).toLocaleString()}</div>
+								</td>
+								<td>
+									<div>${property.roomType || ''}</div>
+									<div>${property.area || ''}m²</div>
+									<div>${property.buildingType || ''}</div>
+								</td>
+								<td>${property.builtYear || ''}</td>
+								<td>
+									<div class="status-available">${property.status || ''}</div>
+								</td>
+								<td>
+									<a href="/property/${property.propertyId}" class="detail-button">상세보기</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="address-info">
+						<div>${property.location || ''}</div>
+						<div>${property.subwayLine || ''}</div>
+						<div>${property.station || ''}</div>
+						<div>${property.description || ''}</div>
+					</div>
+				</div>
+			`;
+		});
 	}
-
-	let html = `
-        <h1>매물 리스트</h1>
-        <!-- 정렬 옵션 -->
-        <div class="sort-options">
-            <select class="form-select" style="width: 200px; display: inline-block;">
-                <option value="newest" ${currentSortValue === 'newest' ? 'selected' : ''}>최신순</option>
-                <option value="price-low" ${currentSortValue === 'price-low' ? 'selected' : ''}>가격 낮은순</option>
-                <option value="price-high" ${currentSortValue === 'price-high' ? 'selected' : ''}>가격 높은순</option>
-            </select>
-            <!-- 장바구니 버튼 -->
-            <button onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
-                선택한 매물 장바구니에 담기
-            </button>
-        </div>
-        <!-- 폼 -->
-        <form id="cartForm" action="/cart/add" method="post" style="display: none;"></form>
-    `;
-
-
-	html += properties.map(property => `
-        <div class="property-item">
-            <div class="property-header">
-                <div class="header-left">
-                    <input type="checkbox" value="${property.propertyId}">
-                    <span class="property-no">NO.${property.propertyId}</span>
-                    <span>${property.title}</span>
-                </div>
-            </div>
-            <table class="property-info-table">
-                <tr>
-                    <td>
-                        <div class="no-image-container" style="width: 150px; height: 100px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
-                            <span>이미지 준비중</span>
-                        </div>
-                    </td>
-                    <td>
-                        <div>${Number(property.monthlyPrice).toLocaleString()}円</div>
-                        <div>${Number(property.managementFee).toLocaleString()}円</div>
-                    </td>
-                    <td>
-                        <div>${Number(property.shikikin).toLocaleString()} / ${Number(property.reikin).toLocaleString()}</div>
-                    </td>
-                    <td>
-                        <div>${property.roomType}</div>
-                        <div>${property.area}m²</div>
-                        <div>${property.buildingType}</div>
-                    </td>
-                    <td>${property.builtYear}</td>
-                    <td>
-                        <div class="status-available">${property.status}</div>
-                    </td>
-                    <td>
-                        <a href="/property/${property.propertyId}" class="detail-button">상세보기</a>
-                    </td>
-                </tr>
-            </table>
-            <div class="address-info">
-                <div>${property.location}</div>
-                <div>${property.subwayLine}</div>
-            </div>
-        </div>
-    `).join('');
 
 	propertyList.innerHTML = html;
 
-	// 정렬 이벤트 리스너 다시 설정
+	// 정렬 이벤트 리스너 재설정
 	const sortSelect = document.querySelector('.sort-options select');
 	if (sortSelect) {
 		sortSelect.addEventListener('change', function() {

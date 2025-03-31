@@ -1,8 +1,14 @@
 /* 네비 전체 글씨 설정 */
 nav{
-	font-family: 'Cafe24 Ssurround air OTF Light';
+    font-family: 'Cafe24 Ssurround air OTF Light';
 }
 
+/* 기본 바디 스타일 설정 - 어드민 페이지 공통 */
+body {
+    padding-top: 0 !important;
+    margin: 0;
+    overflow-x: hidden;
+}
 
 /* 사이드바 기본 스타일 */
 .admin-sidebar {
@@ -14,6 +20,9 @@ nav{
     background-color: #6a99cd;
     color: white;
     padding: 20px 0;
+    z-index: 1000; /* 다른 요소 위에 표시 */
+    overflow-y: auto; /* 내용이 많을 경우 스크롤 */
+    margin-top: 0; /* 상단 마진 제거 */
 }
 
 .sidebar-header {
@@ -30,16 +39,6 @@ nav{
 .nav-links {
     list-style: none;
     padding: 0;
-}
-
-/* 로고 영역 스타일 */
-.sidebar .logo-area {
-    padding: 1.5rem;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.sidebar .logo-area h5 {
-    color: #ffffff;
     margin: 0;
 }
 
@@ -60,6 +59,11 @@ nav{
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+.nav-links a.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: bold;
+}
+
 .nav-links i {
     margin-right: 10px;
     width: 20px;
@@ -74,19 +78,55 @@ nav{
 
 /* 반응형 스타일 */
 @media (max-width: 768px) {
-    .sidebar {
+    .admin-sidebar {
         width: 100%;
         position: relative;
-        min-height: auto;
+        height: auto;
     }
-    
-    .sidebar .nav-link {
-        margin: 0.2rem 0.5rem;
+
+    main {
+        margin-left: 0 !important;
     }
-} 
+}
 
 /* 메인 컨텐츠 영역 조정 */
 main {
-    margin-left: 16.666667%; /* col-md-2의 너비 */
-    padding-top: 1.5rem;
+    margin-left: 250px; /* 사이드바 너비와 동일하게 */
+    padding-top: 0; /* 상단 패딩 제거 */
+}
+
+.container-fluid {
+    padding-top: 0;
+}
+
+.btn-primary {
+    display: flex; /* Flexbox 사용 */
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+    height: 51px; /* 버튼 높이 */
+    width: 105px; /* 버튼 너비 */
+    border-radius: 18px; /* 버튼 모서리 둥글게 */
+    background-color: #4682B4; /* 기본 배경색 */
+    border-color: #4682B4; /* 기본 테두리 색상 */
+    transition: all 0.3s ease; /* 전환 효과 */
+}
+
+.btn-primary:hover {
+    background-color: #375f87; /* 호버 시 배경색 */
+    border-color: #375f87; /* 호버 시 테두리 색상 */
+}
+
+/* 로그아웃 버튼 스타일 */
+.logout-item {
+    margin-top: 20px;
+}
+
+.logout-item a {
+    color: #fff !important;
+    font-weight: bold;
+    background-color: rgba(220, 53, 69, 0.2);
+}
+
+.logout-item a:hover {
+    background-color: rgba(220, 53, 69, 0.4);
 }

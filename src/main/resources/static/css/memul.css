@@ -210,6 +210,8 @@ select {
 	position: relative;
 	width: 250px;
 	margin: 20px auto;
+	padding-top: 0; /* 패딩 제거 */
+	height: 50px; /* 전체 높이 설정 */
 }
 
 .range-bar {
@@ -221,6 +223,7 @@ select {
 	background: linear-gradient(to right, rgb(0, 58, 230), rgb(90, 216, 216));
 	transform: translateY(-50%);
 	border-radius: 5px;
+	z-index: 1;
 }
 
 .slider {
@@ -228,6 +231,9 @@ select {
 	width: 100%;
 	pointer-events: none;
 	background: none;
+	top: 15px; /* 슬라이더 위치 조정 */
+	height: 20px;
+	z-index: 2;
 }
 
 .slider input {
@@ -236,10 +242,13 @@ select {
 	pointer-events: auto;
 	-webkit-appearance: none;
 	background: transparent;
+	margin: 0;
+	padding: 0;
 }
 
 .slider input::-webkit-slider-runnable-track {
 	height: 8px;
+	background: transparent; /* 트랙 배경 투명 */
 }
 
 .slider input::-webkit-slider-thumb {
@@ -255,30 +264,35 @@ select {
 
 	/* 터치 & 마우스 클릭 가능 영역 확장 */
 	pointer-events: all;
-}
-.slider-value1 {
-	position: absolute;
-	background: rgb(137, 161, 206);
-	color: white;
-	padding: 4px 8px;
-	border-radius: 12px;
-	font-size: 12px;
-	transform: translateY(-40px);
+	z-index: 3;
 }
 
-.slider-value2 {
+/* 가격 라벨 - 슬라이더 바 위에 직접 위치하고 5px 위로 올림 */
+.price-label {
 	position: absolute;
-	background: rgb(137, 161, 206);
+	top: -15px; /* 0에서 -5px로 변경하여 5px 위로 이동 */
+	left: 50%;
+	transform: translateX(-50%);
+	background: rgb(0, 87, 231);
 	color: white;
-	padding: 4px 8px;
-	border-radius: 12px;
-	font-size: 12px;
-	transform: translate(-50px, -40px);
-	right: 0;
+	padding: 3px 10px;
+	border-radius: 15px;
+	font-size: 13px;
 	white-space: nowrap;
-	min-width: fit-content;
-	display: inline-block;
 	text-align: center;
+	z-index: 4; /* 가장 앞에 표시 */
+	box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* 최소, 최대 표시 - 라벨 위로 */
+.min-max-labels {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	position: absolute;
+	bottom: 0;
+	font-size: 12px;
+	color: #666;
 }
 
 
@@ -327,7 +341,8 @@ select {
 }
 
 .property-header {
-	background-color: #355c86;;
+	padding: 15px;
+	background-color: #355c86;
 	color: white;
 	padding: 15px 20px;
 	font-size: 1.1em;
@@ -659,16 +674,10 @@ empty-message{
 .property-info-table {
 	width: 100%;
 	border-collapse: collapse;
+	margin: 0;
 }
 
-.property-info-table th {
-	background-color: #f8f6f6;
-	padding: 10px;
-	text-align: center;
-	border: 1px solid #dee2e6;
-	width: 16.66%;
-}
-
+.property-info-table th,
 .property-info-table td {
 	padding: 15px 20px;
 	text-align: center;
@@ -683,6 +692,9 @@ empty-message{
 	border-top: 1px solid #e0e0e0;
 }
 
+.address-info div {
+	margin: 5px 0;
+}
 
 .no-image-container {
 	border: 1px solid #ddd;
@@ -763,4 +775,23 @@ empty-message{
 
 .close-popup-btn:hover {
 	background-color: #2b4f70;
+}
+
+/* 건축년도 셀렉트 박스 스타일 */
+#building-year {
+    width: 250px;
+    padding: 8px;
+    border: 1px solid #355c86;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Cafe24 Ssurround air OTF Light';
+    margin-left: 0; /* 왼쪽 마진 제거 */
+    text-align: left; /* 텍스트 왼쪽 정렬 */
+}
+
+/* form-control 클래스 재정의 (Bootstrap 스타일 오버라이드) */
+.form-control#building-year {
+    width: 250px; /* 너비 제한 */
+    margin: 0; /* 마진 제거 */
+    display: block; /* 블록 요소로 표시 */
 }

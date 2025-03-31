@@ -4,6 +4,8 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Navigation</title>
+	<link rel="stylesheet" href="/webjars/bootstrap/5.3.0/css/bootstrap.min.css">
+	<script src="/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 
@@ -20,14 +22,41 @@
 <footer class="footer">
 	<div class="footer-container">
 		<div class="footer-left">
-			<strong><a href="/templates/index.html" class="footer-logo">LION</a></strong>
+			<strong><a href="#" onclick="scrollToTop(); return false;" class="footer-logo">LION</a></strong>
 		</div>
 		<div class="footer-right">
-			<strong><a href="/*" class="kakao-link">상담원 카카오톡 문의</a></strong>
-			<p class="account">비니니: BBBBB</p>
+			<strong><a href="https://open.kakao.com/o/s3I8uMnh" target="_blank" class="kakao-link">상담원 카카오톡 문의</a></strong>
+			<p class="account">라이온 부동산 대표 : 박김수빈우형규리승연</p>
 		</div>
 	</div>
 </footer>
+
+<div id="reservation-widget" class="reservation-widget collapsed">
+	<div class="widget-toggle">
+		<i class="fas fa-calendar-alt"></i>
+		<span class="notification-count">0</span>
+	</div>
+	<div class="widget-content">
+		<div class="widget-header">
+			<h3>나의 예약 현황</h3>
+			<select id="widget-date-filter">
+				<option value="today">오늘</option>
+				<option value="3">3일 이내</option>
+				<option value="7">7일 이내</option>
+				<option value="14">14일 이내</option>
+				<option value="30">30일 이내</option>
+			</select>
+		</div>
+		<div class="widget-body">
+			<div id="widget-loading">로딩 중...</div>
+			<div id="widget-reservation-list"></div>
+			<div id="widget-no-data" style="display:none;">예약 내역이 없습니다.</div>
+		</div>
+		<div class="widget-footer">
+			<a href="/mypage" class="view-all-btn">마이페이지에서 전체보기</a>
+		</div>
+	</div>
+</div>
 
 <style>
 	body {
@@ -36,7 +65,7 @@
 		flex-direction: column;
 		margin: 0;
 		padding: 0;
-		padding-top: 80px;
+		padding-top: 80px; /* 고정된 값으로 설정 */
 	}
 
 	header {
@@ -48,16 +77,16 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 15px 50px;
+		padding: 0 50px; /* top/bottom 패딩 제거하고 left/right만 유지 */
 		border-bottom: 1px solid #ddd;
 		z-index: 1000; /* 다른 요소보다 위에 표시 */
-		height: 70px;
+		height: 80px; /* 헤더 높이 고정 */
+		box-sizing: border-box; /* 패딩을 포함한 높이 계산 */
 	}
 
 	/* 푸터 */
 
 	.footer {
-
 		width: 100%;
 		background-color: white;
 		padding: 15px 50px;
@@ -81,6 +110,7 @@
 		font-size: 20px;
 		color: #355c86;
 		text-decoration: none;
+		cursor: pointer;
 	}
 
 	.footer-left {
@@ -97,6 +127,11 @@
 		text-decoration: none;
 		color: #2d5be3;
 		font-size: 14px;
+		transition: color 0.3s;
+	}
+
+	.kakao-link:hover {
+		color: #FEE500; /* 카카오톡 노란색으로 변경 */
 	}
 
 	.account {
@@ -113,10 +148,9 @@
 		width: 100%;
 		max-width: 1200px;
 		margin: 0 auto;
-		padding: 15px 10px;
-		/*border-bottom: 1px solid #ddd;*/
+		padding: 0 10px; /* top/bottom 패딩 제거 */
 		background-color: white;
-		height: 70px; /* 네비게이션 높이 고정 */
+		height: 100%; /* 네비게이션이 헤더 높이를 채우도록 설정 */
 		box-sizing: border-box;
 	}
 
@@ -201,6 +235,176 @@
 		font-size: 10px;
 		font-weight: bold;
 	}
+
+	/* 위젯 스타일 추가 */
+	.reservation-widget {
+		position: fixed;
+		right: 20px;
+		bottom: 100px;
+		z-index: 1000;
+		transition: all 0.3s ease;
+	}
+
+	.widget-toggle {
+		width: 50px;
+		height: 50px;
+		background-color: #6a99cd;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: white;
+		cursor: pointer;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+		position: relative;
+		transition: transform 0.3s ease;
+	}
+
+	.widget-toggle:hover {
+		transform: translateY(-3px);
+		box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+	}
+
+	.notification-count {
+		position: absolute;
+		top: -5px;
+		right: -5px;
+		background-color: #e74c3c;
+		color: white;
+		font-size: 12px;
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-weight: bold;
+	}
+
+	.widget-content {
+		display: none;
+		width: 300px;
+		background-color: white;
+		border-radius: 12px;
+		box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+		overflow: hidden;
+		position: absolute;
+		bottom: 60px;
+		right: 0;
+	}
+
+	.reservation-widget.expanded .widget-content {
+		display: block;
+	}
+
+	.widget-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 15px;
+		background-color: #6a99cd;
+		color: white;
+	}
+
+	.widget-header h3 {
+		margin: 0;
+		font-size: 16px;
+	}
+
+	#widget-date-filter {
+		border: none;
+		padding: 5px 10px;
+		border-radius: 15px;
+		font-size: 12px;
+		background-color: white;
+		color: #355c86;
+	}
+
+	.widget-body {
+		max-height: 300px;
+		overflow-y: auto;
+		padding: 15px;
+	}
+
+	.reservation-item {
+		padding: 10px;
+		border-bottom: 1px solid #eee;
+		margin-bottom: 10px;
+	}
+
+	.reservation-item:last-child {
+		border-bottom: none;
+		margin-bottom: 0;
+	}
+
+	.reservation-date {
+		font-weight: bold;
+		color: #355c86;
+		font-size: 14px;
+	}
+
+	.reservation-status {
+		display: inline-block;
+		padding: 3px 8px;
+		border-radius: 10px;
+		font-size: 12px;
+		margin-top: 5px;
+	}
+
+	.status-pending {
+		background-color: #ffdb9a;
+		color: #885800;
+	}
+
+	.status-confirmed {
+		background-color: #6a99cd;
+		color: white;
+	}
+
+	.status-compl {
+		background-color: #c8e6c9;
+		color: #2e7d32;
+	}
+
+	.status-cancelled {
+		background-color: #ffcdd2;
+		color: #c62828;
+	}
+
+	.widget-footer {
+		padding: 10px 15px;
+		background-color: #f5f5f5;
+		text-align: center;
+	}
+
+	.view-all-btn {
+		color: #355c86;
+		text-decoration: none;
+		font-size: 14px;
+		font-weight: bold;
+	}
+
+	.view-all-btn:hover {
+		text-decoration: underline;
+	}
+
+	#widget-loading, #widget-no-data {
+		text-align: center;
+		padding: 20px 0;
+		color: #666;
+	}
 </style>
+
+<!-- 네비게이션 스크립트 추가 -->
+<script src="/js/navbar.js"></script>
+<script>
+// 페이지 상단으로 스크롤하는 함수
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+</script>
 </body>
 </html>

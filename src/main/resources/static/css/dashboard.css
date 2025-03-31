@@ -1,8 +1,22 @@
+@charset "UTF-8";
+
+/* 기본 스타일 */
 body {
+    font-family: 'Cafe24 Ssurround air OTF Light';
     background-color: #f5f5f5;
+    min-height: 100vh;
+    padding-top: 80px; /* 네비바 높이만큼 여백 추가 */
     margin: 0;
-    padding: 0;
-		font-family: 'Cafe24 Ssurround air OTF Light';
+}
+
+/* 관리자 다음 추가 */
+.admin-sidebar {
+    position: fixed;
+    top: 80px; /* 네비바 아래부터 시작 */
+    left: 0;
+    bottom: 0;
+    z-index: 100;
+    overflow-y: auto;
 }
 
 /* 로그아웃 버튼 스타일 */
@@ -10,9 +24,9 @@ body {
     background-color: #4682B4;
     border-color: #4682B4;
     transition: all 0.3s ease;
-		border-radius: 18px;
-		height: 51px;
-		width: 105px;
+    border-radius: 18px;
+    height: 51px;
+    width: 105px;
 }
 
 .btn-primary:hover {
@@ -20,28 +34,188 @@ body {
     border-color: #375f87;
 }
 
+/* 메인 콘텐츠 영역 - 사이드바와 겹치지 않게 조정 */
+main.col-md-10 {
+    margin-left: 250px;
+    transition: margin-left 0.3s;
+}
+
+/* 차트 컨테이너 */
+#reservationChart, #propertyChart {
+    width: 100%;
+    overflow: hidden;
+    min-height: 300px;
+}
+
 /* 카드 스타일 */
 .card {
-    border: none;
-    box-shadow: 0 0 15px rgba(0,0,0,0.05);
     border-radius: 10px;
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border: none;
+    margin-bottom: 20px;
 }
 
 .card:hover {
-    background-color: #a7c6e0;
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(70, 130, 180, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
-.card:hover .card-subtitle,
-.card:hover .card-title {
-    color: #ffffff !important;
+.card-body {
+    padding: 20px;
+}
+
+.card-subtitle {
+    font-size: 0.9rem;
 }
 
 .card-title {
-    margin-bottom: 0;
     font-weight: 600;
+    color: #333;
+}
+
+/* 달력 스타일 */
+.calendar-header h6 {
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.calendar-days {
+    margin-bottom: 20px;
+}
+
+.calendar-days .row {
+    margin-bottom: 5px;
+}
+
+.calendar-days .col {
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.calendar-days .col:hover {
+    background-color: #f0f0f0;
+}
+
+.day-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 0 auto;
+    transition: all 0.2s ease;
+}
+
+.day-cell:hover {
+    background-color: #e9ecef;
+    cursor: pointer;
+}
+
+/* 오늘 날짜 스타일 - 더 강조 */
+.day-cell.today {
+    background-color: #6a99cd;
+    color: white;
+    font-weight: bold;
+}
+
+/* 선택된 날짜 스타일 */
+.day-cell.selected {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+/* 예약 있는 날짜 표시 - 더 명확하게 */
+.day-cell.has-reservation {
+    position: relative;
+}
+
+.day-cell.has-reservation::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #ff6b6b;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* 오늘이면서 예약 있는 날짜 */
+.day-cell.today.has-reservation::after {
+    background-color: #fff;
+}
+
+/* 선택되었으면서 예약 있는 날짜 */
+.day-cell.selected.has-reservation::after {
+    background-color: #fff;
+}
+
+/* 오늘 및 선택된 날짜가 아닌 예약 있는 날짜 - 테두리 추가 */
+.day-cell.has-reservation:not(.today):not(.selected) {
+    border: 2px solid #ff6b6b;
+}
+
+/* 예약 항목 스타일 */
+.reservation-item {
+    background-color: #fff;
+    transition: all 0.3s ease;
+}
+
+.reservation-item:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.reservation-number {
+    font-size: 0.8rem;
+}
+
+/* 버튼 스타일 */
+.btn-outline-primary {
+    color: #355c86;
+    border-color: #355c86;
+}
+
+.btn-outline-primary:hover {
+    background-color: #355c86;
+    border-color: #355c86;
+}
+
+/* 상태 배지 스타일 */
+.badge {
+    padding: 5px 8px;
+    border-radius: 30px;
+    font-weight: 400;
+    font-size: 12px;
+}
+
+.bg-success {
+    background-color: #28a745 !important;
+}
+
+.bg-warning {
+    background-color: #ffc107 !important;
+}
+
+/* 계약 불가 배지 - 주황색 */
+.bg-orange {
+    background-color: #ff9800 !important;
+    color: white !important;
+}
+
+/* 네비게이션 바 스타일 */
+#navbar-placeholder {
+    z-index: 1010;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
 }
 
 /* 테이블 스타일 */
@@ -54,56 +228,9 @@ body {
     vertical-align: middle;
 }
 
-/* 배지 스타일 */
-.badge {
-    padding: 0.5em 1em;
-    font-weight: 500;
-}
-
-/* 차트 컨테이너 스타일 */
-#reservationChart, #propertyChart {
-    width: 100%;
-    margin: 1rem 0;
-}
-
 /* 예약 현황 스타일 */
-.calendar-header h6 {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #333;
-}
-
 .calendar-days {
     color: #666;
-}
-
-/* 달력 스타일 */
-.calendar-days .col {
-    padding: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 5px;
-}
-
-.calendar-days .col:hover {
-    background-color: #e9ecef;
-}
-
-.calendar-days .current-day {
-    background-color: #4682B4;
-    color: white;
-    font-weight: bold;
-}
-
-.calendar-days .prev-month,
-.calendar-days .next-month {
-    color: #dee2e6;
-    cursor: default;
-}
-
-.calendar-days .prev-month:hover,
-.calendar-days .next-month:hover {
-    background-color: transparent;
 }
 
 .day-name {
@@ -117,50 +244,6 @@ body {
 .day-name:hover {
     background-color: #e9ecef;
     border-radius: 5px;
-}
-
-.reservation-item {
-    background-color: #fff;
-    transition: all 0.3s ease;
-}
-
-.reservation-item:hover {
-    transform: translateX(5px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.reservation-item h6 {
-    color: #333;
-    font-weight: 500;
-}
-
-.reservation-number {
-    font-size: 0.9rem;
-    text-align: right;
-}
-
-.badge.bg-success {
-    background-color: #28a745 !important;
-}
-
-.badge.bg-warning {
-    background-color: #ffc107 !important;
-}
-
-/* Show More 버튼 스타일 */
-.btn-outline-primary {
-    color: #4682B4;
-    border-color: #4682B4;
-    transition: all 0.3s ease;
-}
-
-.btn-outline-primary:hover {
-    background-color: #4682B4;
-    color: white;
-}
-
-.dashboard-content {
-    padding: 20px;
 }
 
 .welcome-message {
@@ -201,4 +284,52 @@ body {
     font-size: 24px;
     font-weight: bold;
     margin: 0;
+}
+
+/* 월 선택기 스타일 */
+.month-selector {
+    display: flex;
+    align-items: center;
+}
+
+.month-selector .btn-group {
+    margin-left: 15px;
+}
+
+.month-selector .btn {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+/* 선택된 월 표시 스타일 */
+.selected-month {
+    background-color: #e7f0ff;
+    color: #4682B4;
+    font-weight: 500;
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin-left: 10px;
+    display: inline-block;
+}
+
+/* 그래프 상호작용 힌트 */
+#reservationChart {
+    position: relative;
+}
+
+#reservationChart::before {
+    top: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #666;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0.8;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+#reservationChart:hover::before {
+    opacity: 0;
 }

@@ -1,0 +1,395 @@
+body {
+    font-family: 'Cafe24 Ssurround air OTF Light';
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+#chat-content {
+    width: 50%;
+    max-width: 50%;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #355c86;
+    margin-bottom: 20px;
+}
+
+/* 채팅 목록 영역 */
+.user-selection {
+    margin-bottom: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.chat-user-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chat-user-item:last-child {
+    border-bottom: none;
+}
+
+.user-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-email {
+    font-weight: bold;
+    color: #333;
+}
+
+.last-message-time {
+    color: #888;
+    font-size: 12px;
+}
+
+.last-message {
+    color: #555;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70%;
+}
+
+.buttons-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.start-chat-btn, .delete-chat-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s;
+}
+
+.start-chat-btn {
+    background-color: #4682B4;
+    color: white;
+}
+
+.start-chat-btn:hover {
+    background-color: #375f87;
+}
+
+.delete-chat-btn {
+    background-color: #f8f9fa;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+}
+
+.delete-chat-btn:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* 채팅 메시지 영역 */
+.messages {
+    height: 450px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.message {
+    max-width: 70%;
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    border-radius: 18px;
+    position: relative;
+    animation: fadeIn 0.3s ease;
+    word-wrap: break-word;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.sent {
+    align-self: flex-end;
+    background-color: #4682B4;
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.received {
+    align-self: flex-start;
+    background-color: #E9E9EB;
+    color: #333;
+    border-bottom-left-radius: 4px;
+}
+
+.message-time {
+    font-size: 10px;
+    color: #888;
+    display: block;
+    margin-top: 4px;
+    text-align: right;
+}
+
+.sent .message-time {
+    color: #cce5ff;
+}
+
+/* URL 메시지 스타일 */
+.message-url {
+    color: inherit;
+    text-decoration: underline;
+    display: inline-block;
+    word-break: break-all;
+    transition: opacity 0.2s;
+}
+
+.received .message-url {
+    color: #0056b3;
+    font-weight: 500;
+}
+
+.sent .message-url {
+    color: #ffffff;
+    font-weight: 500;
+    text-decoration-color: rgba(255, 255, 255, 0.7);
+}
+
+.message-url:hover {
+    opacity: 0.8;
+}
+
+/* 입력 영역 */
+.input-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.media-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.media-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background-color: #f1f3f4;
+    color: #5f6368;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.media-btn:hover {
+    background-color: #e8eaed;
+}
+
+.media-btn.active {
+    background-color: #4682B4;
+    color: white;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 16px;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #4682B4;
+    box-shadow: 0 0 0 2px rgba(70, 130, 180, 0.1);
+}
+
+#sendButton {
+    background-color: #4682B4;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 0 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#sendButton:hover {
+    background-color: #375f87;
+}
+
+/* URL 입력 컨테이너 스타일 */
+.attachment-container {
+    display: none;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.attachment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.attachment-content {
+    display: flex;
+    gap: 10px;
+}
+
+.attachment-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.attachment-button {
+    background-color: #4682B4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 15px;
+    cursor: pointer;
+}
+
+.close-attachment {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
+}
+
+.close-attachment:hover {
+    color: #555;
+}
+
+/* 애니메이션 효과 */
+.message-animation {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+    #chat-content {
+        width: 95%;
+        max-width: 95%;
+        margin: 10px auto;
+        padding: 10px;
+        border-radius: 0;
+    }
+
+    .message {
+        max-width: 85%;
+    }
+
+    .input-container {
+        flex-wrap: wrap;
+    }
+}
+
+/* 모달 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    text-align: center;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.confirm-btn, .cancel-btn {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.confirm-btn {
+    background-color: #e53935;
+    color: white;
+}
+
+.cancel-btn {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* 관리자 레이아웃 스타일 */
+.admin-layout #chat-content {
+    margin: 0;
+    max-width: none;
+    width: calc(100% - 250px);
+    box-shadow: none;
+}
+
+.chat-content-admin {
+    margin-left: 250px !important;
+}

@@ -52,7 +52,7 @@ public class Property {
     private BigDecimal area;
 
     @Column(name = "built_year")
-    private String builtYear; // '2001년'과 같은 문자열 형태 저장
+    private String builtYear;  // '2001년'과 같은 문자열 형태 저장
 
     @Column(precision = 20, scale = 7)
     private BigDecimal latitude;
@@ -69,24 +69,77 @@ public class Property {
     @Column(name = "nearby_facilities", columnDefinition = "TEXT")
     private String nearbyFacilities;
 
+    @Column(name = "station")
+    private String station;  // 역 정보
+
+    @Column(name = "floor")
+    private String floor;    // 층수 정보
+
+    @Column(name = "thumbnail_image")
+    private String thumbnailImage;  // 썸네일 이미지 URL
+
+    @Column(name = "is_reserved")
+    private Boolean reserved = false;
+
+    @Column(name = "floorplan_image")
+    private String floorplanImage;  // 평면도 이미지 URL
+
+    @Column(name = "building_image")
+    private String buildingImage;  // 건물 외관 이미지 URL
+
+    @Column(name = "interior_image")
+    private String interiorImage;  // 내부 이미지 URL
+    @Column(name = "extra_image1")
+    private String extraImage1;  // 내부 이미지 URL
+    @Column(name = "extra_image2")
+    private String extraImage2;  // 내부 이미지 URL
+
     @PrePersist
     public void prePersist() {
         if (this.createdAt == null) {
             this.createdAt = LocalDateTime.now();
         }
     }
-}
 
-enum BuildingType {
-    아파트,
-    맨션,   // 인서트문에서 '맨션' 값을 위해 추가
-    타운하우스,
-    오피스텔,
-    셰어하우스
-}
+    public enum BuildingType {
+        아파트("아파트"),
+        맨션("맨션"),
+        타운하우스("타운하우스"),
+        오피스텔("오피스텔"),
+        셰어하우스("셰어하우스");
 
-enum Status {
-    예약중,
-    거래완료,
-    예약가능  // 인서트문에서 '예약가능' 값을 위해 추가
+        private final String value;
+
+        BuildingType(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    public enum Status {
+        예약중("예약중"),
+        거래완료("거래완료"),
+        예약가능("예약가능");
+
+        private final String value;
+
+        Status(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    public Boolean getReserved() {
+        return reserved == null ? false : reserved;
+    }
+
+    public void setReserved(Boolean reserved) {
+        this.reserved = reserved;
+    }
 }

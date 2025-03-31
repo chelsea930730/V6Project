@@ -1,22 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>상세페이지</title>
     <!-- Bootstrap CSS -->
-    <link
-    th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"
-    rel="stylesheet"
-    />
-    <!-- Bootstrap JS -->
-    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
-    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
     <link rel="stylesheet" th:href="@{/css/detail.css}" />
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" defer></script>
     <style>
           #map{
-                width: 400px;
-                height: 400px;
+                width: 600px;
+                height: 600px;
+                margin: 0 auto;
+                display: block;
+            }
+
+            .location {
+                  text-align: center;
             }
             </style>
 <script th:inline="javascript">
@@ -42,14 +46,72 @@
                   title: "매물 위치"
             });
       }
+
+      function addToCart() {
+            // 현재 매물 ID 가져오기
+            const propertyId = [[${property.propertyId}]];
+
+            // CSRF 토큰 가져오기 (Spring Security 사용 시 필요)
+            const token = document.querySelector("meta[name='_csrf']")?.getAttribute("content");
+            const header = document.querySelector("meta[name='_csrf_header']")?.getAttribute("content");
+
+            // 요청 보내기
+            fetch('/cart/add', {
+                  method: 'POST',
+                  headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        ...(token && header ? { [header]: token } : {})
+                  },
+                  body: `propertyIds=${propertyId}`
+            })
+            .then(response => {
+                  if (response.ok) {
+                        alert('매물이 장바구니에 추가되었습니다.');
+                  } else {
+                        throw new Error('매물을 장바구니에 추가하는데 실패했습니다.');
+                  }
+            })
+            .catch(error => {
+                  console.error('에러:', error);
+                  alert('장바구니 추가 실패: ' + error.message);
+            });
+      }
 </script>
       <script async defer
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDAqy6z-ttqo5AzxjzeO05vLev6rahKO2Q&callback=initMap">
       </script>
+    <!-- CSRF 토큰 (Spring Security 사용 시) -->
+    <meta name="_csrf" th:content="${_csrf?.token}" />
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}" />
 </head>
   <style>
     body {
       font-family: "Cafe24 Ssurround air OTF Light";
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .main-content {
+      display: flex;
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .building-photos {
+      flex: 1;
+    }
+    .property-info-section {
+      flex: 1;
+    }
+    #map {
+      width: 600px;
+      height: 600px;
+      margin: 0 auto;
+      display: block;
+    }
+    .location {
+      text-align: center;
     }
   </style>
   <body>
@@ -58,17 +120,25 @@
        <div class="main-content">
           <!-- 왼쪽: 사진 섹션 -->
           <section class="building-photos">
-                <div class="photo-grid" id="propertyPhotos">
-                      <!-- 여기에 데이터베이스의 사진들이 동적으로 표시될 예정 -->
-                      <div class="property-images">
-                            <img src="https://via.placeholder.com/400x300" alt="매물 이미지">
-                      </div>
+                <div class="photo-container" style="background: #fff; border-radius: 10px; padding: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
+                    <div class="photo-grid" id="propertyPhotos">
+                          <div th:if="${property.thumbnailImage != null and !#strings.isEmpty(property.thumbnailImage)}" class="property-images" style="display: flex; justify-content: center; align-items: center; min-height: 300px;">
+                                <img th:src="${property.thumbnailImage}"
+                                     alt="매물 대표 이미지"
+                                     style="max-width: 100%; width: auto; height: auto;">
+                          </div>
+                          <div th:unless="${property.thumbnailImage != null and !#strings.isEmpty(property.thumbnailImage)}"
+                               class="no-image-container"
+                               style="width: 100%; min-height: 300px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <span>이미지 준비중</span>
+                          </div>
+                    </div>
                 </div>
           </section>
     
           <!-- 오른쪽: 상세 정보 -->
           <div class="property-info-section">
-                <div class="property-stats">
+                <div class="property-stats" style="background: #fff; border-radius: 10px; padding: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
                       <div class="stat-item">
                             <div class="stat-label">주거면적</div>
                             <span class="stat-value" th:text="${property.area}"></span>㎡
@@ -93,25 +163,112 @@
                    </div>
                    <div class="stat-item">
                       <div class="stat-label">가까운 역</div>
-                      <div class="stat-value" th:text="${property.subwayLine}"></div>
+                      <div class="stat-value" th:text="${property.station + '(' + property.subwayLine + ')'}"></div>
                 </div>
 
                 </div>
-        
-                <!-- 카트에 추가하는 버튼 -->
-        <div class="add-to-cart">
-            <button class="cart-button">Add to cart</button>
+
+                <!-- 로그인한 사용자에게만 표시 -->
+                <div class="add-to-cart" th:if="${isLoggedIn}">
+                    <button class="cart-button" onclick="addToCart()">Add to cart</button>
+                </div>
+
+                <!-- 로그인하지 않은 사용자에게 표시 -->
+                <div class="add-to-cart" th:unless="${isLoggedIn}">
+                    <button class="cart-button" onclick="location.href='/user/login'">로그인 후 장바구니에 추가</button>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
 <!-- 추가 사진 섹션 -->
 <section class="building-photos2">
     <h2>건물 사진</h2>
-    <div class="photo-grid2" id="propertyPhotos2">
-          <!-- 여기에 데이터베이스의 사진들이 동적으로 표시될 예정 -->
+    <div class="photo-grid2" id="propertyPhotos2" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; max-width: 1200px; margin: 0 auto;">
+        <!-- 썸네일 이미지 -->
+        <div class="photo-item" th:if="${property.thumbnailImage != null}">
+            <img th:src="${property.thumbnailImage}" alt="썸네일 이미지" class="property-image">
+        </div>
+
+        <!-- 평면도 이미지들 -->
+        <th:block th:if="${property.floorplanImage != null}">
+            <div class="photo-item" th:each="url : ${#strings.arraySplit(property.floorplanImage, ',')}">
+                <img th:src="${url}" alt="평면도" class="property-image">
+            </div>
+        </th:block>
+
+        <!-- 건물 이미지들 -->
+        <th:block th:if="${property.buildingImage != null}">
+            <div class="photo-item" th:each="url : ${#strings.arraySplit(property.buildingImage, ',')}">
+                <img th:src="${url}" alt="건물 사진" class="property-image">
+            </div>
+        </th:block>
+
+        <!-- 내부 이미지들 -->
+        <th:block th:if="${property.interiorImage != null}">
+            <div class="photo-item" th:each="url : ${#strings.arraySplit(property.interiorImage, ',')}">
+                <img th:src="${url}" alt="내부 사진" class="property-image">
+            </div>
+        </th:block>
+
+        <!-- 추가 이미지 1 -->
+        <th:block th:if="${property.extraImage1 != null}">
+            <div class="photo-item" th:each="url : ${#strings.arraySplit(property.extraImage1, ',')}">
+                <img th:src="${url}" alt="추가 이미지 1" class="property-image">
+            </div>
+        </th:block>
+
+        <!-- 추가 이미지 2 -->
+        <th:block th:if="${property.extraImage2 != null}">
+            <div class="photo-item" th:each="url : ${#strings.arraySplit(property.extraImage2, ',')}">
+                <img th:src="${url}" alt="추가 이미지 2" class="property-image">
+            </div>
+        </th:block>
     </div>
 </section>
+
+<style>
+.building-photos2 {
+    margin: 20px auto;
+    max-width: 1200px;
+}
+
+.photo-grid2 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+.photo-item {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.property-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.property-image:hover {
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .photo-grid2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .photo-grid2 {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 
 <div class="details-section">
     <table class="details-table">
@@ -125,12 +282,16 @@
                 <td colspan="3" id="buildingType" th:text="${property.buildingType}"></td>
           </tr>
           <tr>
+            <th>층수</th>
+            <td colspan="3" id="floor" th:text="${property.floor}"></td>
+          </tr>
+          <tr>
                 <th>등록일</th>
                 <td colspan="3" id="registDate" th:text="${#temporals.format(property.createdAt, 'yyyy년 M월 d일')}"></td>
           </tr>
           <tr>
                 <th>초기비용</th>
-                <td colspan="3" id="costDetail"></td>
+                <td colspan="3" id="costDetail" th:text="${property.initialCost}"></td>
           </tr>
 
           <tr>
@@ -143,22 +304,25 @@
     <div class="amenities">
        <h2>방의 특징과 설비</h2>
           <div class="amenities-content" id="amenitiesList">
+              <p th:text="${property.nearbyFacilities}"></p>
         <!-- 편의시설 목록이 동적으로 추가됨 -->
       </ul>
     </div>
 
     <div class="location">
       <h2>위치 정보</h2>
+      <br>
       <div id="map">
         <!-- 지도가 표시될 영역 -->
       </div>
     </div>
   </div>
 
+    <input type="hidden" id="propertyIdValue" th:value="${property.propertyId}">
 
     <div class="appointment">
-       <button class="appointment-button">상담예약 페이지 이동</button>
-</div>
+       <a th:href="@{/reservation(propertyIds=${property.propertyId})}" class="appointment-button">상담예약 페이지 이동</a>
+    </div>
 
     <script th:src="@{/js/navbar.js}"></script>
     <script th:src="@{/js/detail.js}"></script>

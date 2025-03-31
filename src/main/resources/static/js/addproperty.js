@@ -59,17 +59,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 매물 삭제 함수
     function deleteProperty(propertyId) {
-        fetch(`/api/admin/property/${propertyId}`, {
+        fetch(`/api/properties/${propertyId}`, {
             method: 'DELETE'
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('매물 삭제에 실패했습니다.');
+                return response.json().then(err => {
+                    throw new Error(err.message || '매물 삭제에 실패했습니다.');
+                });
             }
             return response.json();
         })
         .then(data => {
-            showNotification("매물이 성공적으로 삭제되었습니다.", "success");
+            showNotification(data.message || "매물이 성공적으로 삭제되었습니다.", "success");
             location.reload();
         })
         .catch(error => {
@@ -94,20 +96,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 <h3>${propertyId ? "매물 수정" : "매물 등록"}</h3>
                 <button type="button" class="btn-close" aria-label="Close"></button>
             </div>
-            <iframe src="/admin/create${propertyId ? '?id=' + propertyId : ''}" 
+            <iframe src="${propertyId ? `/admin/property/edit/${propertyId}` : '/admin/property/create'}" 
                     style="width: 100%; height: calc(100% - 60px); border: none;"></iframe>
         `;
-    popup.appendChild(header);
-
-    // iframe 생성
-    const iframe = document.createElement("iframe");
-    iframe.style.width = "100%";
-    iframe.style.height = "calc(100% - 50px)";
-    iframe.style.border = "none";
-    iframe.style.overflow = "auto";
-    // propertyId가 있으면 수정 모드로 create.html 열기
-    iframe.src = propertyId ? `create.html?id=${propertyId}` : "create.html";
-    popup.appendChild(iframe);
 
         document.body.appendChild(popup);
 

@@ -20,15 +20,17 @@
 <section class="hero">
     <h1>매물 리스트</h1>
     <div th:if="${filterType != null}">
-        <p th:if="${filterType == 'district' && filterValueKorean != null}" 
+        <p th:if="${filterType == 'district' && filterValueKorean != null}"
            th:text="${filterValue} + ' (' + ${filterValueKorean} + ') 지역 매물을 보고 계십니다'"></p>
-        <p th:if="${filterType == 'district' && filterValueKorean == null}" 
+        <p th:if="${filterType == 'district' && filterValueKorean == null}"
            th:text="${filterValue} + ' 지역 매물을 보고 계십니다'"></p>
-        <p th:if="${filterType == 'line'}" 
+        <p th:if="${filterType == 'line'}"
            th:text="${filterValue} + ' 노선 매물을 보고 계십니다'"></p>
     </div>
     <br>
-    <a href="/*" class="cta-btn">상담 예약 페이지 이동</a>
+
+    <!-- ADMIN이 아닐 때만 상담 예약 버튼 표시 -->
+    <a id="reservationBtn" th:href="@{/reservation}" class="cta-btn">상담 예약 페이지 이동</a>
 </section>
 
 
@@ -54,14 +56,20 @@
         <label for="minPrice">월세</label>
         <br>
         <div class="slider-container">
+            <!-- 통합된 가격 라벨 -->
+            <div id="priceLabel" class="price-label">50,000円 ~ 150,000円</div>
+
             <div class="range-bar"></div>
             <div class="slider">
-
-                <input type="range" id="minPrice" min="50000" max="100000" step="1000" value="50000">
-                <input type="range" id="maxPrice" min="11000" max="150000" step="1000" value="150000">
+                <input type="range" id="minPrice" min="50000" max="150000" step="1000" value="50000">
+                <input type="range" id="maxPrice" min="50000" max="150000" step="1000" value="150000">
             </div>
-            <span id="minValue" class="slider-value1" style="left: 0%;">50,000</span>
-            <span id="maxValue" class="slider-value2" style="left: 100%;">150,000</span>
+
+            <!-- 최소/최대 표시 (선택사항) -->
+            <div class="min-max-labels">
+                <span>최소</span>
+                <span>최대</span>
+            </div>
         </div>
 
 
@@ -72,8 +80,9 @@
             <label>건물 타입</label>
             <label><input type="checkbox" name="type" value="맨션"> 맨션</label>
             <label><input type="checkbox" name="type" value="아파트"> 아파트</label>
-            <label><input type="checkbox" name="type" value="LDK 주택"> LDK 주택</label>
-            <label><input type="checkbox" name="type" value="기타"> 기타</label>
+            <label><input type="checkbox" name="type" value="타운하우스"> 타운하우스</label>
+            <label><input type="checkbox" name="type" value="오피스텔"> 오피스텔</label>
+            <label><input type="checkbox" name="type" value="셰어하우스"> 셰어하우스</label>
         </div>
 
         <br>
@@ -85,14 +94,17 @@
             <label><input type="checkbox" name="room" value="1K"> 1K</label>
             <label><input type="checkbox" name="room" value="1DK"> 1DK</label>
             <label><input type="checkbox" name="room" value="1LDK"> 1LDK</label>
-            <label><input type="checkbox" name="room" value="2K이상"> 2K이상</label>
+            <label><input type="checkbox" name="room" value="2K"> 2K</label>
+            <label><input type="checkbox" name="room" value="2DK"> 2DK</label>
+            <label><input type="checkbox" name="room" value="2LDK"> 2LDK</label>
+            <label><input type="checkbox" name="room" value="3K이상"> 3K이상</label>
         </div>
 
         <br>
 
         <!-- 건축년도 -->
         <label for="building-year">건축년도</label>
-        <select class="form-control" id="building-year">
+        <select class="form-control" id="building-year" style="width: 250px; margin: 0; padding: 8px; text-align: left; display: block; float: none;">
             <option value="">지정없음</option>
             <option value="1년 이내">1년 이내</option>
             <option value="5년 이내">5년 이내</option>
@@ -111,8 +123,11 @@
             <label>상세 조건</label>
             <label><input type="checkbox" name="detail" value="주차장"> 주차장</label>
             <label><input type="checkbox" name="detail" value="2인 입주"> 2인 입주</label>
-            <label><input type="checkbox" name="detail" value="욕실, 화장실"> 욕실, 화장실 분리</label>
-            <label><input type="checkbox" name="detail" value="인터넷 무료"> 인터넷 무료</label>
+            <label><input type="checkbox" name="detail" value="욕실/화장실 분리"> 욕실/화장실 분리</label>
+            <label><input type="checkbox" name="detail" value="즉시 입주"> 즉시 입주</label>
+            <label><input type="checkbox" name="detail" value="학생 가능"> 학생 가능</label>
+            <label><input type="checkbox" name="detail" value="반려동물 가능"> 반려동물 가능</label>
+            <label><input type="checkbox" name="detail" value="가구 포함"> 가구 포함</label>
             <label><input type="checkbox" name="detail" value="에어컨"> 에어컨</label>
         </div>
 
@@ -151,8 +166,7 @@
             </div>
             <h3>역 선택</h3>
             <div id="stationList" class="station-list">
-                <button id="searchStationsBtn" class="station-search-btn">검색</button>
-                <button id="resetStationsBtn" class="station-search-btn" style="background-color: gray;">초기화</button>
+
             </div>
         </div>
     </div>
@@ -170,8 +184,8 @@
                 <option value="price-high">가격 높은순</option>
             </select>
 
-            <!-- 장바구니 버튼 추가 (detail-button 클래스 사용) -->
-            <button onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
+            <!-- 장바구니 버튼 (초기 상태는 표시) -->
+            <button id="cartButton" onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
                 선택한 매물 장바구니에 담기
             </button>
         </div>
@@ -211,7 +225,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="no-image-container"
+                        <div th:if="${property.thumbnailImage != null}" class="property-image-container">
+                            <img th:src="${property.thumbnailImage}" alt="매물 이미지"
+                                 style="width: 150px; height: 100px; object-fit: cover;">
+                        </div>
+                        <div th:unless="${property.thumbnailImage != null}" class="no-image-container"
                              style="width: 150px; height: 100px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
                             <span>이미지 준비중</span>
                         </div>
@@ -221,7 +239,7 @@
                         <div th:text="${#numbers.formatInteger(property.managementFee, 0, 'COMMA') + '円'}">10000円</div>
                     </td>
                     <td>
-                        <div th:text="${#numbers.formatInteger(property.shikikin, 0, 'COMMA') + ' / ' + 
+                        <div th:text="${#numbers.formatInteger(property.shikikin, 0, 'COMMA') + ' / ' +
                                       #numbers.formatInteger(property.reikin, 0, 'COMMA') }">1/1</div>
                     </td>
                     <td>
@@ -243,6 +261,8 @@
             <div class="address-info">
                 <div th:text="${property.location}">도쿄도 세타가야구 상마4쵸메</div>
                 <div th:text="${property.subwayLine}">오다큐선 / 키타센주역 도보 7분</div>
+                <div th:if="${property.station != null}" th:text="${property.station}"></div>
+                <div th:if="${property.description != null}" th:text="${property.description}"></div>
             </div>
         </div>
     </div>
@@ -253,6 +273,40 @@
 <script th:inline="javascript">
     // 서버에서 받은 데이터를 전역 변수로 설정
     const serverProperties = /*[[${properties}]]*/ [];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // 페이지 로드 시 버튼 상태를 초기화
+        const reservationBtn = document.getElementById('reservationBtn');
+        const cartBtn = document.getElementById('cartButton');
+        if (reservationBtn) reservationBtn.style.display = 'none';
+        if (cartBtn) cartBtn.style.display = 'none';
+
+        // 사용자 정보 API 호출
+        fetch('/user/index')
+            .then(response => response.json())
+            .then(data => {
+                console.log('사용자 정보:', data); // 디버깅용 로그
+
+                // 사용자 역할이 'ADMIN'인지 확인
+                const isAdmin = data.role === 'ADMIN';
+                console.log('관리자 여부:', isAdmin); // 디버깅용 로그
+
+                // 버튼 표시 여부 설정 - 관리자가 아닐 때만 표시
+                if (reservationBtn) {
+                    reservationBtn.style.display = isAdmin ? 'none' : 'inline-block';
+                }
+
+                if (cartBtn) {
+                    cartBtn.style.display = isAdmin ? 'none' : 'inline-block';
+                }
+            })
+            .catch(error => {
+                console.error('사용자 정보 확인 실패:', error);
+                // 오류 발생 시에도 버튼을 표시 (비로그인 사용자용)
+                if (reservationBtn) reservationBtn.style.display = 'inline-block';
+                if (cartBtn) cartBtn.style.display = 'inline-block';
+            });
+    });
 </script>
 <script th:src="@{/js/memul.js}"></script>
 <script th:src="@{/js/navbar.js}"></script>

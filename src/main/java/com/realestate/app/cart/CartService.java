@@ -104,8 +104,8 @@ public class CartService {
      */
     @Transactional(readOnly = true)
     public Long getUserIdByEmail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email));
-        return user.getUserId();
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email))
+            .getUserId();
     }
 }

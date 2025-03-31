@@ -6,6 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -28,4 +30,22 @@ public class UserService {
         user.setProvider(Provider.LOCAL);
         userRepository.save(user);
     }
+
+    // 모든 사용자 반환 메서드 추가
+    public List<User> getAllUsers() {
+        return userRepository.findAll(); // UserRepository에서 모든 사용자 반환
+    }
+
+    /**
+     * 사용자 정보를 업데이트합니다.
+     */
+    @Transactional
+    public void updateUser(User user) {
+        userRepository.save(user);
+    }
+
+    public User findByEmail(String userEmail) {
+        return userRepository.findByEmail(userEmail).orElse(null);
+    }
 }
+
