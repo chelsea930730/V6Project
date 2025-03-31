@@ -1,6 +1,6 @@
 package com.realestate.app.reservation;
 
-import com.realestate.app.property.PropertyDto;
+//import com.realestate.app.property.PropertyDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -25,11 +25,9 @@ public class ReservationDto {
     
     private String status;
     private String message;
-    private List<PropertyDto> properties;
-
-    public void setReservationId(Long reservationId) {
-    }
-
-    public void setStatus(String name) {
-    }
+    
+    // PropertyDto 대신 기본 타입 리스트 사용
+    private List<Long> propertyIds;
+    private List<String> propertyTitles;
+    private List<String> propertyLocations;
 }

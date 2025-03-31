@@ -446,16 +446,22 @@ function updateWidgetUI(isAdmin = false) {
 		const reservationItem = document.createElement('div');
 		reservationItem.className = 'reservation-item';
 		
-		// 일반 사용자 UI만 표시 (관리자용 UI 제거)
-		// reservationId가 null이 아닌지 확인
-		const reservationId = reservation.reservationId || '';
+		// 매물 주소 정보 표시하도록 수정
+		// propertyLocations가 있으면 사용하고, 없으면 properties 배열에서 location 정보 사용
+		let locationInfo = '주소 정보 없음';
+		
+		if (reservation.propertyLocations && reservation.propertyLocations.length > 0) {
+			// propertyLocations 배열이 있는 경우
+			locationInfo = reservation.propertyLocations[0];
+		} else if (reservation.properties && reservation.properties.length > 0 && reservation.properties[0].location) {
+			// properties 배열에서 location 정보가 있는 경우
+			locationInfo = reservation.properties[0].location;
+		}
 		
 		reservationItem.innerHTML = `
 			<div class="reservation-date">${formattedDate} ${formattedTime}</div>
 			<div class="reservation-status ${statusClass}">${statusText}</div>
-			${reservation.properties && reservation.properties.length > 0 ? 
-				`<div class="reservation-property">${reservation.properties[0].title}</div>` : 
-				'<div class="reservation-property">매물 정보 없음</div>'}
+			<div class="reservation-property">${locationInfo}</div>
 			<a href="/mypage" class="reservation-link">상세보기</a>
 		`;
 		
