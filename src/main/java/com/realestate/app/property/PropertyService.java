@@ -290,4 +290,9 @@ public class PropertyService {
                 return getAllPropertiesWithPaging(pageable);
         }
     }
+
+    public Property updateProperty(PropertyDto propertyDto) {
+        Property property = propertyDto.toEntity();
+        return propertyRepository.save(property);
+    }
 }

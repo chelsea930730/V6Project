@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.util.StringUtils;
 
 import com.realestate.app.user.Provider;
 import com.realestate.app.user.Role;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -83,5 +85,28 @@ public class AdminService {
 
         // 프론트엔드에서 접근 가능한 경로로 변환 (/uploads/파일명)
         return "/uploads/" + newFilename;
+    }
+
+    public String uploadImage(MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+
+        // 이미지 저장 로직
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
+        Path uploadPath = Paths.get(uploadDirectory);
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        try (InputStream inputStream = file.getInputStream()) {
+            Path filePath = uploadPath.resolve(uniqueFileName);
+            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+            return "/uploads/" + uniqueFileName;
+        } catch (IOException e) {
+            throw new IOException("이미지 저장 실패: " + fileName, e);
+        }
     }
 }

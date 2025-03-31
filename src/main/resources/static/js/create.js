@@ -258,68 +258,50 @@ document.addEventListener('DOMContentLoaded', function() {
 			stationModal.show();
 	});
 
-	// 이미지 미리보기 처리
-	setupImagePreview('thumbnailImage', 'thumbnailPreview', false);
-	setupImagePreview('floorplanImages', 'floorplanPreview', true);
-	setupImagePreview('buildingImages', 'buildingPreview', true);
-	setupImagePreview('interiorImages', 'interiorPreview', true);
+	// 이미지 미리보기 함수
+	function handleImagePreview(input, previewContainer) {
+			const container = document.getElementById(previewContainer);
+			container.innerHTML = '';
 
-	// 이미지 미리보기 설정 함수
-	function setupImagePreview(inputId, previewId, multiple) {
-			const input = document.getElementById(inputId);
-			const preview = document.getElementById(previewId);
-			
-			input.addEventListener('change', function() {
-					// 단일 파일인 경우 이전 미리보기 제거
-					if (!multiple) {
-							preview.innerHTML = '';
-					}
-					
-					// 선택된 파일 처리
-					for (let i = 0; i < this.files.length; i++) {
-							const file = this.files[i];
-							
-							// 이미지 파일인지 확인
-							if (!file.type.startsWith('image/')) {
-									continue;
-							}
-							
-							// 미리보기 요소 생성
-							const previewItem = document.createElement('div');
-							previewItem.className = 'preview-item';
-							
-							// 이미지 요소 생성
-							const img = document.createElement('img');
-							img.file = file;
-							previewItem.appendChild(img);
-							
-							// 파일 정보 저장
-							previewItem.dataset.filename = file.name;
-							
-							// 삭제 버튼 추가
-							const removeBtn = document.createElement('button');
-							removeBtn.className = 'remove-btn';
-							removeBtn.innerHTML = '×';
-							removeBtn.addEventListener('click', function(e) {
-									e.preventDefault();
-									previewItem.remove();
-							});
-							previewItem.appendChild(removeBtn);
-							
-							// 미리보기 컨테이너에 추가
-							preview.appendChild(previewItem);
-							
-							// 파일 리더로 이미지 로드
+			if (input.files && input.files.length > 0) {
+					for (let i = 0; i < input.files.length; i++) {
 							const reader = new FileReader();
-							reader.onload = (function(aImg) {
-									return function(e) {
-											aImg.src = e.target.result;
-									};
-							})(img);
-							reader.readAsDataURL(file);
+							reader.onload = function(e) {
+									const img = document.createElement('img');
+									img.src = e.target.result;
+									img.className = 'preview-image';
+									container.appendChild(img);
+							}
+							reader.readAsDataURL(input.files[i]);
 					}
-			});
+			}
 	}
+
+	// 이미지 미리보기 이벤트 리스너
+	document.getElementById('thumbnailImage').addEventListener('change', function() {
+			handleImagePreview(this, 'thumbnailPreview');
+	});
+
+	document.getElementById('floorplanImages').addEventListener('change', function() {
+			handleImagePreview(this, 'floorplanPreview');
+	});
+
+	document.getElementById('buildingImages').addEventListener('change', function() {
+			handleImagePreview(this, 'buildingPreview');
+	});
+
+	document.getElementById('interiorImages').addEventListener('change', function() {
+			handleImagePreview(this, 'interiorPreview');
+	});
+
+	// 추가 이미지 미리보기 이벤트 리스너
+	document.getElementById('extraImage1').addEventListener('change', function() {
+			handleImagePreview(this, 'extraImage1Preview');
+	});
+
+	document.getElementById('extraImage2').addEventListener('change', function() {
+			handleImagePreview(this, 'extraImage2Preview');
+	});
 
 	// 폼 요소 가져오기
 	const form = document.getElementById('propertyForm');

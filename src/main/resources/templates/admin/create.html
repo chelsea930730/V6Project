@@ -25,7 +25,7 @@
       <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
       
       <form class="create-form" id="propertyForm" 
-            th:action="${propertyDto.propertyId != null} ? @{/admin/property/edit/{id}(id=${propertyDto.propertyId})} : @{/admin/property/create}" 
+            th:action="${propertyDto != null and propertyDto.propertyId != null} ? @{/admin/property/edit/{id}(id=${propertyDto.propertyId})} : @{/admin/property/create}" 
             th:object="${propertyDto}" 
             method="post" 
             enctype="multipart/form-data">
@@ -100,14 +100,14 @@
             <div class="checkbox-area">
               <h3>상세조건</h3>
               <div class="checkbox-list">
-                <label><input type="checkbox" name="features" value="주차장" /> 주차장</label>
-                <label><input type="checkbox" name="features" value="2인 입주" /> 2인 입주</label>
-                <label><input type="checkbox" name="features" value="욕실/화장실 분리" /> 욕실/화장실 분리</label>
-                <label><input type="checkbox" name="features" value="즉시 입주" /> 즉시 입주</label>
-                <label><input type="checkbox" name="features" value="학생 가능" /> 학생 가능</label>
-                <label><input type="checkbox" name="features" value="반려동물 가능" /> 반려동물 가능</label>
-                <label><input type="checkbox" name="features" value="가구 포함" /> 가구 포함</label>
-                <label><input type="checkbox" name="features" value="에어컨" /> 에어컨</label>
+                <label><input type="checkbox" name="features" value="주차장" th:checked="${selectedFeatures != null && selectedFeatures.contains('주차장')}" /> 주차장</label>
+                <label><input type="checkbox" name="features" value="2인 입주" th:checked="${selectedFeatures != null && selectedFeatures.contains('2인 입주')}" /> 2인 입주</label>
+                <label><input type="checkbox" name="features" value="욕실/화장실 분리" th:checked="${selectedFeatures != null && selectedFeatures.contains('욕실/화장실 분리')}" /> 욕실/화장실 분리</label>
+                <label><input type="checkbox" name="features" value="즉시 입주" th:checked="${selectedFeatures != null && selectedFeatures.contains('즉시 입주')}" /> 즉시 입주</label>
+                <label><input type="checkbox" name="features" value="학생 가능" th:checked="${selectedFeatures != null && selectedFeatures.contains('학생 가능')}" /> 학생 가능</label>
+                <label><input type="checkbox" name="features" value="반려동물 가능" th:checked="${selectedFeatures != null && selectedFeatures.contains('반려동물 가능')}" /> 반려동물 가능</label>
+                <label><input type="checkbox" name="features" value="가구 포함" th:checked="${selectedFeatures != null && selectedFeatures.contains('가구 포함')}" /> 가구 포함</label>
+                <label><input type="checkbox" name="features" value="에어컨" th:checked="${selectedFeatures != null && selectedFeatures.contains('에어컨')}" /> 에어컨</label>
               </div>
             </div>
           </div>
@@ -117,16 +117,16 @@
             <div class="station-info">
               <h3>역/노선 정보</h3>
               <div class="station-display" id="selectedStationDisplay">
-                <span class="selected-line">노선을 선택해주세요</span>
-                <span class="selected-station">역을 선택해주세요</span>
+                <span class="selected-line" th:text="${selectedLine != null ? selectedLine : '노선을 선택해주세요'}">노선을 선택해주세요</span>
+                <span class="selected-station" th:text="${selectedStation != null ? selectedStation : '역을 선택해주세요'}">역을 선택해주세요</span>
               </div>
               <div class="button-group">
                 <button type="button" class="btn-normal" id="lineChangeBtn">노선 변경</button>
                 <button type="button" class="btn-primary" id="stationChangeBtn">역 변경</button>
               </div>
-              <input type="hidden" th:field="*{station}" id="stationInput" />
+              <input type="hidden" th:field="*{station}" id="stationInput" th:value="${selectedStation}" />
               <div class="error" th:errors="*{station}"></div>
-              <input type="hidden" th:field="*{subwayLine}" id="lineInput" />
+              <input type="hidden" th:field="*{subwayLine}" id="lineInput" th:value="${selectedLine}" />
               <div class="error" th:errors="*{subwayLine}"></div>
             </div>
 
@@ -242,6 +242,24 @@
                   <div class="preview-container" id="interiorPreview"></div>
                 </div>
                 <small class="form-text text-muted">매물 내부 이미지를 업로드하세요.</small>
+              </div>
+
+              <div class="image-upload-group">
+                <label>추가 이미지 1</label>
+                <div class="file-input-container">
+                  <input type="file" id="extraImage1" name="extraImage1" accept="image/*" multiple>
+                  <div class="preview-container" id="extraImage1Preview"></div>
+                </div>
+                <small class="form-text text-muted">추가 이미지를 업로드하세요.</small>
+              </div>
+
+              <div class="image-upload-group">
+                <label>추가 이미지 2</label>
+                <div class="file-input-container">
+                  <input type="file" id="extraImage2" name="extraImage2" accept="image/*" multiple>
+                  <div class="preview-container" id="extraImage2Preview"></div>
+                </div>
+                <small class="form-text text-muted">추가 이미지를 업로드하세요.</small>
               </div>
             </div>
 

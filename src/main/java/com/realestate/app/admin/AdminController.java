@@ -60,6 +60,11 @@ public class AdminController {
     private final CancellationCounterRepository cancellationCounterRepository;
     private final AdminService adminService;
 
+    @ModelAttribute("propertyDto")
+    public PropertyDto propertyDto() {
+        return new PropertyDto();
+    }
+
     @GetMapping("/dashboard")
     public String dashboard(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
@@ -344,6 +349,8 @@ public class AdminController {
             @RequestParam(value = "floorplanImages", required = false) MultipartFile[] floorplanImages,
             @RequestParam(value = "buildingImages", required = false) MultipartFile[] buildingImages,
             @RequestParam(value = "interiorImages", required = false) MultipartFile[] interiorImages,
+            @RequestParam(value = "extraImage1", required = false) MultipartFile[] extraImage1,
+            @RequestParam(value = "extraImage2", required = false) MultipartFile[] extraImage2,
             @RequestParam(value = "features", required = false) String[] features,
             Model model,
             RedirectAttributes redirectAttributes) {
@@ -358,7 +365,7 @@ public class AdminController {
 
         try {
             // 이미지 처리 및 특징 처리 로직
-            processPropertyImages(propertyDto, thumbnailImage, floorplanImages, buildingImages, interiorImages);
+            processPropertyImages(propertyDto, thumbnailImage, floorplanImages, buildingImages, interiorImages, extraImage1, extraImage2);
             processFeatures(propertyDto, features);
 
             // 매물 저장
@@ -378,14 +385,55 @@ public class AdminController {
     @GetMapping("/property/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         try {
-            PropertyDto propertyDto = propertyService.getPropertyDtoById(id);
+            Property property = propertyService.getPropertyById(id);
+            PropertyDto propertyDto = PropertyDto.fromEntity(property);
+            
+            // 기존 특징들을 파싱
+            List<String> features = new ArrayList<>();
+            String description = propertyDto.getDescription();
+            if (description != null && description.contains("특징:")) {
+                String[] parts = description.split("특징:\n");
+                if (parts.length > 1) {
+                    String[] featureLines = parts[1].split("\n");
+                    for (String line : featureLines) {
+                        if (line.startsWith("- ")) {
+                            features.add(line.substring(2));
+                        }
+                    }
+                    // 원래 설명만 남기기
+                    propertyDto.setDescription(parts[0].trim());
+                }
+            }
+            
             model.addAttribute("propertyDto", propertyDto);
             model.addAttribute("buildingTypes", Property.BuildingType.values());
             model.addAttribute("statusTypes", Property.Status.values());
+            model.addAttribute("selectedFeatures", features);
+            
+            // 역 정보 설정
+            model.addAttribute("selectedStation", propertyDto.getStation());
+            model.addAttribute("selectedLine", propertyDto.getSubwayLine());
+            
+            // 건축년도 설정
+            model.addAttribute("selectedBuiltYear", propertyDto.getBuiltYear());
+            
+            // 이미지 URL 설정
+            model.addAttribute("thumbnailImageUrl", propertyDto.getThumbnailImage());
+            model.addAttribute("floorplanImageUrls", propertyDto.getFloorplanImage() != null ? 
+                propertyDto.getFloorplanImage().split(",") : new String[0]);
+            model.addAttribute("buildingImageUrls", propertyDto.getBuildingImage() != null ? 
+                propertyDto.getBuildingImage().split(",") : new String[0]);
+            model.addAttribute("interiorImageUrls", propertyDto.getInteriorImage() != null ? 
+                propertyDto.getInteriorImage().split(",") : new String[0]);
+            model.addAttribute("extraImage1Urls", propertyDto.getExtraImage1() != null ? 
+                propertyDto.getExtraImage1().split(",") : new String[0]);
+            model.addAttribute("extraImage2Urls", propertyDto.getExtraImage2() != null ? 
+                propertyDto.getExtraImage2().split(",") : new String[0]);
+            
             return "admin/create";
         } catch (Exception e) {
             log.error("매물 조회 실패: {}", e.getMessage());
-            return "redirect:/admin/property/list";
+            return "redirect:/admin/addproperty";
         }
     }
 
@@ -399,109 +447,145 @@ public class AdminController {
             @RequestParam(value = "floorplanImages", required = false) MultipartFile[] floorplanImages,
             @RequestParam(value = "buildingImages", required = false) MultipartFile[] buildingImages,
             @RequestParam(value = "interiorImages", required = false) MultipartFile[] interiorImages,
+            @RequestParam(value = "extraImage1", required = false) MultipartFile[] extraImage1,
+            @RequestParam(value = "extraImage2", required = false) MultipartFile[] extraImage2,
             @RequestParam(value = "features", required = false) String[] features,
             Model model,
             RedirectAttributes redirectAttributes) {
-
-        // ID 설정
-        propertyDto.setPropertyId(id);
-
-        // 유효성 검증 실패 시 폼 다시 표시
-        if (bindingResult.hasErrors()) {
-            log.error("매물 수정 유효성 검증 실패: {}", bindingResult.getAllErrors());
-            model.addAttribute("buildingTypes", Property.BuildingType.values());
-            model.addAttribute("statusTypes", Property.Status.values());
-            return "admin/create";
-        }
-
         try {
-            // 이미지 처리 및 특징 처리 로직
-            processPropertyImages(propertyDto, thumbnailImage, floorplanImages, buildingImages, interiorImages);
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("buildingTypes", Property.BuildingType.values());
+                model.addAttribute("statusTypes", Property.Status.values());
+                return "admin/create";
+            }
+
+            // 기존 매물 정보 가져오기
+            Property existingProperty = propertyService.getPropertyById(id);
+            
+            // 이미지가 새로 업로드되지 않은 경우 기존 이미지 URL 유지
+            if (thumbnailImage == null || thumbnailImage.isEmpty()) {
+                propertyDto.setThumbnailImage(existingProperty.getThumbnailImage());
+            }
+            if (floorplanImages == null || floorplanImages.length == 0 || floorplanImages[0].isEmpty()) {
+                propertyDto.setFloorplanImage(existingProperty.getFloorplanImage());
+            }
+            if (buildingImages == null || buildingImages.length == 0 || buildingImages[0].isEmpty()) {
+                propertyDto.setBuildingImage(existingProperty.getBuildingImage());
+            }
+            if (interiorImages == null || interiorImages.length == 0 || interiorImages[0].isEmpty()) {
+                propertyDto.setInteriorImage(existingProperty.getInteriorImage());
+            }
+            if (extraImage1 == null || extraImage1.length == 0 || extraImage1[0].isEmpty()) {
+                propertyDto.setExtraImage1(existingProperty.getExtraImage1());
+            }
+            if (extraImage2 == null || extraImage2.length == 0 || extraImage2[0].isEmpty()) {
+                propertyDto.setExtraImage2(existingProperty.getExtraImage2());
+            }
+
+            // 새로운 이미지가 업로드된 경우에만 이미지 처리
+            processPropertyImages(propertyDto, thumbnailImage, floorplanImages, buildingImages, interiorImages, extraImage1, extraImage2);
+
+            // 특징 처리
             processFeatures(propertyDto, features);
 
-            // 매물 저장
-            PropertyDto updatedProperty = propertyService.savePropertyDto(propertyDto);
-            redirectAttributes.addFlashAttribute("successMessage", "매물이 성공적으로 수정되었습니다.");
-            return "redirect:/admin/property/list";
+            // 매물 ID 설정
+            propertyDto.setPropertyId(id);
+
+            // 매물 정보 업데이트
+            propertyService.updateProperty(propertyDto);
+
+            redirectAttributes.addFlashAttribute("message", "매물이 성공적으로 수정되었습니다.");
+            return "redirect:/admin/addproperty";
         } catch (Exception e) {
-            log.error("매물 수정 중 오류 발생", e);
-            model.addAttribute("errorMessage", "매물 수정에 실패했습니다: " + e.getMessage());
-            model.addAttribute("buildingTypes", Property.BuildingType.values());
-            model.addAttribute("statusTypes", Property.Status.values());
-            return "admin/create";
+            log.error("매물 수정 실패: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "매물 수정에 실패했습니다.");
+            return "redirect:/admin/addproperty";
         }
     }
 
-    // 매물 삭제 처리
-    @PostMapping("/property/delete/{id}")
-    public String deleteProperty(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        try {
-            propertyService.deleteProperty(id);
-            redirectAttributes.addFlashAttribute("successMessage", "매물이 성공적으로 삭제되었습니다.");
-        } catch (Exception e) {
-            log.error("매물 삭제 중 오류 발생", e);
-            redirectAttributes.addFlashAttribute("errorMessage", "매물 삭제에 실패했습니다: " + e.getMessage());
-        }
-        return "redirect:/admin/property/list";
-    }
-
-    // 이미지 처리 메서드
     private void processPropertyImages(
             PropertyDto propertyDto,
             MultipartFile thumbnailImage,
             MultipartFile[] floorplanImages,
             MultipartFile[] buildingImages,
-            MultipartFile[] interiorImages) throws IOException {
+            MultipartFile[] interiorImages,
+            MultipartFile[] extraImage1,
+            MultipartFile[] extraImage2) throws IOException {
         
         // 썸네일 이미지 처리
         if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
-            String thumbnailUrl = adminService.saveImage(thumbnailImage);
+            String thumbnailUrl = adminService.uploadImage(thumbnailImage);
             propertyDto.setThumbnailImage(thumbnailUrl);
         }
 
-        // 평면도 이미지 처리 - 모든 이미지 저장
-        if (floorplanImages != null && floorplanImages.length > 0) {
-            StringBuilder floorplanUrls = new StringBuilder();
-            for (MultipartFile image : floorplanImages) {
-                if (image != null && !image.isEmpty()) {
-                    String imageUrl = adminService.saveImage(image);
-                    if (floorplanUrls.length() > 0) {
-                        floorplanUrls.append(",");
-                    }
-                    floorplanUrls.append(imageUrl);
-                }
-            }
-            propertyDto.setFloorplanImage(floorplanUrls.toString());
+        // 평면도 이미지 처리
+        if (floorplanImages != null && floorplanImages.length > 0 && !floorplanImages[0].isEmpty()) {
+            List<String> floorplanUrls = Arrays.stream(floorplanImages)
+                    .map(file -> {
+                        try {
+                            return adminService.uploadImage(file);
+                        } catch (IOException e) {
+                            throw new RuntimeException("이미지 업로드 실패", e);
+                        }
+                    })
+                    .collect(Collectors.toList());
+            propertyDto.setFloorplanImage(String.join(",", floorplanUrls));
         }
 
-        // 건물 이미지 처리 - 모든 이미지 저장
-        if (buildingImages != null && buildingImages.length > 0) {
-            StringBuilder buildingUrls = new StringBuilder();
-            for (MultipartFile image : buildingImages) {
-                if (image != null && !image.isEmpty()) {
-                    String imageUrl = adminService.saveImage(image);
-                    if (buildingUrls.length() > 0) {
-                        buildingUrls.append(",");
-                    }
-                    buildingUrls.append(imageUrl);
-                }
-            }
-            propertyDto.setBuildingImage(buildingUrls.toString());
+        // 건물 이미지 처리
+        if (buildingImages != null && buildingImages.length > 0 && !buildingImages[0].isEmpty()) {
+            List<String> buildingUrls = Arrays.stream(buildingImages)
+                    .map(file -> {
+                        try {
+                            return adminService.uploadImage(file);
+                        } catch (IOException e) {
+                            throw new RuntimeException("이미지 업로드 실패", e);
+                        }
+                    })
+                    .collect(Collectors.toList());
+            propertyDto.setBuildingImage(String.join(",", buildingUrls));
         }
 
-        // 내부 이미지 처리 - 모든 이미지 저장
-        if (interiorImages != null && interiorImages.length > 0) {
-            StringBuilder interiorUrls = new StringBuilder();
-            for (MultipartFile image : interiorImages) {
-                if (image != null && !image.isEmpty()) {
-                    String imageUrl = adminService.saveImage(image);
-                    if (interiorUrls.length() > 0) {
-                        interiorUrls.append(",");
-                    }
-                    interiorUrls.append(imageUrl);
-                }
-            }
-            propertyDto.setInteriorImage(interiorUrls.toString());
+        // 내부 이미지 처리
+        if (interiorImages != null && interiorImages.length > 0 && !interiorImages[0].isEmpty()) {
+            List<String> interiorUrls = Arrays.stream(interiorImages)
+                    .map(file -> {
+                        try {
+                            return adminService.uploadImage(file);
+                        } catch (IOException e) {
+                            throw new RuntimeException("이미지 업로드 실패", e);
+                        }
+                    })
+                    .collect(Collectors.toList());
+            propertyDto.setInteriorImage(String.join(",", interiorUrls));
+        }
+
+        // 추가 이미지 1 처리
+        if (extraImage1 != null && extraImage1.length > 0 && !extraImage1[0].isEmpty()) {
+            List<String> extraUrls1 = Arrays.stream(extraImage1)
+                    .map(file -> {
+                        try {
+                            return adminService.uploadImage(file);
+                        } catch (IOException e) {
+                            throw new RuntimeException("이미지 업로드 실패", e);
+                        }
+                    })
+                    .collect(Collectors.toList());
+            propertyDto.setExtraImage1(String.join(",", extraUrls1));
+        }
+
+        // 추가 이미지 2 처리
+        if (extraImage2 != null && extraImage2.length > 0 && !extraImage2[0].isEmpty()) {
+            List<String> extraUrls2 = Arrays.stream(extraImage2)
+                    .map(file -> {
+                        try {
+                            return adminService.uploadImage(file);
+                        } catch (IOException e) {
+                            throw new RuntimeException("이미지 업로드 실패", e);
+                        }
+                    })
+                    .collect(Collectors.toList());
+            propertyDto.setExtraImage2(String.join(",", extraUrls2));
         }
     }
 
@@ -516,5 +600,18 @@ public class AdminController {
             }
             propertyDto.setDescription(featureText.toString());
         }
+    }
+
+    // 매물 삭제 처리
+    @PostMapping("/property/delete/{id}")
+    public String deleteProperty(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            propertyService.deleteProperty(id);
+            redirectAttributes.addFlashAttribute("successMessage", "매물이 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            log.error("매물 삭제 중 오류 발생", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "매물 삭제에 실패했습니다: " + e.getMessage());
+        }
+        return "redirect:/admin/property/list";
     }
 }
