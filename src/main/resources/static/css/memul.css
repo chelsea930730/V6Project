@@ -518,23 +518,93 @@ empty-message{
     max-height: 80vh;
     overflow-y: auto;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    min-width: 600px; /* 최소 너비 설정 */
+    min-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-/* 닫기 버튼 스타일 */
+/* 확인 버튼 스타일 */
+.confirm-button {
+    margin-top: 20px;
+    padding: 12px 24px;
+    background-color: #355c86;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Cafe24 Ssurround air OTF Light';
+    font-size: 16px;
+    align-self: center;
+    transition: background-color 0.3s ease;
+}
+
+.confirm-button:hover {
+    background-color: #2b4f70;
+}
+
+/* 선택된 노선/역 표시 스타일 개선 */
+.line.selected {
+    box-shadow: 0 0 0 3px white, 0 0 0 5px currentColor;
+    transform: scale(1.05);
+}
+
+.station.selected {
+    box-shadow: 0 0 0 2px white, 0 0 0 4px currentColor;
+    transform: scale(1.05);
+}
+
+/* 스테이션 리스트 섹션 스타일 개선 */
+.line-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.line-section h3 {
+    color: #355c86;
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    border-bottom: 2px solid #355c86;
+    padding-bottom: 5px;
+}
+
+/* 스크롤바 스타일 개선 */
+.popup-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.popup-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.popup-content::-webkit-scrollbar-thumb {
+    background: #355c86;
+    border-radius: 4px;
+}
+
+.popup-content::-webkit-scrollbar-thumb:hover {
+    background: #2b4f70;
+}
+
+/* 닫기 버튼 위치 조정 */
 .close-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 15px;
+    right: 15px;
     font-size: 24px;
     cursor: pointer;
     background: none;
     border: none;
-    color: #333;
+    color: #355c86;
+    transition: color 0.3s ease;
 }
 
 .close-btn:hover {
-    color: #000;
+    color: #2b4f70;
 }
 
 /* 노선 선택 스타일 */

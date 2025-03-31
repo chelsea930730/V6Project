@@ -1,7 +1,8 @@
 // 전역 변수 설정
 const filterState = {
 	selectedStation: "",
-	selectedLine: "",
+	selectedLines: new Set(),  // 선택된 노선들을 저장하는 Set
+	selectedStations: new Set(),  // 선택된 역들을 저장하는 Set
 	currentProperties: [],
 	isLinePopupInitialized: false
 };
@@ -263,44 +264,13 @@ const lineClassMap = {
 	'토자이선': 'tozai'
 };
 
-// 노선 이름 매핑 (한글 <-> 일본어)
+// 노선 매핑 객체는 하나로 통일
 const lineMapping = {
-	// 한글 -> 일본어
-	"JR야마노테선": "JR山手線",
-	"JR츄오소부선": "JR中央総武線",
-	"JR사이쿄선": "JR埼京線",
-	"JR죠반선": "JR常磐線",
-	"JR타카사키선": "JR高崎線",
-	"JR요코스카선": "JR横須賀線",
-	"JR케이힌토쿠선": "JR京浜東北線",
-	"한조몬선": "半蔵門線",
-	"마루노우치선": "丸ノ内線",
-	"히비야선": "日比谷線",
-	"치요다선": "千代田線",
-	"후쿠토신선": "副都心線",
-	"긴자선": "銀座線",
-	"난보쿠선": "南北線",
-	"유라쿠쵸선": "有楽町線",
-	"토자이선": "東西線",
-	
-	// 일본어 -> 한글 (역방향 매핑)
-	"JR山手線": "JR야마노테선",
-	"JR中央総武線": "JR츄오소부선",
-	"JR埼京線": "JR사이쿄선",
-	"JR常磐線": "JR죠반선",
-	"JR高崎線": "JR타카사키선",
-	"JR横須賀線": "JR요코스카선",
-	"JR京浜東北線": "JR케이힌토쿠선",
-	"半蔵門線": "한조몬선",
-	"丸ノ内線": "마루노우치선",
-	"日比谷線": "히비야선",
-	"千代田線": "치요다선",
-	"副都心線": "후쿠토신선",
-	"銀座線": "긴자선",
-	"南北線": "난보쿠선",
-	"有楽町線": "유라쿠쵸선",
-	"東西線": "토자이선"
+	'야마노테': 'JR山手線・JR야마노테선',
+	'츄오- 소부': 'JR中央総武線',
+	// ... 나머지 매핑
 };
+
 // stations 객체의 역 이름을 일본어(한글) 형식으로 변환
 for (const line in stations) {
 	if (stations.hasOwnProperty(line)) {
@@ -373,214 +343,231 @@ let currentSortType = 'newest'; // 기본값은 최신순
 
 // 필터 데이터 수집 함수
 function getCurrentFilterData() {
-    const filterData = {
-        minPrice: document.getElementById('minPrice')?.value || '',
-        maxPrice: document.getElementById('maxPrice')?.value || '',
-        buildingTypes: Array.from(document.querySelectorAll('input[name="type"]:checked')).map(cb => cb.value),
-        roomTypes: Array.from(document.querySelectorAll('input[name="room"]:checked')).map(cb => cb.value),
-        buildingYear: document.getElementById('building-year')?.value || '',
-        detailTypes: Array.from(document.querySelectorAll('input[name="detail"]:checked')).map(cb => cb.value),
-        keyword: document.getElementById('searchInput')?.value || '',
-        sortType: document.getElementById('sortSelect')?.value || 'newest',
-        subwayLine: filterState.selectedLine,
-        station: filterState.selectedStation
-    };
-    
-    console.log('필터 데이터:', filterData);
-    
-    return {
-        minPrice: filterData.minPrice ? parseInt(filterData.minPrice) : null,
-        maxPrice: filterData.maxPrice ? parseInt(filterData.maxPrice) : null,
-        buildingTypes: filterData.buildingTypes,
-        roomTypes: filterData.roomTypes,
-        buildingYear: filterData.buildingYear,
-        detailTypes: filterData.detailTypes,
-        keyword: filterData.keyword,
-        subwayLine: filterData.subwayLine,
-        station: filterData.station,
-        sortType: filterData.sortType
-    };
+	const urlParams = new URLSearchParams(window.location.search);
+	const district = urlParams.get('district');
+	const line = urlParams.get('line');
+	
+	// 상세조건 체크박스 값을 정확하게 가져오기
+	const detailTypes = Array.from(document.querySelectorAll('input[name="detail"]:checked'))
+		.map(cb => cb.value);
+	
+	console.log('상세조건 필터:', detailTypes); // 디버깅용 로그
+	
+	return {
+			minPrice: document.getElementById('minPrice')?.value || '',
+			maxPrice: document.getElementById('maxPrice')?.value || '',
+			buildingTypes: Array.from(document.querySelectorAll('input[name="type"]:checked')).map(cb => cb.value),
+			roomTypes: Array.from(document.querySelectorAll('input[name="room"]:checked')).map(cb => cb.value),
+			buildingYear: document.getElementById('building-year')?.value || '',
+			detailTypes: detailTypes, // 상세조건 추가
+			keyword: document.getElementById('searchInput')?.value || '',
+			sortType: document.getElementById('sortSelect')?.value || 'newest',
+			district: district,
+			line: line,
+			selectedLines: Array.from(filterState.selectedLines),
+			selectedStations: Array.from(filterState.selectedStations)
+	};
 }
 
 // 필터 적용 함수
 function filterProperties() {
-    const filterData = getCurrentFilterData();
-    console.log('필터 데이터:', filterData);
-
-    fetch('/api/properties/filter', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(filterData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        filterState.currentProperties = data;
-        updatePropertyList(data);
-    })
-    .catch(error => {
-        console.error('필터링 중 오류 발생:', error);
-    });
+	const filterData = getCurrentFilterData();
+	console.log('필터 데이터:', filterData); // 디버깅용 로그
+	
+	fetch('/api/properties/filter', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(filterData)
+	})
+	.then(response => {
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+		return response.json();
+	})
+	.then(data => {
+		console.log('서버 응답 데이터:', data); // 디버깅용 로그
+		updatePropertyList(data);
+		
+		// URL 업데이트 (페이지 새로고침 없이)
+		const params = new URLSearchParams();
+		if (filterData.district) params.set('district', filterData.district);
+		if (filterData.line) params.set('line', filterData.line);
+		const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+		window.history.pushState({}, '', newUrl);
+	})
+	.catch(error => {
+		console.error('필터 적용 에러:', error);
+	});
 }
 
 // 매물 목록 업데이트 함수
 function updatePropertyList(properties) {
-    const propertyListContainer = document.querySelector('.property-items-container');
-    if (!propertyListContainer) return;
+	const propertyListContainer = document.querySelector('.property-items-container');
+	if (!propertyListContainer) return;
 
-    // 기존 매물 항목들 제거
-    propertyListContainer.innerHTML = '';
+	propertyListContainer.innerHTML = '';
 
-    // 새로운 매물 항목들 추가
-    properties.forEach(property => {
-        const propertyElement = createPropertyElement(property);
-        propertyListContainer.appendChild(propertyElement);
-    });
+	if (!Array.isArray(properties) || properties.length === 0) {
+		propertyListContainer.innerHTML = '<div class="no-results">검색 결과가 없습니다.</div>';
+		return;
+	}
+
+	properties.forEach(property => {
+		const propertyElement = createPropertyElement(property);
+		propertyListContainer.appendChild(propertyElement);
+	});
 }
 
 // 매물 요소 생성 함수
 function createPropertyElement(property) {
-    const div = document.createElement('div');
-    div.className = 'property-item';
-    
-    // HTML 템플릿 생성
-    div.innerHTML = `
-        <div class="property-header">
-            <div class="header-left">
-                <input type="checkbox" value="${property.propertyId}">
-                <span class="property-no">NO.${property.propertyId}</span>
-                <span>${property.title}</span>
-            </div>
-        </div>
-        <table class="property-info-table">
-            <tr>
-                <th>사진</th>
-                <th>월세/관리비</th>
-                <th>시키킹/레이킹</th>
-                <th>방 타입/면적</th>
-                <th>건축년도</th>
-                <th>예약상태</th>
-                <th>상세보기</th>
-            </tr>
-            <tr>
-                <td>
-                    ${property.thumbnailImage 
-                        ? `<div class="property-image-container">
-                             <img src="${property.thumbnailImage}" alt="매물 이미지" 
-                                  style="width: 150px; height: 100px; object-fit: cover;">
-                           </div>`
-                        : `<div class="no-image-container"
-                             style="width: 150px; height: 100px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
-                             <span>이미지 준비중</span>
-                           </div>`
-                    }
-                </td>
-                <td>
-                    <div>${property.monthlyPrice?.toLocaleString()}円</div>
-                    <div>${property.managementFee?.toLocaleString()}円</div>
-                </td>
-                <td>
-                    <div>${property.shikikin?.toLocaleString()} / ${property.reikin?.toLocaleString()}</div>
-                </td>
-                <td>
-                    <div>${property.roomType}</div>
-                    <div>${property.area}m²</div>
-                    <div>${property.buildingType}</div>
-                </td>
-                <td>${property.builtYear}</td>
-                <td>
-                    <div class="status-available">${property.status}</div>
-                </td>
-                <td>
-                    <a href="/property/${property.propertyId}" class="detail-button">상세보기</a>
-                </td>
-            </tr>
-        </table>
-        <div class="address-info">
-            <div>${property.location}</div>
-            <div>${property.subwayLine}</div>
-            ${property.station ? `<div>${property.station}</div>` : ''}
-            ${property.description ? `<div>${property.description}</div>` : ''}
-        </div>
-    `;
-    
-    return div;
+	const div = document.createElement('div');
+	div.className = 'property-item';
+	
+	// HTML 템플릿 생성
+	div.innerHTML = `
+		<div class="property-header">
+			<div class="header-left">
+				<input type="checkbox" value="${property.propertyId}">
+				<span class="property-no">NO.${property.propertyId}</span>
+				<span>${property.title}</span>
+			</div>
+		</div>
+		<table class="property-info-table">
+			<tr>
+				<th>사진</th>
+				<th>월세/관리비</th>
+				<th>시키킹/레이킹</th>
+				<th>방 타입/면적</th>
+				<th>건축년도</th>
+				<th>예약상태</th>
+				<th>상세보기</th>
+			</tr>
+			<tr>
+				<td>
+					${property.thumbnailImage 
+						? `<div class="property-image-container">
+							 <img src="${property.thumbnailImage}" alt="매물 이미지" 
+								  style="width: 150px; height: 100px; object-fit: cover;">
+						   </div>`
+						: `<div class="no-image-container"
+							 style="width: 150px; height: 100px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+							 <span>이미지 준비중</span>
+						   </div>`
+					}
+				</td>
+				<td>
+					<div>${property.monthlyPrice?.toLocaleString()}円</div>
+					<div>${property.managementFee?.toLocaleString()}円</div>
+				</td>
+				<td>
+					<div>${property.shikikin?.toLocaleString()} / ${property.reikin?.toLocaleString()}</div>
+				</td>
+				<td>
+					<div>${property.roomType}</div>
+					<div>${property.area}m²</div>
+					<div>${property.buildingType}</div>
+				</td>
+				<td>${property.builtYear}</td>
+				<td>
+					<div class="status-available">${property.status}</div>
+				</td>
+				<td>
+					<a href="/property/${property.propertyId}" class="detail-button">상세보기</a>
+				</td>
+			</tr>
+		</table>
+		<div class="address-info">
+			<div>${property.location}</div>
+			<div>${property.subwayLine}</div>
+			${property.station ? `<div>${property.station}</div>` : ''}
+			${property.description ? `<div>${property.description}</div>` : ''}
+		</div>
+	`;
+	
+	return div;
 }
 
 // 이벤트 리스너 설정
 function setupFilterEventListeners() {
-    // 가격 슬라이더 이벤트
-    const priceInputs = document.querySelectorAll('#minPrice, #maxPrice');
-    priceInputs.forEach(input => {
-        input.addEventListener('change', filterProperties);
-    });
+	// 가격 슬라이더 이벤트
+	const priceInputs = document.querySelectorAll('#minPrice, #maxPrice');
+	priceInputs.forEach(input => {
+		input.addEventListener('change', filterProperties);
+	});
 
-    // 건물 유형 체크박스 이벤트
-    const buildingTypeCheckboxes = document.querySelectorAll('input[name="type"]');
-    buildingTypeCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', filterProperties);
-    });
+	// 건물 유형 체크박스 이벤트
+	const buildingTypeCheckboxes = document.querySelectorAll('input[name="type"]');
+	buildingTypeCheckboxes.forEach(checkbox => {
+		checkbox.addEventListener('change', filterProperties);
+	});
 
-    // 방 유형 체크박스 이벤트
-    const roomTypeCheckboxes = document.querySelectorAll('input[name="room"]');
-    roomTypeCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', filterProperties);
-    });
+	// 방 유형 체크박스 이벤트
+	const roomTypeCheckboxes = document.querySelectorAll('input[name="room"]');
+	roomTypeCheckboxes.forEach(checkbox => {
+		checkbox.addEventListener('change', filterProperties);
+	});
 
-    // 건축년도 선택 이벤트
-    const buildingYearSelect = document.getElementById('building-year');
-    if (buildingYearSelect) {
-        buildingYearSelect.addEventListener('change', filterProperties);
-    }
+	// 건축년도 선택 이벤트
+	const buildingYearSelect = document.getElementById('building-year');
+	if (buildingYearSelect) {
+		buildingYearSelect.addEventListener('change', filterProperties);
+	}
 
-    // 상세 정보 체크박스 이벤트
-    const detailCheckboxes = document.querySelectorAll('input[name="detail"]');
-    detailCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', filterProperties);
-    });
+	// 상세조건 체크박스 이벤트 리스너 수정
+	const detailCheckboxes = document.querySelectorAll('input[name="detail"]');
+	detailCheckboxes.forEach(checkbox => {
+		checkbox.addEventListener('change', function(e) {
+			console.log('상세조건 체크박스 변경:', this.value, this.checked);
+			const filterData = getCurrentFilterData();
+			console.log('전송되는 필터 데이터:', filterData);
+			filterProperties();
+		});
+	});
 
-    // 검색어 입력 이벤트
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce(filterProperties, 500));
-    }
+	// 검색어 입력 이벤트
+	const searchInput = document.getElementById('searchInput');
+	if (searchInput) {
+		searchInput.addEventListener('input', debounce(filterProperties, 500));
+	}
 
-    // 정렬 옵션 변경 이벤트
-    const sortSelect = document.getElementById('sortSelect');
-    if (sortSelect) {
-        sortSelect.addEventListener('change', filterProperties);
-    }
+	// 정렬 옵션 변경 이벤트
+	const sortSelect = document.getElementById('sortSelect');
+	if (sortSelect) {
+		sortSelect.addEventListener('change', filterProperties);
+	}
 }
 
 // 페이지 로드 시 이벤트 리스너 설정
 document.addEventListener('DOMContentLoaded', () => {
-    // 초기 데이터 로드
-    filterProperties();
-    
-    // 필터 이벤트 리스너 설정
-    setupFilterEventListeners();
-    
-    // 노선 팝업 초기화 추가
-    setupLinePopup();
-    
-    // 가격 슬라이더 초기화
-    initializePriceSliders();
+	// 초기 데이터 로드
+	filterProperties();
+	
+	// 필터 이벤트 리스너 설정
+	setupFilterEventListeners();
+	
+	// 노선 팝업 초기화 추가
+	setupLinePopup();
+	
+	// 가격 슬라이더 초기화
+	initializePriceSliders();
 }, { once: true });
 
 // 역 선택 시 필터 적용
 function applyStationFilter(selectedLine, selectedStation) {
-    console.log('노선 선택:', selectedLine);
-    console.log('역 선택:', selectedStation);
-    
-    filterState.selectedLine = selectedLine;
-    filterState.selectedStation = selectedStation ? selectedStation : '';
-    
-    // 필터 적용 전에 상태 확인
-    console.log('필터 상태:', filterState);
-    
-    filterProperties();
-    closeLinePopup();
+	console.log('노선 선택:', selectedLine);
+	console.log('역 선택:', selectedStation);
+	
+	filterState.selectedLine = selectedLine;
+	filterState.selectedStation = selectedStation ? selectedStation : '';
+	
+	// 필터 적용 전에 상태 확인
+	console.log('필터 상태:', filterState);
+	
+	filterProperties();
+	closeLinePopup();
 }
 
 // 페이지 로드 시 한 번만 실행
@@ -663,105 +650,129 @@ function setupLinePopup() {
 	
 	// 노선 클릭 이벤트
 	document.querySelectorAll(".line").forEach(line => {
-		line.addEventListener("click", function() {
+		line.addEventListener("click", function(e) {
+			e.preventDefault();
+			e.stopPropagation();
 			const lineName = this.textContent.trim();
-			console.log('Line clicked:', lineName); // 디버깅용 로그
 			
-			// 기존 선택 상태 초기화
-			document.querySelectorAll('.line').forEach(l => l.classList.remove('selected'));
-			this.classList.add('selected');
-			
-			// 노선 정보 저장
-			filterState.selectedLine = lineName;
-			filterState.selectedStation = '';
+			// 노선 토글 (선택/해제)
+			if (this.classList.contains('selected')) {
+				this.classList.remove('selected');
+				filterState.selectedLines.delete(lineName);
+			} else {
+				this.classList.add('selected');
+				filterState.selectedLines.add(lineName);
+			}
 			
 			// 역 목록 업데이트
 			updateStationList(lineName);
 			
-			// 필터 적용
-			filterProperties();
+			// 필터 메시지 업데이트
+			updateFilterMessage();
 		});
 	});
+	
+	// 확인 버튼 이벤트
+	const confirmButton = document.createElement('button');
+	confirmButton.className = 'confirm-button';
+	confirmButton.textContent = '선택 완료';
+	confirmButton.addEventListener('click', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		filterProperties();  // 필터 적용
+		closeLinePopup();   // 팝업 닫기
+	});
+	
+	const popupContent = document.querySelector('.popup-content');
+	if (!document.querySelector('.confirm-button')) {
+		popupContent.appendChild(confirmButton);
+	}
 	
 	filterState.isLinePopupInitialized = true;
 }
 
-// 역 목록 업데이트 함수 수정
+// updateStationList 함수 수정
 function updateStationList(lineName) {
-	console.log('Updating station list for:', lineName); // 디버깅용 로그
+	console.log('Updating station list for:', lineName);
 	const lineStations = stations[lineName] || [];
 	const stationListHTML = generateStationListHTML(lineName, lineStations);
 	const stationListElement = document.getElementById('stationList');
 
 	if (stationListElement) {
-		stationListElement.innerHTML = stationListHTML;
+		// 기존 역 목록에 새로운 역 목록 추가
+		if (!stationListElement.querySelector(`[data-line="${lineName}"]`)) {
+			const lineSection = document.createElement('div');
+			lineSection.setAttribute('data-line', lineName);
+			lineSection.innerHTML = stationListHTML;
+			stationListElement.appendChild(lineSection);
+		}
 		
 		// 역 버튼 클릭 이벤트 설정
 		stationListElement.querySelectorAll('.station').forEach(button => {
-			button.addEventListener('click', function() {
+			button.addEventListener('click', function(e) {
+				e.preventDefault(); // 기본 이벤트 방지
 				const koreanName = this.getAttribute('data-korean');
-				console.log('Station clicked:', koreanName); // 디버깅용 로그
+				const stationLineName = this.closest('[data-line]').getAttribute('data-line');
+				console.log('Station clicked:', koreanName, 'on line:', stationLineName);
 				
-				// 기존 선택 상태 초기화
-				document.querySelectorAll('.station').forEach(s => s.classList.remove('selected'));
-				this.classList.add('selected');
+				if (this.classList.contains('selected')) {
+					this.classList.remove('selected');
+					filterState.selectedStations.delete(koreanName);
+				} else {
+					this.classList.add('selected');
+					filterState.selectedStations.add(koreanName);
+				}
 				
-				// 역 정보 저장 및 필터 적용
-				filterState.selectedStation = koreanName;
-				filterProperties();
+				// 필터 메시지 업데이트
+				updateFilterMessage();
 			});
 		});
 	}
 }
 
 // 역 목록 HTML 생성
-function generateStationListHTML(lineName, stations, lineClass) {
-	// 노선별 클래스 매핑
-	const lineClassMap = {
-		'JR야마노테선': 'yamanote',
-		'JR츄오소부선': 'chuuo',
-		'JR사이쿄선': 'saikyou',
-		'JR죠반선': 'joban',
-		'JR타카사키선': 'takasaki',
-		'JR요코스카선': 'yokosuka',
-		'JR케이힌토쿠선': 'keitoku',
-		'한조몬선': 'hanzomon',
-		'마루노우치선': 'marunouchi',
-		'히비야선': 'hibiya',
-		'치요다선': 'chiyoda',
-		'후쿠토신선': 'fukutoshin',
-		'긴자선': 'ginza',
-		'난보쿠선': 'namboku',
-		'유라쿠쵸선': 'yurakucho',
-		'토자이선': 'tozai'
-	};
-	const actualLineClass = lineClassMap[lineName] || 'default-line';
+function generateStationListHTML(lineName, stations) {
+	const lineClass = lineClassMap[lineName] || 'default-line';
 	return `
-			<h3>${lineName}</h3>
-			<div class="station-container">
-					${stations.map(station => {
-							const match = station.match(/^(.*?)\((.*?)\)$/);
-							const displayName = match ? match[0] : station;
-							const koreanName = match ? match[2] : station;
-							return `<button class="station ${actualLineClass}" data-korean="${koreanName}">${displayName}</button>`;
-					}).join('')}
+			<div class="line-section">
+					<h3>${lineName}</h3>
+					<div class="station-container">
+							${stations.map(station => {
+									const match = station.match(/^(.*?)\((.*?)\)$/);
+									const displayName = match ? match[0] : station;
+									const koreanName = match ? match[2] : station;
+									const isSelected = filterState.selectedStations.has(koreanName);
+									return `<button class="station ${lineClass} ${isSelected ? 'selected' : ''}" 
+													data-korean="${koreanName}">${displayName}</button>`;
+							}).join('')}
+					</div>
 			</div>
 	`;
 }
-// 필터 메시지 업데이트 함수 수정
+
+// 필터 메시지 업데이트
 function updateFilterMessage() {
-	const container = document.querySelector('.hero div');
+	const container = document.querySelector('.filter-message');
 	if (!container) return;
 
-	let msg = '';
-	if (filterState.selectedStation && filterState.selectedLine) {
-			msg = `<p>${filterState.selectedLine} 노선 ${filterState.selectedStation}역 매물을 보고 계십니다</p>`;
-	} else if (filterState.selectedLine) {
-			msg = `<p>${filterState.selectedLine} 노선 매물을 보고 계십니다</p>`;
+	let messages = [];
+	
+	if (filterState.selectedLines.size > 0) {
+			messages.push(`선택된 노선: ${Array.from(filterState.selectedLines).join(', ')}`);
+	}
+	
+	if (filterState.selectedStations.size > 0) {
+			messages.push(`선택된 역: ${Array.from(filterState.selectedStations).join(', ')}`);
 	}
 
-	container.innerHTML = msg;
+	container.innerHTML = messages.length > 0 ? messages.join('<br>') : '';
 }
+
+// 초기화
+document.addEventListener('DOMContentLoaded', () => {
+	setupLinePopup();
+	filterProperties();
+});
 
 // 전체 매물 보기 버튼 클릭 이벤트 처리
 document.addEventListener('DOMContentLoaded', function() {
@@ -821,4 +832,53 @@ function resetFilters() {
     filterProperties();
 }
 
+// index.html의 노선 버튼 클릭 이벤트
+document.addEventListener('DOMContentLoaded', function() {
+    const lineButtons = document.querySelectorAll('.line');
+    lineButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const lineName = this.textContent.trim();
+            const convertedLine = lineMapping[lineName] || lineName;
+            window.location.href = `/property/list?line=${encodeURIComponent(convertedLine)}`;
+        });
+    });
+});
 
+// 검색 입력 이벤트 처리
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(function() {
+            const keyword = this.value.trim();
+            const filterData = getCurrentFilterData();
+            filterData.keyword = keyword;
+            filterProperties(filterData);
+        }, 500));
+    }
+});
+
+// 노선 변경 버튼 클릭 이벤트 처리
+document.addEventListener('DOMContentLoaded', function() {
+    const lineChangeBtn = document.querySelector('.line-btn');
+    if (lineChangeBtn) {
+        lineChangeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            openLinePopup();
+        });
+    }
+});
+
+// 팝업 내부 클릭 이벤트가 외부로 전파되지 않도록 처리
+document.querySelector('.popup-content')?.addEventListener('click', function(e) {
+    e.stopPropagation();
+});
+
+// 팝업 바깥 영역 클릭 시 닫히지 않도록 처리
+document.getElementById('linePopup')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        e.stopPropagation();
+        e.preventDefault();
+    }
+});

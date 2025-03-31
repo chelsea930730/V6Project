@@ -1,9 +1,39 @@
+// 노선명 매핑 객체 (한 번만 정의)
+const lineMapping = {
+    '야마노테': 'JR山手線・JR야마노테선',
+    '츄오- 소부': 'JR中央総武線',
+    '사이쿄': 'JR埼京線',
+    '죠반': 'JR常磐線・JR죠반선',
+    '타카사키': 'JR高崎線・JR타카사키선',
+    '요코스카': 'JR横須賀・JR요코스카선',
+    '게이힌토호쿠': 'JR京浜東北線・JR게이힌토호쿠선',
+    '한조몬': '半蔵門線・한조몬선',
+    '마루노우치': '丸ノ内線・마루노우치선',
+    '히비야': '日比谷線・히비야선',
+    '치요다': '千代田線・치요다선',
+    '후쿠토신': '副都心線・후쿠토신선',
+    '긴자': '銀座線・긴자선',
+    '난보쿠': '南北線・난보쿠선',
+    '유라쿠쵸': '有楽町線・유라쿠쵸선',
+    '토자이': '東西線・토자이선'
+};
+
 // 노선 버튼 클릭 이벤트
-document.querySelectorAll(".line").forEach(button => {
-    button.addEventListener("click", () => {
-        window.location.href = "/templates/property/list,html";
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll(".line").forEach(button => {
+        button.addEventListener("click", (e) => {
+            e.preventDefault();
+            const line = button.textContent.trim();
+            const convertedLine = lineMapping[line] || line;
+            window.location.href = `/property/list?line=${encodeURIComponent(convertedLine)}`;
+        });
     });
 });
+
+// 노선명 변환 함수 (기존 매핑 객체 재사용)
+function convertLineName(line) {
+    return lineMapping[line] || line;
+}
 
 // 지역 이름 매핑 객체 추가
 const districtMapping = {
@@ -39,16 +69,9 @@ document.addEventListener('DOMContentLoaded', function() {
     districtButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
-            
-            // URL에서 일본어 district 파라미터 추출
             const japaneseDistrict = this.getAttribute('href').split('district=')[1];
             const decodedJapaneseDistrict = decodeURIComponent(japaneseDistrict);
-            
-            // URL에는 한글 지역명을 사용
-            const koreanDistrict = convertDistrictToKorean(decodedJapaneseDistrict);
-            
-            // 한글 지역명으로 페이지 이동
-            window.location.href = `/property/list?district=${encodeURIComponent(koreanDistrict)}`;
+            window.location.href = `/property/list?district=${encodeURIComponent(decodedJapaneseDistrict)}`;
         });
     });
 });
