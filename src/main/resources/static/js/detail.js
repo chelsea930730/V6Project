@@ -35,12 +35,92 @@ function updatePropertyDetails() {
 }
 
 // 페이지 로드 시 실행
-window.addEventListener("DOMContentLoaded", updatePropertyDetails);
+window.addEventListener("DOMContentLoaded", function() {
+    updatePropertyDetails();
+    initImageSlider();
+});
+
+// 이미지 슬라이더 초기화
+function initImageSlider() {
+    const slider = document.getElementById('propertyImagesSlider');
+    if (!slider) return;
+    
+    const slides = slider.querySelectorAll('.slide');
+    if (slides.length === 0) return;
+
+    const prevBtn = document.getElementById('prevSlide');
+    const nextBtn = document.getElementById('nextSlide');
+    const indicators = document.getElementById('sliderIndicators');
+    
+    // 슬라이드 인덱스 초기화
+    let currentIndex = 0;
+    
+    // 인디케이터 생성
+    slides.forEach((_, index) => {
+        const indicator = document.createElement('div');
+        indicator.classList.add('indicator');
+        if (index === currentIndex) {
+            indicator.classList.add('active');
+        }
+        indicator.addEventListener('click', () => {
+            goToSlide(index);
+        });
+        indicators.appendChild(indicator);
+    });
+    
+    // 이전 슬라이드로 이동
+    prevBtn.addEventListener('click', () => {
+        goToSlide(currentIndex - 1);
+    });
+    
+    // 다음 슬라이드로 이동
+    nextBtn.addEventListener('click', () => {
+        goToSlide(currentIndex + 1);
+    });
+    
+    // 특정 슬라이드로 이동
+    function goToSlide(index) {
+        // 슬라이드 범위 체크
+        if (index < 0) {
+            index = slides.length - 1;
+        } else if (index >= slides.length) {
+            index = 0;
+        }
+        
+        // 이전 슬라이드 비활성화
+        slides[currentIndex].classList.remove('active');
+        indicators.children[currentIndex].classList.remove('active');
+        
+        // 새 슬라이드 활성화
+        slides[index].classList.add('active');
+        indicators.children[index].classList.add('active');
+        
+        // 인덱스 업데이트
+        currentIndex = index;
+    }
+    
+    // 자동 슬라이드 기능 (3초마다)
+    let slideInterval = setInterval(() => {
+        goToSlide(currentIndex + 1);
+    }, 5000);
+    
+    // 마우스 오버시 자동 슬라이드 중지
+    slider.parentElement.addEventListener('mouseenter', () => {
+        clearInterval(slideInterval);
+    });
+    
+    // 마우스 나갈 때 자동 슬라이드 재시작
+    slider.parentElement.addEventListener('mouseleave', () => {
+        slideInterval = setInterval(() => {
+            goToSlide(currentIndex + 1);
+        }, 5000);
+    });
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     // Bootstrap 모달 초기화
     const reservationModal = new bootstrap.Modal(document.getElementById('reservationModal'));
-
+    
     // 이미지 캐러셀 초기화
     const propertyImageCarousel = new bootstrap.Carousel(document.getElementById('propertyImageCarousel'), {
         interval: 5000, // 5초마다 슬라이드 변경
@@ -54,21 +134,21 @@ document.addEventListener('DOMContentLoaded', function() {
             interval: false // 자동 슬라이드 비활성화
         });
     }
-
+    
     const buildingCarousel = document.getElementById('buildingImageCarousel');
     if (buildingCarousel) {
         new bootstrap.Carousel(buildingCarousel, {
             interval: false
         });
     }
-
+    
     const interiorCarousel = document.getElementById('interiorImageCarousel');
     if (interiorCarousel) {
         new bootstrap.Carousel(interiorCarousel, {
             interval: false
         });
     }
-
+    
     // 탭 클릭 이벤트에 따른 캐러셀 설정
     const imageTabs = document.querySelectorAll('[data-bs-toggle="tab"]');
     imageTabs.forEach(tab => {
@@ -84,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
+    
     // 예약 버튼 클릭 이벤트
     const reservationBtn = document.getElementById('reservationBtn');
     if (reservationBtn) {
@@ -92,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
             reservationModal.show();
         });
     }
-
+    
     // 찜하기 버튼 클릭 이벤트
     const addToCartBtn = document.getElementById('addToCartBtn');
     if (addToCartBtn) {
@@ -110,12 +190,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const date = document.getElementById('reservationDate').value;
             const time = document.getElementById('reservationTime').value;
             const note = document.getElementById('reservationNote').value;
-
+            
             if (!date || !time) {
                 alert('날짜와 시간을 선택해주세요.');
                 return;
             }
-
+            
             submitReservation(propertyId, date, time, note);
         });
     }
@@ -156,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
+    
     // 매물 예약 함수
     function submitReservation(propertyId, date, time, note) {
         const reservationData = {
@@ -165,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function() {
             reservationTime: time,
             note: note
         };
-
+        
         fetch('/reservation/add', {
             method: 'POST',
             headers: {

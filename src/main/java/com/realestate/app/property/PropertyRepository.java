@@ -27,4 +27,14 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
 
     @Query("SELECT p FROM Property p WHERE p.subwayLine LIKE CONCAT('%', :line, '%')")
     List<Property> findByStationRegex(@Param("line") String pattern);
+
+    // ID로 검색
+    Page<Property> findByPropertyId(Long propertyId, Pageable pageable);
+
+    // 제목으로 검색
+    Page<Property> findByTitleContaining(String title, Pageable pageable);
+
+    // ID 또는 제목으로 검색
+    Page<Property> findByPropertyIdOrTitleContaining(Long propertyId, String title, Pageable pageable);
+
 }

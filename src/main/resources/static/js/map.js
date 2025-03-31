@@ -65,7 +65,7 @@ const districtMapping = {
 // 지역 버튼 클릭 이벤트 처리
 document.addEventListener('DOMContentLoaded', function() {
     const districtButtons = document.querySelectorAll('.district-button');
-    
+
     districtButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();

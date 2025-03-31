@@ -28,7 +28,7 @@
     </div>
 
     <form action="/user/login" method="post" th:object="${userLoginDto}">
-
+      
       <!-- 아이디 입력 -->
       <div class="input-wrapper">
         <input type="text" th:field="*{email}" class="form-control" placeholder="아이디" id="username" />

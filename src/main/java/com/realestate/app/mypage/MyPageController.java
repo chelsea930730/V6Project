@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Controller
 @RequiredArgsConstructor
@@ -48,10 +49,10 @@ public class MyPageController {
         String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
         User user = userService.getUserByEmail(userEmail);
         
-        // 진행 중인 예약 (PENDING 상태)
-        List<Reservation> activeReservations = reservationService.findByUserIdAndStatus(
+        // 진행 중인 예약 (PENDING, CONFIRMED 상태)
+        List<Reservation> activeReservations = reservationService.findByUserIdAndStatusIn(
             user.getUserId(), 
-            ReservationStatus.PENDING
+            Arrays.asList(ReservationStatus.PENDING, ReservationStatus.CONFIRMED)
         );
         
         // 완료된 예약 (COMPL, CANCELLED 상태)
@@ -62,6 +63,10 @@ public class MyPageController {
         
         model.addAttribute("activeReservations", activeReservations);
         model.addAttribute("completedReservations", completedReservations);
+        model.addAttribute("allReservations", 
+            Stream.concat(activeReservations.stream(), completedReservations.stream())
+            .collect(Collectors.toList())
+        );
         
         return "mypage/mypage";
     }
@@ -97,15 +102,17 @@ public class MyPageController {
                              r.getStatus() == ReservationStatus.CONFIRMED)
                 .collect(Collectors.toList());
             
-            // 완료된 예약 (COMPL만 포함, CANCELLED는 제외)
+            // 완료된 예약 (COMPL, CANCELLED 포함)
             List<Reservation> completedReservations = allReservations.stream()
-                .filter(r -> r.getStatus() == ReservationStatus.COMPL)
+                .filter(r -> r.getStatus() == ReservationStatus.COMPL || 
+                             r.getStatus() == ReservationStatus.CANCELLED)
                 .collect(Collectors.toList());
             
             // 데이터를 모델에 추가
             model.addAttribute("user", user);
             model.addAttribute("activeReservations", activeReservations);
-            model.addAttribute("allReservations", completedReservations); // COMPL 상태만 포함
+            model.addAttribute("completedReservations", completedReservations);
+            model.addAttribute("allReservations", allReservations); // 모든 예약을 포함 (캘린더 표시 등에 사용)
             
             // 성공/오류 메시지 전달 (리디렉션된 경우)
             model.addAttribute("success", model.getAttribute("success"));
@@ -114,6 +121,7 @@ public class MyPageController {
         } catch (Exception e) {
             model.addAttribute("error", "사용자 정보를 불러오는 중 오류가 발생했습니다: " + e.getMessage());
             model.addAttribute("activeReservations", new ArrayList<>());
+            model.addAttribute("completedReservations", new ArrayList<>());
             model.addAttribute("allReservations", new ArrayList<>());
         }
         

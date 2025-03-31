@@ -6,8 +6,7 @@
   <title>회원가입</title>
   <link rel="stylesheet" href="/css/register.css" />
   <!-- Bootstrap CSS -->
-  <link
-          th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
+  <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
   <!-- Bootstrap JS -->
   <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </head>
@@ -17,18 +16,28 @@
   <div class="signup-box">
     <h2>회원가입</h2>
     <form action="/user/register" method="post" th:object="${userRegisterDto}">
-      <div class="input-group">
+
+      <!-- 이메일 -->
+      <div class="input-wrapper">
         <input type="email" th:field="*{email}" class="form-control" placeholder="이메일" id="email" required />
-        <input type="text" th:field="*{name}" class="form-control" placeholder="이름" id="name" required />
-        <input type="password" th:field="*{password}" class="form-control" placeholder="비밀번호" id="password" required/>
       </div>
+
+      <!-- 이름 -->
+      <div class="input-wrapper mt-2">
+        <input type="text" th:field="*{name}" class="form-control" placeholder="이름" id="name" required />
+      </div>
+
+      <!-- 비밀번호 -->
+      <div class="input-wrapper mt-2">
+        <input type="password" th:field="*{password}" class="form-control" placeholder="비밀번호" id="password" required />
+      </div>
+
       <button type="submit" class="signup-btn">회원가입</button>
       <p class="login-link">
-        이미 계정이 있나요? <a th:href="@{user/login}">로그인</a>
+        이미 계정이 있나요? <a th:href="@{/user/login}">로그인</a>
       </p>
     </form>
   </div>
 </div>
 </body>
 </html>
-

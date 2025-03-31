@@ -39,9 +39,7 @@
       지금 바로 찾아보세요.</p>
       <br>
       <div class="image-gallery">
-        <a href="/property/list" class="all-build" onclick="event.preventDefault(); window.location.href='/property/list';">
-          전체 매물 보기
-        </a>
+        <a th:href="@{/property/list}"><button class="all-build">전체 매물 보기</button></a>
       </div>
     </aside>
 
@@ -154,25 +152,25 @@
 
         <div class="jr">
           <img src="/img/jr.png" alt="jr 로고" class="jr-logo" />
-          <a href="#" class="line yamanote">야마노테</a>
-          <a href="#" class="line chuuo">츄오- 소부</a>
-          <a href="#" class="line saikyou">사이쿄</a>
-          <a href="#" class="line joban">죠반</a>
-          <a href="#" class="line takasaki">타카사키</a>
-          <a href="#" class="line yokosuka">요코스카</a>
-          <a href="#" class="line keitoku">게이힌토호쿠</a>
+          <a th:href="@{/property/list(line='야마노테')}" class="line yamanote">야마노테</a>
+          <a th:href="@{/property/list(line='츄오- 소부')}" class="line chuuo">츄오- 소부</a>
+          <a th:href="@{/property/list(line='사이쿄')}" class="line saikyou">사이쿄</a>
+          <a th:href="@{/property/list(line='죠반')}" class="line joban">죠반</a>
+          <a th:href="@{/property/list(line='타카사키')}" class="line takasaki">타카사키</a>
+          <a th:href="@{/property/list(line='요코스카')}" class="line yokosuka">요코스카</a>
+          <a th:href="@{/property/list(line='케이힌토쿠')}" class="line keitoku">케이힌토쿠</a>
         </div>
         <div class="tokyometro">
           <img src="/img/Tokyo_Metro_logo.svg.png" alt="도쿄메트로 로고" class="tokyometro-logo" />
-          <a href="#" class="line hanzomon">한조몬</a>
-          <a href="#" class="line marunouchi">마루노우치</a>
-          <a href="#" class="line hibiya">히비야</a>
-          <a href="#" class="line chiyoda">치요다</a>
-          <a href="#" class="line fukutoshin">후쿠토신</a>
-          <a href="#" class="line ginza">긴자</a>
-          <a href="#" class="line namboku">난보쿠</a>
-          <a href="#" class="line yurakucho">유라쿠쵸</a>
-          <a href="#" class="line tozai">토자이</a>
+          <a th:href="@{/property/list(line='한조몬')}" class="line hanzomon">한조몬</a>
+          <a th:href="@{/property/list(line='마루노우치')}" class="line marunouchi">마루노우치</a>
+          <a th:href="@{/property/list(line='히비야')}" class="line hibiya">히비야</a>
+          <a th:href="@{/property/list(line='치요다')}" class="line chiyoda">치요다</a>
+          <a th:href="@{/property/list(line='후쿠토신')}" class="line fukutoshin">후쿠토신</a>
+          <a th:href="@{/property/list(line='긴자')}" class="line ginza">긴자</a>
+          <a th:href="@{/property/list(line='난보쿠')}" class="line namboku">난보쿠</a>
+          <a th:href="@{/property/list(line='유라쿠쵸')}" class="line yurakucho">유라쿠쵸</a>
+          <a th:href="@{/property/list(line='토자이')}" class="line tozai">토자이</a>
         </div>
       </section>
     </aside>

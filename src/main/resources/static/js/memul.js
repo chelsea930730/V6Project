@@ -556,12 +556,12 @@ document.addEventListener('DOMContentLoaded', () => {
 }, { once: true });
 
 // 역 선택 시 필터 적용
-function applyStationFilter(selectedLine, selectedStation) {
-	console.log('노선 선택:', selectedLine);
-	console.log('역 선택:', selectedStation);
+function applyStationFilter(selectedLines, selectedStations) {
+	console.log('노선 선택:', selectedLines);
+	console.log('역 선택:', selectedStations);
 	
-	filterState.selectedLine = selectedLine;
-	filterState.selectedStation = selectedStation ? selectedStation : '';
+	filterState.selectedLines = new Set(selectedLines);
+	filterState.selectedStations = new Set(selectedStations);
 	
 	// 필터 적용 전에 상태 확인
 	console.log('필터 상태:', filterState);
@@ -627,127 +627,185 @@ function updatePriceLabel() {
 	priceLabel.textContent = `${minPrice}円 ~ ${maxPrice}円`;
 }
 
-// 팝업 열기/닫기 함수 추가
+// 노선 팝업 열기 함수 수정
 function openLinePopup() {
-	const linePopup = document.getElementById("linePopup");
-	if (linePopup) {
-		linePopup.style.display = "block";
-		document.body.style.overflow = "hidden";
+	const popup = document.getElementById('linePopup');
+	if (popup) {
+		popup.style.display = 'flex';
+		
+		// 이벤트 리스너 초기화 및 재설정
+		setupLinePopup();
 	}
 }
 
+// 노선 팝업 닫기 함수 수정
 function closeLinePopup() {
-	const linePopup = document.getElementById("linePopup");
-	if (linePopup) {
-		linePopup.style.display = "none";
-		document.body.style.overflow = "auto";
+	const popup = document.getElementById('linePopup');
+	if (popup) {
+		// 현재 선택된 노선과 역을 유지하기 위해 상태를 저장하는 로직 추가 가능
+		popup.style.display = 'none';
 	}
 }
 
-// setupLinePopup 함수 수정
+// 노선 팝업 설정 함수 전체 재작성
 function setupLinePopup() {
-	if (filterState.isLinePopupInitialized) return;
+	const lineElements = document.querySelectorAll('.line');
+	const stationList = document.getElementById('stationList');
+	const closeBtn = document.querySelector('.close-btn');
 	
-	// 노선 클릭 이벤트
-	document.querySelectorAll(".line").forEach(line => {
-		line.addEventListener("click", function(e) {
-			e.preventDefault();
-			e.stopPropagation();
-			const lineName = this.textContent.trim();
-			
-			// 노선 토글 (선택/해제)
-			if (this.classList.contains('selected')) {
-				this.classList.remove('selected');
-				filterState.selectedLines.delete(lineName);
-			} else {
-				this.classList.add('selected');
-				filterState.selectedLines.add(lineName);
-			}
-			
-			// 역 목록 업데이트
-			updateStationList(lineName);
-			
-			// 필터 메시지 업데이트
-			updateFilterMessage();
-		});
+	// 이전에 등록된 이벤트 리스너 제거
+	lineElements.forEach(line => {
+		line.removeEventListener('click', lineClickHandler);
+		line.addEventListener('click', lineClickHandler);
 	});
 	
-	// 확인 버튼 이벤트
-	const confirmButton = document.createElement('button');
-	confirmButton.className = 'confirm-button';
-	confirmButton.textContent = '선택 완료';
-	confirmButton.addEventListener('click', function(e) {
+	// 노선 클릭 핸들러 정의
+	function lineClickHandler(e) {
+		e.preventDefault();
+		e.stopPropagation(); // 이벤트 버블링 방지
+		
+		const lineName = this.textContent.trim();
+		console.log(`노선 클릭: ${lineName}`); // 디버깅용
+		
+		// 노선 선택 상태 토글
+		this.classList.toggle('selected-line');
+		
+		// 선택된 노선들 수집
+		const selectedLines = [];
+		document.querySelectorAll('.line.selected-line').forEach(el => {
+			selectedLines.push(el.textContent.trim());
+		});
+		
+		// 역 목록 업데이트만 하고 모달은 닫지 않음
+		updateStationList(selectedLines);
+	}
+	
+	// 역 클릭 이벤트 처리
+	stationList.addEventListener('click', function(e) {
+		if (e.target.classList.contains('station-item')) {
+			e.preventDefault();
+			e.stopPropagation(); // 이벤트 버블링 방지
+			
+			// 역 선택 상태 토글
+			e.target.classList.toggle('selected-station');
+		}
+	});
+	
+	// 닫기 버튼에 이벤트 핸들러 등록
+	if (closeBtn) {
+		closeBtn.removeEventListener('click', closeBtnHandler);
+		closeBtn.addEventListener('click', closeBtnHandler);
+	}
+	
+	// 닫기 버튼 핸들러 정의
+	function closeBtnHandler(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		filterProperties();  // 필터 적용
-		closeLinePopup();   // 팝업 닫기
-	});
-	
-	const popupContent = document.querySelector('.popup-content');
-	if (!document.querySelector('.confirm-button')) {
-		popupContent.appendChild(confirmButton);
-	}
-	
-	filterState.isLinePopupInitialized = true;
-}
-
-// updateStationList 함수 수정
-function updateStationList(lineName) {
-	console.log('Updating station list for:', lineName);
-	const lineStations = stations[lineName] || [];
-	const stationListHTML = generateStationListHTML(lineName, lineStations);
-	const stationListElement = document.getElementById('stationList');
-
-	if (stationListElement) {
-		// 기존 역 목록에 새로운 역 목록 추가
-		if (!stationListElement.querySelector(`[data-line="${lineName}"]`)) {
-			const lineSection = document.createElement('div');
-			lineSection.setAttribute('data-line', lineName);
-			lineSection.innerHTML = stationListHTML;
-			stationListElement.appendChild(lineSection);
+		
+		// 선택된 노선과 역 정보 수집
+		const selectedLines = [];
+		document.querySelectorAll('.line.selected-line').forEach(el => {
+			selectedLines.push(el.textContent.trim());
+		});
+		
+		const selectedStations = [];
+		document.querySelectorAll('.station-item.selected-station').forEach(el => {
+			selectedStations.push({
+				line: el.dataset.line,
+				station: el.textContent.trim()
+			});
+		});
+		
+		// 필터 적용
+		if (selectedLines.length > 0 || selectedStations.length > 0) {
+			applyStationFilter(selectedLines, selectedStations);
 		}
 		
-		// 역 버튼 클릭 이벤트 설정
-		stationListElement.querySelectorAll('.station').forEach(button => {
-			button.addEventListener('click', function(e) {
-				e.preventDefault(); // 기본 이벤트 방지
-				const koreanName = this.getAttribute('data-korean');
-				const stationLineName = this.closest('[data-line]').getAttribute('data-line');
-				console.log('Station clicked:', koreanName, 'on line:', stationLineName);
-				
-				if (this.classList.contains('selected')) {
-					this.classList.remove('selected');
-					filterState.selectedStations.delete(koreanName);
-				} else {
-					this.classList.add('selected');
-					filterState.selectedStations.add(koreanName);
-				}
-				
-				// 필터 메시지 업데이트
-				updateFilterMessage();
-			});
+		// 모달 닫기
+		closeLinePopup();
+	}
+	
+	// 모달 외부 클릭 시 닫히지 않도록 설정
+	const popupContent = document.querySelector('.popup-content');
+	const linePopup = document.getElementById('linePopup');
+	
+	if (popupContent) {
+		popupContent.addEventListener('click', function(e) {
+			e.stopPropagation();
+		});
+	}
+	
+	if (linePopup) {
+		linePopup.addEventListener('click', function(e) {
+			if (e.target === this) {
+				// 모달 외부 클릭 시 모달을 닫지 않고 이벤트만 중지
+				e.stopPropagation();
+				e.preventDefault();
+			}
 		});
 	}
 }
 
-// 역 목록 HTML 생성
+// 역 목록 업데이트 함수 수정
+function updateStationList(selectedLines) {
+	const stationList = document.getElementById('stationList');
+	stationList.innerHTML = '';
+	
+	// 선택된 모든 노선의 역 목록 표시
+	if (selectedLines.length > 0) {
+		selectedLines.forEach(lineName => {
+			// 기존 코드와 동일하게 노선명 변환 처리
+			const convertedLineName = convertLineName(lineName);
+			
+			fetch(`/api/stations?line=${encodeURIComponent(convertedLineName)}`)
+				.then(response => response.json())
+				.then(data => {
+					// 노선별 역 목록 표시 추가
+					const lineTitle = document.createElement('div');
+					lineTitle.className = 'line-title';
+					lineTitle.textContent = lineName;
+					stationList.appendChild(lineTitle);
+					
+					// 역 목록 HTML 생성 및 추가
+					const stationsHTML = generateStationListHTML(lineName, data);
+					stationList.insertAdjacentHTML('beforeend', stationsHTML);
+				})
+				.catch(error => {
+					console.error('역 정보 로딩 오류:', error);
+				});
+		});
+	} else {
+		stationList.innerHTML = '<div class="no-line-selected">노선을 선택해주세요</div>';
+	}
+}
+
+// 역 목록 HTML 생성 함수 수정
 function generateStationListHTML(lineName, stations) {
-	const lineClass = lineClassMap[lineName] || 'default-line';
-	return `
-			<div class="line-section">
-					<h3>${lineName}</h3>
-					<div class="station-container">
-							${stations.map(station => {
-									const match = station.match(/^(.*?)\((.*?)\)$/);
-									const displayName = match ? match[0] : station;
-									const koreanName = match ? match[2] : station;
-									const isSelected = filterState.selectedStations.has(koreanName);
-									return `<button class="station ${lineClass} ${isSelected ? 'selected' : ''}" 
-													data-korean="${koreanName}">${displayName}</button>`;
-							}).join('')}
-					</div>
-			</div>
-	`;
+	return stations.map(station => {
+		// 각 역에 노선 데이터 속성 추가
+		const stationName = formatStationName(station.koreanName);
+		return `<div class="station-item" data-line="${lineName}">${stationName}</div>`;
+	}).join('');
+}
+
+// 필터 적용 함수 수정
+function applyStationFilter(selectedLines, selectedStations) {
+	console.log('필터 적용:', selectedLines, selectedStations); // 디버깅용
+	
+	// 필터 데이터 구성
+	const filterData = getCurrentFilterData();
+	
+	// 선택된 노선 정보 추가
+	filterData.selectedLines = selectedLines;
+	
+	// 선택된 역 정보 추가
+	filterData.selectedStations = selectedStations.map(item => item.station);
+	
+	// 필터링 요청
+	filterProperties(filterData);
+	
+	// 필터 메시지 업데이트
+	updateFilterMessage();
 }
 
 // 필터 메시지 업데이트
@@ -822,8 +880,8 @@ function resetFilters() {
     if (searchInput) searchInput.value = '';
 
     // 노선, 역 정보도 초기화
-    filterState.selectedLine = '';
-    filterState.selectedStation = '';
+    filterState.selectedLines.clear();
+    filterState.selectedStations.clear();
 
     // URL 파라미터 제거
     window.history.pushState({}, '', '/property/list');

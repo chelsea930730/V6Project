@@ -26,6 +26,13 @@ public class PropertyService {
         return propertyRepository.findAllByOrderByCreatedAtDesc();
     }
 
+    public List<PropertyDto> getAllPropertyDtos() {
+        return propertyRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(PropertyDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public Property saveProperty(Property property) {
         if (property.getLocation() != null) {
@@ -38,9 +45,39 @@ public class PropertyService {
         return propertyRepository.save(property);
     }
 
+    @Transactional
+    public PropertyDto savePropertyDto(PropertyDto propertyDto) {
+        // 시키킨과 레이킨 null 체크 및 기본값 설정
+        if (propertyDto.getShikikin() == null) {
+            propertyDto.setShikikin(BigDecimal.ZERO);
+        }
+        if (propertyDto.getReikin() == null) {
+            propertyDto.setReikin(BigDecimal.ZERO);
+        }
+
+        Property property = propertyDto.toEntity();
+
+        if (property.getLocation() != null) {
+            var result = geocodingService.getCoordinates(property.getLocation());
+            if (result != null) {
+                property.setLatitude(BigDecimal.valueOf(result.latitude()));
+                property.setLongitude(BigDecimal.valueOf(result.longitude()));
+            }
+        }
+
+        Property savedProperty = propertyRepository.save(property);
+        return PropertyDto.fromEntity(savedProperty);
+    }
+
     public Property getPropertyById(Long id) {
         return propertyRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("매물을 찾을 수 없습니다: " + id));
+    }
+
+    public PropertyDto getPropertyDtoById(Long id) {
+        Property property = propertyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("매물을 찾을 수 없습니다: " + id));
+        return PropertyDto.fromEntity(property);
     }
 
     @Transactional
@@ -153,7 +190,8 @@ public class PropertyService {
                         if (roomType.equals("2K이상")) {
                             return property.getRoomType() != null && 
                                    (property.getRoomType().startsWith("2") || 
-                                    property.getRoomType().startsWith("3"));
+                                    property.getRoomType().startsWith("3") ||
+                                    property.getRoomType().startsWith("4"));
                         }
                         return property.getRoomType() != null && 
                                property.getRoomType().equals(roomType);
@@ -305,7 +343,15 @@ public class PropertyService {
 
                 // 방 유형 필터
                 boolean roomTypeMatch = roomTypes.isEmpty() || 
-                    (property.getRoomType() != null && roomTypes.contains(property.getRoomType()));
+                    (property.getRoomType() != null && 
+                     roomTypes.stream().anyMatch(roomType -> {
+                        if (roomType.equals("2K이상")) {
+                            return property.getRoomType().startsWith("2") || 
+                                   property.getRoomType().startsWith("3") ||
+                                   property.getRoomType().startsWith("4");
+                        }
+                        return property.getRoomType().equals(roomType);
+                    }));
 
                 // 건축년도 필터
                 boolean yearMatch = buildingYear == null || buildingYear.isEmpty() || 
@@ -367,5 +413,38 @@ public class PropertyService {
             case "오타구", "오타" -> "大田区";
             default -> koreanDistrict;
         };
+    }
+
+    // 매물 검색 메서드 추가
+    public Page<Property> searchProperties(String searchType, String keyword, Pageable pageable) {
+        if (searchType == null || keyword == null || keyword.trim().isEmpty()) {
+            return getAllPropertiesWithPaging(pageable);
+        }
+
+        switch (searchType) {
+            case "id":
+                try {
+                    Long propertyId = Long.parseLong(keyword);
+                    return propertyRepository.findByPropertyId(propertyId, pageable);
+                } catch (NumberFormatException e) {
+                    return Page.empty(pageable);
+                }
+            case "title":
+                return propertyRepository.findByTitleContaining(keyword, pageable);
+            case "all":
+                try {
+                    Long propertyId = Long.parseLong(keyword);
+                    return propertyRepository.findByPropertyIdOrTitleContaining(propertyId, keyword, pageable);
+                } catch (NumberFormatException e) {
+                    return propertyRepository.findByTitleContaining(keyword, pageable);
+                }
+            default:
+                return getAllPropertiesWithPaging(pageable);
+        }
+    }
+
+    public Property updateProperty(PropertyDto propertyDto) {
+        Property property = propertyDto.toEntity();
+        return propertyRepository.save(property);
     }
 }

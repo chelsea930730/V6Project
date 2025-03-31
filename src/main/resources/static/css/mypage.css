@@ -1,175 +1,523 @@
 @import url('../css/consulting.css'); /* consulting.css의 스타일을 가져옴 */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap'); /* 세련된 폰트 추가 */
+
+:root {
+    --primary-color: #6a99cd;
+    --primary-dark: #355c86;
+    --primary-light: #e7f0ff;
+    --accent-color: #ff5a5f; /* 에어비앤비 스타일 액센트 컬러 */
+    --text-dark: #222222;
+    --text-medium: #484848;
+    --text-light: #767676;
+    --bg-light: #f7f7f7;
+    --border-color: #ebebeb;
+    --shadow-color: rgba(0, 0, 0, 0.08);
+    --card-radius: 12px;
+    --btn-radius: 8px;
+    --transition: all 0.3s ease;
+}
+
+/* 기본 레이아웃 */
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-dark);
+    background-color: #fff;
+}
 
 .mypage-container {
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 120px auto 80px;
     padding: 0 20px;
 }
 
 h1 {
     font-size: 32px;
+    font-weight: 600;
     margin-bottom: 10px;
-    color: #333;
+    color: var(--text-dark);
     margin-top: 40px;
 }
 
 .sub-heading {
-    color: #666;
+    color: var(--text-light);
     margin-bottom: 30px;
+    font-weight: 300;
+    font-size: 16px;
 }
 
+/* 좌우 배치를 위한 컨테이너 */
+.row-container {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+/* 테이블 섹션 스타일 */
 .reservation-section, .history-section {
+    flex: 1;
+    margin-bottom: 30px;
+    background-color: #fff;
+    border-radius: var(--card-radius);
+    box-shadow: 0 6px 16px var(--shadow-color);
+    overflow: hidden;
+    padding: 20px;
+}
+
+.calendar-section {
+    width: 100%;
     margin-bottom: 50px;
 }
 
 h2 {
-    font-size: 20px;
-    margin-bottom: 20px;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: var(--text-dark);
+    position: relative;
+    padding-bottom: 12px;
 }
 
+h2:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background-color: var(--primary-color);
+    border-radius: 3px;
+}
+
+/* 테이블 스타일 */
 table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     margin-bottom: 20px;
-}
-
-th, td {
-    padding: 15px 20px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 th {
-    background-color: #6a99cd;
+    padding: 16px 20px;
+    text-align: left;
+    background-color: var(--primary-color);
     color: white;
-    font-weight: normal;
-    border-right: none;
-}
-
-/* 진행상태 칸의 배경색 제거 */
-th:nth-child(4) {
-    background-color: #6a99cd;
-    color: white;
-}
-
-/* 테이블 헤더 사이의 경계선 추가 (선택사항) */
-th:nth-child(4) {
-    border-right: none;
-}
-
-th:last-child {
-    border-right: none;
-}
-
-.view-btn {
-    background-color: #6a99cd;
-    color: white;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.3px;
     border: none;
+}
+
+td {
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+    color: var(--text-medium);
+    background-color: #fff;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover td {
+    background-color: var(--primary-light);
+}
+
+/* 상세보기 버튼 스타일 */
+.view-btn {
+    background-color: #fff;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
     padding: 8px 16px;
-    border-radius: 4px;
+    border-radius: var(--btn-radius);
     cursor: pointer;
     display: inline-block;
     text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: var(--transition);
 }
 
 .view-btn:hover {
-    background-color: #355c86;
+    background-color: var(--primary-color);
     text-decoration: none;
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(106, 153, 205, 0.2);
 }
 
-/* 채팅 버튼 스타일 추가 */
+/* 채팅 버튼 스타일 */
 .chat-btn {
-    background-color: #6a99cd;
-    color: white;
-    border: none;
+    background-color: #fff;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
     padding: 8px 16px;
-    border-radius: 4px;
+    border-radius: var(--btn-radius);
     cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    transition: var(--transition);
 }
 
 .chat-btn:hover {
-    background-color: #355c86;
-}
-
-/* 채팅로그 버튼 스타일 */
-.log-btn {
-    background-color: #6a99cd;
+    background-color: var(--primary-color);
     color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.log-btn:hover {
-    background-color: #355c86;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(106, 153, 205, 0.2);
 }
 
 /* 빈 메시지 스타일 */
 .empty-message {
     text-align: center;
-    color: #666;
-    padding: 20px 0;
+    color: var(--text-light);
+    padding: 32px 0;
+    font-size: 15px;
+    background-color: var(--bg-light);
+    border-radius: 8px;
 }
 
-/* 상태 셀렉트 박스를 consulting.css와 동일하게 적용 */
+/* 상태 셀렉트 박스 스타일 */
 .status-select {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 15px;
-    font-size: 0.9rem;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
     appearance: none;
     text-align: center;
-    min-width: 110px;
+    min-width: 120px;
     cursor: default;
+    font-weight: 500;
 }
 
-/* PENDING 상태 (예약 대기) */
-.status-select option[value="PENDING"] {
-    background-color: #ffc107;
-    color: #000;
-}
-
+/* 상태별 색상 */
 .status-select.pending {
-    background-color: #ffc107;
-    border-color: #ffc107;
-    color: #000;
-}
-
-/* CONFIRMED 상태 (예약 중) */
-.status-select option[value="CONFIRMED"] {
-    background-color: #007bff;
-    color: white;
+    background-color: #ffdb9a;
+    color: #885800;
 }
 
 .status-select.confirmed {
-    background-color: #007bff;
-    border-color: #007bff;
-    color: white;
-}
-
-/* COMPL 상태 (계약 완료) */
-.status-select option[value="COMPL"] {
-    background-color: #28a745;
+    background-color: var(--primary-color);
     color: white;
 }
 
 .status-select.compl {
-    background-color: #28a745;
-    border-color: #28a745;
-    color: white;
-}
-
-/* CANCELLED 상태 (계약 불가) - 주황색으로 변경 */
-.status-select option[value="CANCELLED"] {
-    background-color: #ff9800;
-    color: white;
+    background-color: #c8e6c9;
+    color: #2e7d32;
 }
 
 .status-select.cancelled {
-    background-color: #ff9800;
-    border-color: #ff9800;
+    background-color: #ffcdd2;
+    color: #c62828;
+}
+
+/* 카드 컴포넌트 스타일 */
+.card {
+    border-radius: var(--card-radius);
+    box-shadow: 0 6px 16px var(--shadow-color);
+    border: none;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.card-body {
+    padding: 24px;
+}
+
+.card-title {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+    font-size: 18px;
+    position: relative;
+    padding-bottom: 12px;
+}
+
+.card-title:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background-color: var(--primary-color);
+    border-radius: 3px;
+}
+
+/* 달력 헤더 스타일 */
+.calendar-header h6 {
+    font-weight: 600;
+    margin-bottom: 0;
+    color: var(--text-dark);
+    font-size: 16px;
+}
+
+.calendar-nav {
+    display: flex;
+    gap: 8px;
+}
+
+/* 달력 일자 스타일 */
+.calendar-days {
+    margin-bottom: 24px;
+    padding: 16px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.calendar-days .row {
+    margin-bottom: 8px;
+}
+
+.calendar-days .col {
+    padding: 4px;
+    text-align: center;
+}
+
+.day-name {
+    font-weight: 500;
+    color: var(--text-medium);
+    margin-bottom: 12px;
+}
+
+.day-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 0 auto;
+    transition: var(--transition);
+    cursor: pointer;
+    position: relative;
+    font-weight: 400;
+}
+
+.day-cell:hover {
+    background-color: var(--primary-light);
+    transform: scale(1.1);
+}
+
+
+/* 선택된 날짜 스타일 */
+.day-cell.selected {
+    background-color: var(--primary-dark);
     color: white;
+    font-weight: 600;
+    transform: scale(1.1);
+}
+
+/* 예약이 있는 날짜 표시 */
+.day-cell.has-reservation {
+    position: relative;
+    font-weight: 500;
+    border: 2px solid var(--accent-color);
+}
+
+/* 예약 날짜에 점 표시 */
+.reservation-dot {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* 오늘이면서 예약이 있는 날짜 */
+.day-cell.today .reservation-dot {
+    background-color: #ffffff;
+}
+
+/* 선택된 날짜이면서 예약이 있는 날짜 */
+.day-cell.selected .reservation-dot {
+    background-color: #ffffff;
+}
+
+/* 예약 항목 스타일 */
+.reservation-item {
+    background-color: #fff;
+    transition: var(--transition);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.reservation-item:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+}
+
+.reservation-number {
+    font-size: 13px;
+    color: var(--text-light);
+}
+
+/* 예약 상태 배지 스타일 */
+.badge {
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-weight: 500;
+    font-size: 12px;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.bg-success {
+    background-color: #c8e6c9 !important;
+    color: #2e7d32 !important;
+}
+
+.bg-warning {
+    background-color: #ffdb9a !important;
+    color: #885800 !important;
+}
+
+.bg-primary {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+.bg-orange {
+    background-color: #ffcdd2 !important;
+    color: #c62828 !important;
+}
+
+/* 버튼 스타일 */
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    border-radius: var(--btn-radius);
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(106, 153, 205, 0.2);
+}
+
+.btn-outline-secondary {
+    color: var(--text-medium);
+    border-color: var(--border-color);
+    border-radius: var(--btn-radius);
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--text-medium);
+    border-color: var(--text-medium);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* 날짜 선택 영역 스타일 */
+.day-reservations-container {
+    padding: 16px;
+    background-color: var(--bg-light);
+    border-radius: 12px;
+}
+
+/* 모달 스타일 업데이트 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+    margin: 15% auto;
+    display: block;
+    max-width: 80%;
+    max-height: 80%;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    color: #fff;
+    font-size: 35px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: var(--accent-color);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+    .row-container {
+        flex-direction: column;
+    }
+    
+    .reservation-section, .history-section {
+        width: 100%;
+    }
+    
+    table {
+        font-size: 0.9rem;
+    }
+    
+    th, td {
+        padding: 12px;
+    }
+    
+    .day-cell {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .mypage-container {
+        padding: 0 16px;
+        margin: 100px auto 60px;
+    }
+}
+
+/* 테이블 내 셀 반응형 조정 */
+@media (max-width: 576px) {
+    .reservation-table th:nth-child(4),
+    .reservation-table td:nth-child(4),
+    .history-table th:nth-child(4),
+    .history-table td:nth-child(4) {
+        display: none;
+    }
+    
+    .card-body {
+        padding: 16px;
+    }
+    
+    h1 {
+        font-size: 28px;
+    }
+    
+    h2 {
+        font-size: 20px;
+    }
 }

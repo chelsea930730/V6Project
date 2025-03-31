@@ -134,52 +134,68 @@
 
 /* 건물 상세 사진 섹션 */
 .building-photos2 {
-	max-width: calc(100% - 100px);
-	margin: 10px auto;
-	padding: 20px;
+	max-width: 1200px;
+	margin: 40px auto;
+	padding: 0 50px;
 }
 
 .building-photos2 h2 {
 	text-align: center;
-	margin-bottom: 30px;
+	margin-bottom: 20px;
+	font-size: 1.5em;
 	color: #333;
-	white-space: nowrap;
 }
 
 /* 사진 그리드 수정 */
 .photo-grid2 {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr); /* 3열 그리드 */
-	gap: 15px;
-	padding: 20px;
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 20px;
+	overflow-x: auto;
+	padding: 10px 0;
+	justify-content: center;
 }
 
 /* 각 사진 아이템 */
 .photo-grid2 .photo-item {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	text-align: center;
-}
-
-.photo-grid2 .photo-item img {
-	width: 100%;
+	flex: 0 0 auto;
+	width: 300px;
 	height: 200px;
-	object-fit: cover;
 	border-radius: 8px;
-	margin-bottom: 10px;
+	overflow: hidden;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* 사진 설명 텍스트 */
-.photo-grid2 .photo-title {
-	font-weight: bold;
-	margin-bottom: 5px;
-	color: #333;
+.photo-grid2 .photo-item img,
+.property-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.3s ease;
 }
 
-.photo-grid2 .photo-description {
-	color: #666;
-	font-size: 0.9em;
+.photo-grid2 .photo-item img:hover,
+.property-image:hover {
+	transform: scale(1.05);
+}
+
+/* 스크롤바 스타일링 */
+.photo-grid2::-webkit-scrollbar {
+	height: 8px;
+}
+
+.photo-grid2::-webkit-scrollbar-track {
+	background: #f1f1f1;
+	border-radius: 4px;
+}
+
+.photo-grid2::-webkit-scrollbar-thumb {
+	background: #888;
+	border-radius: 4px;
+}
+
+.photo-grid2::-webkit-scrollbar-thumb:hover {
+	background: #555;
 }
 
 /* 상세 정보 테이블 */
@@ -232,6 +248,8 @@
 	max-width: 1200px;  /* 테이블과 동일한 최대 너비 */
 	margin: 40px auto;
 	padding: 0 50px;
+	margin-bottom: 50px; /* 아래쪽 여백 줄임 */
+	position: relative;
 }
 
 .amenities-content {
@@ -239,12 +257,16 @@
 	padding: 18px;
 	background: rgb(255, 255, 255);
 	border-radius: 8px;
-	box-shadow: 1px 1px 3px rgba(0.1,0.1,0.1,0.1); /* 긴 텍스트 자동 줄바꿈 */
+	box-shadow: 1px 1px 3px rgba(0.1,0.1,0.1,0.1);
 }
 
 /* 위치 정보 */
 .location {
 	text-align: center;
+	margin-top: 50px; /* 위쪽 여백 줄임 */
+	clear: both;
+	position: relative;
+	padding-top: 0; /* 상단 패딩 제거 */
 }
 
 .location #map {
@@ -349,4 +371,111 @@ h2 {
 	background-color: #355c86;
 	text-decoration: none; /* 호버 시에도 밑줄 제거 */
 	color: white; /* 호버 시에도 텍스트 색상 유지 */
+}
+
+/* 이미지 슬라이더 스타일 */
+.slider-container {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    border-radius: 8px;
+    min-height: 300px;
+}
+
+.image-slider {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.slide {
+    width: 100%;
+    flex-shrink: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+}
+
+.slide.active {
+    display: flex;
+}
+
+.slider-image {
+    max-width: 100%;
+    max-height: 400px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.slider-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.slider-control:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.slider-control.prev {
+    left: 10px;
+}
+
+.slider-control.next {
+    right: 10px;
+}
+
+.slider-indicators {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+}
+
+.indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.indicator.active {
+    background-color: white;
+}
+
+.no-image-container {
+    width: 100%;
+    min-height: 300px;
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 1.1em;
+}
+
+/* 메인 이미지 섹션 조정 */
+.building-photos {
+    flex: 0.4;
+    padding: 20px;
 }

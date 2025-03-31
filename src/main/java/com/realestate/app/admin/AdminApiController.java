@@ -53,7 +53,9 @@ public class AdminApiController {
             @RequestParam(value = "thumbnailImage", required = false) MultipartFile thumbnailImage,
             @RequestParam(value = "floorplanImages", required = false) MultipartFile[] floorplanImages,
             @RequestParam(value = "buildingImages", required = false) MultipartFile[] buildingImages,
-            @RequestParam(value = "interiorImages", required = false) MultipartFile[] interiorImages) {
+            @RequestParam(value = "interiorImages", required = false) MultipartFile[] interiorImages,
+            @RequestParam(value = "extraImage1", required = false) MultipartFile[] extraImage1,
+            @RequestParam(value = "extraImage2", required = false) MultipartFile[] extraImage2) {
         
         try {
             Property property = new Property();
@@ -69,8 +71,29 @@ public class AdminApiController {
             property.setSubwayLine(line);
             property.setLocation(address);
             property.setDistrict(district);
-            property.setShikikin(new BigDecimal(shikikin.replaceAll("[^0-9]", "")));
-            property.setReikin(new BigDecimal(reikin.replaceAll("[^0-9]", "")));
+            
+            // 시키킨 처리 - 비어있거나 숫자가 아닌 경우 0으로 설정
+            if (shikikin == null || shikikin.trim().isEmpty()) {
+                property.setShikikin(BigDecimal.ZERO);
+            } else {
+                try {
+                    property.setShikikin(new BigDecimal(shikikin.replaceAll("[^0-9]", "")));
+                } catch (NumberFormatException e) {
+                    property.setShikikin(BigDecimal.ZERO);
+                }
+            }
+            
+            // 레이킨 처리 - 비어있거나 숫자가 아닌 경우 0으로 설정
+            if (reikin == null || reikin.trim().isEmpty()) {
+                property.setReikin(BigDecimal.ZERO);
+            } else {
+                try {
+                    property.setReikin(new BigDecimal(reikin.replaceAll("[^0-9]", "")));
+                } catch (NumberFormatException e) {
+                    property.setReikin(BigDecimal.ZERO);
+                }
+            }
+            
             property.setStatus(Property.Status.valueOf(status));
             property.setBuiltYear(builtYear);
             property.setDescription(description);
@@ -137,6 +160,36 @@ public class AdminApiController {
                 property.setInteriorImage(interiorUrls.toString());
             }
 
+            // 추가 이미지 1 처리
+            if (extraImage1 != null && extraImage1.length > 0) {
+                StringBuilder extraImage1Urls = new StringBuilder();
+                for (MultipartFile image : extraImage1) {
+                    if (image != null && !image.isEmpty()) {
+                        String imageUrl = saveImage(image);
+                        if (extraImage1Urls.length() > 0) {
+                            extraImage1Urls.append(",");
+                        }
+                        extraImage1Urls.append(imageUrl);
+                    }
+                }
+                property.setExtraImage1(extraImage1Urls.toString());
+            }
+
+            // 추가 이미지 2 처리
+            if (extraImage2 != null && extraImage2.length > 0) {
+                StringBuilder extraImage2Urls = new StringBuilder();
+                for (MultipartFile image : extraImage2) {
+                    if (image != null && !image.isEmpty()) {
+                        String imageUrl = saveImage(image);
+                        if (extraImage2Urls.length() > 0) {
+                            extraImage2Urls.append(",");
+                        }
+                        extraImage2Urls.append(imageUrl);
+                    }
+                }
+                property.setExtraImage2(extraImage2Urls.toString());
+            }
+
             // 매물 저장
             Property savedProperty = propertyService.saveProperty(property);
             return ResponseEntity.ok().body(savedProperty);
@@ -169,10 +222,14 @@ public class AdminApiController {
             @RequestParam("status") String status,
             @RequestParam("builtYear") String builtYear,
             @RequestParam("description") String description,
+            @RequestParam("shikikin") String shikikin,
+            @RequestParam("reikin") String reikin,
             @RequestParam(value = "thumbnailImage", required = false) MultipartFile thumbnailImage,
             @RequestParam(value = "floorplanImages", required = false) MultipartFile[] floorplanImages,
             @RequestParam(value = "buildingImages", required = false) MultipartFile[] buildingImages,
-            @RequestParam(value = "interiorImages", required = false) MultipartFile[] interiorImages) {
+            @RequestParam(value = "interiorImages", required = false) MultipartFile[] interiorImages,
+            @RequestParam(value = "extraImage1", required = false) MultipartFile[] extraImage1,
+            @RequestParam(value = "extraImage2", required = false) MultipartFile[] extraImage2) {
         
         try {
             Property property = propertyService.getPropertyById(id);
@@ -188,6 +245,29 @@ public class AdminApiController {
             property.setSubwayLine(line);
             property.setLocation(address);
             property.setDistrict(district);
+            
+            // 시키킨 처리 - 비어있거나 숫자가 아닌 경우 0으로 설정
+            if (shikikin == null || shikikin.trim().isEmpty()) {
+                property.setShikikin(BigDecimal.ZERO);
+            } else {
+                try {
+                    property.setShikikin(new BigDecimal(shikikin.replaceAll("[^0-9]", "")));
+                } catch (NumberFormatException e) {
+                    property.setShikikin(BigDecimal.ZERO);
+                }
+            }
+            
+            // 레이킨 처리 - 비어있거나 숫자가 아닌 경우 0으로 설정
+            if (reikin == null || reikin.trim().isEmpty()) {
+                property.setReikin(BigDecimal.ZERO);
+            } else {
+                try {
+                    property.setReikin(new BigDecimal(reikin.replaceAll("[^0-9]", "")));
+                } catch (NumberFormatException e) {
+                    property.setReikin(BigDecimal.ZERO);
+                }
+            }
+            
             property.setStatus(Property.Status.valueOf(status));
             property.setBuiltYear(builtYear);
             property.setDescription(description);
@@ -224,6 +304,36 @@ public class AdminApiController {
             if (interiorImages != null && interiorImages.length > 0) {
                 String interiorUrl = saveImage(interiorImages[0]);
                 property.setInteriorImage(interiorUrl);
+            }
+
+            // 추가 이미지 1 처리
+            if (extraImage1 != null && extraImage1.length > 0) {
+                StringBuilder extraImage1Urls = new StringBuilder();
+                for (MultipartFile image : extraImage1) {
+                    if (image != null && !image.isEmpty()) {
+                        String imageUrl = saveImage(image);
+                        if (extraImage1Urls.length() > 0) {
+                            extraImage1Urls.append(",");
+                        }
+                        extraImage1Urls.append(imageUrl);
+                    }
+                }
+                property.setExtraImage1(extraImage1Urls.toString());
+            }
+
+            // 추가 이미지 2 처리
+            if (extraImage2 != null && extraImage2.length > 0) {
+                StringBuilder extraImage2Urls = new StringBuilder();
+                for (MultipartFile image : extraImage2) {
+                    if (image != null && !image.isEmpty()) {
+                        String imageUrl = saveImage(image);
+                        if (extraImage2Urls.length() > 0) {
+                            extraImage2Urls.append(",");
+                        }
+                        extraImage2Urls.append(imageUrl);
+                    }
+                }
+                property.setExtraImage2(extraImage2Urls.toString());
             }
 
             // 매물 저장

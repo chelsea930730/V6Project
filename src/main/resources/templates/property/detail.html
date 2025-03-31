@@ -121,17 +121,48 @@
           <!-- 왼쪽: 사진 섹션 -->
           <section class="building-photos">
                 <div class="photo-container" style="background: #fff; border-radius: 10px; padding: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
-                    <div class="photo-grid" id="propertyPhotos">
-                          <div th:if="${property.thumbnailImage != null and !#strings.isEmpty(property.thumbnailImage)}" class="property-images" style="display: flex; justify-content: center; align-items: center; min-height: 300px;">
-                                <img th:src="${property.thumbnailImage}" 
-                                     alt="매물 대표 이미지" 
-                                     style="max-width: 100%; width: auto; height: auto;">
-                          </div>
-                          <div th:unless="${property.thumbnailImage != null and !#strings.isEmpty(property.thumbnailImage)}" 
-                               class="no-image-container"
-                               style="width: 100%; min-height: 300px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
-                                <span>이미지 준비중</span>
-                          </div>
+                    <div class="slider-container">
+                        <div class="image-slider" id="propertyImagesSlider">
+                            <!-- 썸네일 이미지 -->
+                            <div class="slide active" th:if="${property.thumbnailImage != null and !#strings.isEmpty(property.thumbnailImage)}">
+                                <img th:src="${property.thumbnailImage}" alt="매물 대표 이미지" class="slider-image">
+                            </div>
+                            
+                            <!-- 평면도 이미지들 -->
+                            <th:block th:if="${property.floorplanImage != null}">
+                                <div class="slide" th:each="url : ${#strings.arraySplit(property.floorplanImage, ',')}">
+                                    <img th:src="${url}" alt="평면도" class="slider-image">
+                                </div>
+                            </th:block>
+                            
+                            <!-- 건물 이미지들 -->
+                            <th:block th:if="${property.buildingImage != null}">
+                                <div class="slide" th:each="url : ${#strings.arraySplit(property.buildingImage, ',')}">
+                                    <img th:src="${url}" alt="건물 외관" class="slider-image">
+                                </div>
+                            </th:block>
+                            
+                            <!-- 내부 이미지들 -->
+                            <th:block th:if="${property.interiorImage != null}">
+                                <div class="slide" th:each="url : ${#strings.arraySplit(property.interiorImage, ',')}">
+                                    <img th:src="${url}" alt="내부 사진" class="slider-image">
+                                </div>
+                            </th:block>
+                            
+                            <!-- 이미지가 없는 경우 -->
+                            <div class="slide no-image" th:unless="${(property.thumbnailImage != null and !#strings.isEmpty(property.thumbnailImage)) or property.floorplanImage != null or property.buildingImage != null or property.interiorImage != null}">
+                                <div class="no-image-container">
+                                    <span>이미지 준비중</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 슬라이더 컨트롤 버튼 -->
+                        <button class="slider-control prev" id="prevSlide">&lt;</button>
+                        <button class="slider-control next" id="nextSlide">&gt;</button>
+                        
+                        <!-- 슬라이더 인디케이터 -->
+                        <div class="slider-indicators" id="sliderIndicators"></div>
                     </div>
                 </div>
           </section>
@@ -190,81 +221,27 @@
         </div>
         
         <!-- 평면도 이미지들 -->
-        <th:block th:if="${property.floorplanImage != null}">
+        <div th:if="${property.floorplanImage != null}">
             <div class="photo-item" th:each="url : ${#strings.arraySplit(property.floorplanImage, ',')}">
                 <img th:src="${url}" alt="평면도" class="property-image">
             </div>
-        </th:block>
+        </div>
         
         <!-- 건물 이미지들 -->
-        <th:block th:if="${property.buildingImage != null}">
+        <div th:if="${property.buildingImage != null}">
             <div class="photo-item" th:each="url : ${#strings.arraySplit(property.buildingImage, ',')}">
                 <img th:src="${url}" alt="건물 외관" class="property-image">
             </div>
-        </th:block>
+        </div>
         
         <!-- 내부 이미지들 -->
-        <th:block th:if="${property.interiorImage != null}">
+        <div th:if="${property.interiorImage != null}">
             <div class="photo-item" th:each="url : ${#strings.arraySplit(property.interiorImage, ',')}">
                 <img th:src="${url}" alt="내부 사진" class="property-image">
             </div>
-        </th:block>
+        </div>
     </div>
 </section>
-
-<style>
-.building-photos2 {
-    padding: 20px;
-    margin: 20px 0;
-}
-
-.photo-grid2 {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 20px;
-    overflow-x: auto;
-    padding: 10px 0;
-}
-
-.photo-item {
-    flex: 0 0 auto;
-    width: 300px;
-    height: 200px;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.property-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.property-image:hover {
-    transform: scale(1.05);
-}
-
-/* 스크롤바 스타일링 */
-.photo-grid2::-webkit-scrollbar {
-    height: 8px;
-}
-
-.photo-grid2::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-.photo-grid2::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-}
-
-.photo-grid2::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-</style>
 
 <div class="details-section">
     <table class="details-table">
@@ -277,6 +254,10 @@
                 <th>건물 타입</th>
                 <td colspan="3" id="buildingType" th:text="${property.buildingType}"></td>
           </tr>
+        <tr>
+            <th>층수</th>
+            <td colspan="3" id="floor" th:text="${property.floor}"></td>
+        </tr>
           <tr>
                 <th>등록일</th>
                 <td colspan="3" id="registDate" th:text="${#temporals.format(property.createdAt, 'yyyy년 M월 d일')}"></td>
@@ -295,20 +276,17 @@
 
     <div class="amenities">
        <h2>방의 특징과 설비</h2>
-          <div class="amenities-content" id="amenitiesList">
-              <p th:text="${property.nearbyFacilities}"></p>
-        <!-- 편의시설 목록이 동적으로 추가됨 -->
-      </ul>
+       <div class="amenities-content" id="amenitiesList">
+           <p th:text="${property.nearbyFacilities}"></p>
+       </div>
     </div>
 
     <div class="location">
       <h2>위치 정보</h2>
-      <br>
       <div id="map">
         <!-- 지도가 표시될 영역 -->
       </div>
     </div>
-  </div>
 
     <input type="hidden" id="propertyIdValue" th:value="${property.propertyId}">
 
