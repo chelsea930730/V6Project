@@ -69,8 +69,29 @@ public class AdminApiController {
             property.setSubwayLine(line);
             property.setLocation(address);
             property.setDistrict(district);
-            property.setShikikin(new BigDecimal(shikikin.replaceAll("[^0-9]", "")));
-            property.setReikin(new BigDecimal(reikin.replaceAll("[^0-9]", "")));
+            
+            // 시키킨 처리 - 비어있거나 숫자가 아닌 경우 0으로 설정
+            if (shikikin == null || shikikin.trim().isEmpty()) {
+                property.setShikikin(BigDecimal.ZERO);
+            } else {
+                try {
+                    property.setShikikin(new BigDecimal(shikikin.replaceAll("[^0-9]", "")));
+                } catch (NumberFormatException e) {
+                    property.setShikikin(BigDecimal.ZERO);
+                }
+            }
+            
+            // 레이킨 처리 - 비어있거나 숫자가 아닌 경우 0으로 설정
+            if (reikin == null || reikin.trim().isEmpty()) {
+                property.setReikin(BigDecimal.ZERO);
+            } else {
+                try {
+                    property.setReikin(new BigDecimal(reikin.replaceAll("[^0-9]", "")));
+                } catch (NumberFormatException e) {
+                    property.setReikin(BigDecimal.ZERO);
+                }
+            }
+            
             property.setStatus(Property.Status.valueOf(status));
             property.setBuiltYear(builtYear);
             property.setDescription(description);
@@ -169,6 +190,8 @@ public class AdminApiController {
             @RequestParam("status") String status,
             @RequestParam("builtYear") String builtYear,
             @RequestParam("description") String description,
+            @RequestParam("shikikin") String shikikin,
+            @RequestParam("reikin") String reikin,
             @RequestParam(value = "thumbnailImage", required = false) MultipartFile thumbnailImage,
             @RequestParam(value = "floorplanImages", required = false) MultipartFile[] floorplanImages,
             @RequestParam(value = "buildingImages", required = false) MultipartFile[] buildingImages,
@@ -188,6 +211,29 @@ public class AdminApiController {
             property.setSubwayLine(line);
             property.setLocation(address);
             property.setDistrict(district);
+            
+            // 시키킨 처리 - 비어있거나 숫자가 아닌 경우 0으로 설정
+            if (shikikin == null || shikikin.trim().isEmpty()) {
+                property.setShikikin(BigDecimal.ZERO);
+            } else {
+                try {
+                    property.setShikikin(new BigDecimal(shikikin.replaceAll("[^0-9]", "")));
+                } catch (NumberFormatException e) {
+                    property.setShikikin(BigDecimal.ZERO);
+                }
+            }
+            
+            // 레이킨 처리 - 비어있거나 숫자가 아닌 경우 0으로 설정
+            if (reikin == null || reikin.trim().isEmpty()) {
+                property.setReikin(BigDecimal.ZERO);
+            } else {
+                try {
+                    property.setReikin(new BigDecimal(reikin.replaceAll("[^0-9]", "")));
+                } catch (NumberFormatException e) {
+                    property.setReikin(BigDecimal.ZERO);
+                }
+            }
+            
             property.setStatus(Property.Status.valueOf(status));
             property.setBuiltYear(builtYear);
             property.setDescription(description);

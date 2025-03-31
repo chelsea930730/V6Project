@@ -191,11 +191,11 @@ document.addEventListener('DOMContentLoaded', function() {
 	const stationChangeBtn = document.getElementById('stationChangeBtn');
 	const selectedLineName = document.getElementById('selectedLineName');
 	const selectedStationDisplay = document.getElementById('selectedStationDisplay');
-	const lineInput = document.getElementById('lineInput');
-	const stationInput = document.getElementById('stationInput');
+	const lineInput = document.getElementById('subwayLine');
+	const stationInput = document.getElementById('station');
 
 	// 선택된 노선
-	let selectedLine = '';
+	let selectedLine = lineInput.value || '';
 	
 	// 노선 변경 버튼 클릭
 	lineChangeBtn.addEventListener('click', function() {
@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					// 역 클릭 이벤트
 					stationItem.addEventListener('click', function() {
 							document.querySelector('.selected-station').textContent = station.name;
-							stationInput.value = station.name; // 한자 (한글) 형식으로 저장
+							stationInput.value = station.kanji;
 							stationModal.hide();
 					});
 					
@@ -341,124 +341,37 @@ document.addEventListener('DOMContentLoaded', function() {
 			loadPropertyData(propertyId);
 	}
 
-	// 폼 제출 이벤트
-	form.addEventListener('submit', function(e) {
+	// 폼 제출 처리
+	const propertyForm = document.getElementById('propertyForm');
+	const submitButton = document.getElementById('submitButton');
+
+	// 폼 초기 로드 시 기존 값으로 노선과 역 표시 업데이트
+	if (lineInput.value) {
+		selectedLine = lineInput.value;
+		document.querySelector('.selected-line').textContent = selectedLine;
+		
+		// 역 표시 업데이트
+		if (stationInput.value) {
+			// 역 표시할 때는 kanji 값을 표시하거나, 필요에 따라 표시 가능한 형태로 변환
+			document.querySelector('.selected-station').textContent = stationInput.value;
+		}
+	}
+
+	propertyForm.addEventListener('submit', function(e) {
+		// 폼은 자동으로 제출되도록 함
+		// 이미 Thymeleaf에서 method와 action이 설정되어 있음
+		submitButton.disabled = true;
+		submitButton.textContent = '제출중...';
+		
+		// 다른 폼 관련 로직이 필요하면 여기에 추가
+		// 예: 필수 필드 체크 등
+		if (!lineInput.value || !stationInput.value) {
 			e.preventDefault();
-			
-			// FormData 객체 생성
-			const formData = new FormData();
-			
-			// 필수 필드 추가
-			formData.append('title', form.querySelector('[name="title"]').value);
-			formData.append('monthlyPrice', form.querySelector('[name="monthlyPrice"]').value);
-			formData.append('managementFee', form.querySelector('[name="managementFee"]').value);
-			formData.append('initialCost', form.querySelector('[name="initialCost"]').value);
-			formData.append('area', form.querySelector('[name="area"]').value);
-			formData.append('floor', form.querySelector('[name="floor"]').value);
-			formData.append('builtYear', form.querySelector('[name="builtYear"]').value);
-			formData.append('description', form.querySelector('[name="description"]').value);
-			
-			// 건물 유형
-			const buildingType = document.querySelector('input[name="buildingType"]:checked');
-			if (!buildingType) {
-					alert('건물 유형을 선택해주세요.');
-					return;
-			}
-			formData.append('buildingType', buildingType.value);
-			
-			// 방 유형
-			const roomType = document.querySelector('input[name="roomType"]:checked');
-			if (!roomType) {
-					alert('방 유형을 선택해주세요.');
-					return;
-			}
-			formData.append('roomType', roomType.value);
-			
-			// 특징
-			const features = Array.from(document.querySelectorAll('input[name="features"]:checked')).map(cb => cb.value);
-			features.forEach(feature => formData.append('features', feature));
-			
-			// 노선과 역
-			if (!lineInput.value || !stationInput.value) {
-					alert('노선과 역을 선택해주세요.');
-					return;
-			}
-			formData.append('line', lineInput.value);
-			formData.append('station', stationInput.value);
-			
-			// 주소 및 상태
-			formData.append('address', form.querySelector('[name="address"]').value);
-			formData.append('district', form.querySelector('[name="district"]').value);
-			formData.append('shikikin', form.querySelector('[name="shikikin"]').value);
-			formData.append('reikin', form.querySelector('[name="reikin"]').value);
-			formData.append('status', form.querySelector('[name="status"]').value);
-			formData.append('nearbyFacilities', form.querySelector('[name="nearbyFacilities"]').value);
-			
-			// 이미지 파일들
-			const thumbnailInput = document.getElementById('thumbnailImage');
-			if (thumbnailInput && thumbnailInput.files.length > 0) {
-					formData.append('thumbnailImage', thumbnailInput.files[0]);
-			}
-
-			// 평면도 이미지들
-			const floorplanInput = document.getElementById('floorplanImages');
-			if (floorplanInput && floorplanInput.files.length > 0) {
-					for (let i = 0; i < floorplanInput.files.length; i++) {
-							formData.append('floorplanImages', floorplanInput.files[i]);
-					}
-			}
-
-			// 건물 이미지들
-			const buildingInput = document.getElementById('buildingImages');
-			if (buildingInput && buildingInput.files.length > 0) {
-					for (let i = 0; i < buildingInput.files.length; i++) {
-							formData.append('buildingImages', buildingInput.files[i]);
-					}
-			}
-
-			// 내부 이미지들
-			const interiorInput = document.getElementById('interiorImages');
-			if (interiorInput && interiorInput.files.length > 0) {
-					for (let i = 0; i < interiorInput.files.length; i++) {
-							formData.append('interiorImages', interiorInput.files[i]);
-					}
-			}
-			
-			// API 요청
-			const url = propertyId ? `/api/properties/${propertyId}` : '/api/properties';
-			const method = propertyId ? 'PUT' : 'POST';
-			
-			fetch(url, {
-					method: method,
-					body: formData
-			})
-			.then(response => {
-					if (!response.ok) {
-							return response.text().then(text => {
-									try {
-											// JSON 응답일 경우 파싱
-											const errorData = JSON.parse(text);
-											throw new Error(errorData.message || (propertyId ? '매물 수정에 실패했습니다.' : '매물 등록에 실패했습니다.'));
-									} catch (e) {
-											// JSON이 아니거나 파싱 실패한 경우
-											if (e instanceof SyntaxError) {
-													throw new Error(text || (propertyId ? '매물 수정에 실패했습니다.' : '매물 등록에 실패했습니다.'));
-											}
-											throw e;
-									}
-							});
-					}
-					return response.json();
-			})
-			.then(data => {
-					alert(propertyId ? '매물이 성공적으로 수정되었습니다.' : '매물이 성공적으로 등록되었습니다.');
-					window.parent.location.reload(); // 부모 창 새로고침
-					window.frameElement.parentElement.parentElement.querySelector('.btn-close').click(); // 팝업 닫기
-			})
-			.catch(error => {
-					console.error('Error:', error);
-					alert(error.message);
-			});
+			alert('노선과 역을 선택해주세요.');
+			submitButton.disabled = false;
+			submitButton.textContent = '매물 등록하기';
+			return false;
+		}
 	});
 
 	// 매물 데이터 불러오기 함수

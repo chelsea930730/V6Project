@@ -1,53 +1,64 @@
 package com.realestate.app.admin;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.ui.Model;
-import lombok.RequiredArgsConstructor;
-import com.realestate.app.property.Property;
-import com.realestate.app.property.PropertyService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import org.springframework.format.annotation.DateTimeFormat;
-import java.time.LocalDate;
-import org.springframework.data.domain.Sort;
-import com.realestate.app.reservation.Reservation;
-import com.realestate.app.reservation.ReservationService;
-import com.realestate.app.reservation.ReservationStatus;
-import org.springframework.data.domain.PageImpl;
-import java.lang.NumberFormatException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import org.json.JSONArray;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-import java.time.YearMonth;
-import com.realestate.app.reservation.CancellationCounterRepository;
-import com.realestate.app.reservation.CancellationCounter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import java.util.ArrayList;
+import com.realestate.app.property.Property;
+import com.realestate.app.property.PropertyDto;
+import com.realestate.app.property.PropertyService;
+import com.realestate.app.reservation.CancellationCounter;
+import com.realestate.app.reservation.CancellationCounterRepository;
+import com.realestate.app.reservation.Reservation;
+import com.realestate.app.reservation.ReservationService;
+import com.realestate.app.reservation.ReservationStatus;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
+@Slf4j
 public class AdminController {
 
     private final PropertyService propertyService;
     private final ReservationService reservationService;
     private final CancellationCounterRepository cancellationCounterRepository;
+    private final AdminService adminService;
 
     @GetMapping("/dashboard")
     public String dashboard(
@@ -150,16 +161,27 @@ public class AdminController {
     }
 
     @GetMapping("/addproperty")
-    public String propertyList(Model model, @RequestParam(defaultValue = "1") int page) {
-        // 페이지는 0부터 시작하므로 1을 빼줍니다
+    public String propertyList(Model model, 
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) String searchType,
+            @RequestParam(required = false) String keyword) {
+        
         int pageNumber = page - 1;
-        // 한 페이지당 8개의 항목, 페이지 크기는 10으로 설정
         Pageable pageable = PageRequest.of(pageNumber, 8, Sort.by("createdAt").descending());
-        Page<Property> propertyPage = propertyService.getAllPropertiesWithPaging(pageable);
+        
+        // 검색 조건에 따른 매물 목록 조회
+        Page<Property> propertyPage;
+        if (searchType != null && keyword != null && !keyword.trim().isEmpty()) {
+            propertyPage = propertyService.searchProperties(searchType, keyword, pageable);
+        } else {
+            propertyPage = propertyService.getAllPropertiesWithPaging(pageable);
+        }
 
         model.addAttribute("properties", propertyPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", propertyPage.getTotalPages());
+        model.addAttribute("searchType", searchType);
+        model.addAttribute("keyword", keyword);
 
         // 페이지 번호 목록 생성 (최대 10개)
         int totalPages = propertyPage.getTotalPages();
@@ -293,6 +315,206 @@ public class AdminController {
                 "success", false,
                 "error", "예약 취소 처리 중 오류가 발생했습니다: " + e.getMessage()
             ));
+        }
+    }
+
+    // 매물 목록 페이지 (관리자용)
+    @GetMapping("/property/list")
+    public String listProperties(Model model) {
+        List<PropertyDto> properties = propertyService.getAllPropertyDtos();
+        model.addAttribute("properties", properties);
+        return "admin/property-list";
+    }
+
+    // 매물 등록 폼 페이지
+    @GetMapping("/property/create")
+    public String showCreateForm(Model model) {
+        model.addAttribute("propertyDto", new PropertyDto());
+        model.addAttribute("buildingTypes", Property.BuildingType.values());
+        model.addAttribute("statusTypes", Property.Status.values());
+        return "admin/create";
+    }
+
+    // 매물 등록 처리 (유효성 검증 포함)
+    @PostMapping("/property/create")
+    public String createProperty(
+            @Valid @ModelAttribute PropertyDto propertyDto,
+            BindingResult bindingResult,
+            @RequestParam(value = "thumbnailImage", required = false) MultipartFile thumbnailImage,
+            @RequestParam(value = "floorplanImages", required = false) MultipartFile[] floorplanImages,
+            @RequestParam(value = "buildingImages", required = false) MultipartFile[] buildingImages,
+            @RequestParam(value = "interiorImages", required = false) MultipartFile[] interiorImages,
+            @RequestParam(value = "features", required = false) String[] features,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        // 유효성 검증 실패 시 폼 다시 표시
+        if (bindingResult.hasErrors()) {
+            log.error("매물 등록 유효성 검증 실패: {}", bindingResult.getAllErrors());
+            model.addAttribute("buildingTypes", Property.BuildingType.values());
+            model.addAttribute("statusTypes", Property.Status.values());
+            return "admin/create";
+        }
+
+        try {
+            // 이미지 처리 및 특징 처리 로직
+            processPropertyImages(propertyDto, thumbnailImage, floorplanImages, buildingImages, interiorImages);
+            processFeatures(propertyDto, features);
+
+            // 매물 저장
+            PropertyDto savedProperty = propertyService.savePropertyDto(propertyDto);
+            redirectAttributes.addFlashAttribute("successMessage", "매물이 성공적으로 등록되었습니다.");
+            return "redirect:/admin/property/list";
+        } catch (Exception e) {
+            log.error("매물 등록 중 오류 발생", e);
+            model.addAttribute("errorMessage", "매물 등록에 실패했습니다: " + e.getMessage());
+            model.addAttribute("buildingTypes", Property.BuildingType.values());
+            model.addAttribute("statusTypes", Property.Status.values());
+            return "admin/create";
+        }
+    }
+
+    // 매물 수정 폼 페이지
+    @GetMapping("/property/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        try {
+            PropertyDto propertyDto = propertyService.getPropertyDtoById(id);
+            model.addAttribute("propertyDto", propertyDto);
+            model.addAttribute("buildingTypes", Property.BuildingType.values());
+            model.addAttribute("statusTypes", Property.Status.values());
+            return "admin/create";
+        } catch (Exception e) {
+            log.error("매물 조회 실패: {}", e.getMessage());
+            return "redirect:/admin/property/list";
+        }
+    }
+
+    // 매물 수정 처리 (유효성 검증 포함)
+    @PostMapping("/property/edit/{id}")
+    public String updateProperty(
+            @PathVariable Long id,
+            @Valid @ModelAttribute PropertyDto propertyDto,
+            BindingResult bindingResult,
+            @RequestParam(value = "thumbnailImage", required = false) MultipartFile thumbnailImage,
+            @RequestParam(value = "floorplanImages", required = false) MultipartFile[] floorplanImages,
+            @RequestParam(value = "buildingImages", required = false) MultipartFile[] buildingImages,
+            @RequestParam(value = "interiorImages", required = false) MultipartFile[] interiorImages,
+            @RequestParam(value = "features", required = false) String[] features,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        // ID 설정
+        propertyDto.setPropertyId(id);
+
+        // 유효성 검증 실패 시 폼 다시 표시
+        if (bindingResult.hasErrors()) {
+            log.error("매물 수정 유효성 검증 실패: {}", bindingResult.getAllErrors());
+            model.addAttribute("buildingTypes", Property.BuildingType.values());
+            model.addAttribute("statusTypes", Property.Status.values());
+            return "admin/create";
+        }
+
+        try {
+            // 이미지 처리 및 특징 처리 로직
+            processPropertyImages(propertyDto, thumbnailImage, floorplanImages, buildingImages, interiorImages);
+            processFeatures(propertyDto, features);
+
+            // 매물 저장
+            PropertyDto updatedProperty = propertyService.savePropertyDto(propertyDto);
+            redirectAttributes.addFlashAttribute("successMessage", "매물이 성공적으로 수정되었습니다.");
+            return "redirect:/admin/property/list";
+        } catch (Exception e) {
+            log.error("매물 수정 중 오류 발생", e);
+            model.addAttribute("errorMessage", "매물 수정에 실패했습니다: " + e.getMessage());
+            model.addAttribute("buildingTypes", Property.BuildingType.values());
+            model.addAttribute("statusTypes", Property.Status.values());
+            return "admin/create";
+        }
+    }
+
+    // 매물 삭제 처리
+    @PostMapping("/property/delete/{id}")
+    public String deleteProperty(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            propertyService.deleteProperty(id);
+            redirectAttributes.addFlashAttribute("successMessage", "매물이 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            log.error("매물 삭제 중 오류 발생", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "매물 삭제에 실패했습니다: " + e.getMessage());
+        }
+        return "redirect:/admin/property/list";
+    }
+
+    // 이미지 처리 메서드
+    private void processPropertyImages(
+            PropertyDto propertyDto,
+            MultipartFile thumbnailImage,
+            MultipartFile[] floorplanImages,
+            MultipartFile[] buildingImages,
+            MultipartFile[] interiorImages) throws IOException {
+        
+        // 썸네일 이미지 처리
+        if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
+            String thumbnailUrl = adminService.saveImage(thumbnailImage);
+            propertyDto.setThumbnailImage(thumbnailUrl);
+        }
+
+        // 평면도 이미지 처리 - 모든 이미지 저장
+        if (floorplanImages != null && floorplanImages.length > 0) {
+            StringBuilder floorplanUrls = new StringBuilder();
+            for (MultipartFile image : floorplanImages) {
+                if (image != null && !image.isEmpty()) {
+                    String imageUrl = adminService.saveImage(image);
+                    if (floorplanUrls.length() > 0) {
+                        floorplanUrls.append(",");
+                    }
+                    floorplanUrls.append(imageUrl);
+                }
+            }
+            propertyDto.setFloorplanImage(floorplanUrls.toString());
+        }
+
+        // 건물 이미지 처리 - 모든 이미지 저장
+        if (buildingImages != null && buildingImages.length > 0) {
+            StringBuilder buildingUrls = new StringBuilder();
+            for (MultipartFile image : buildingImages) {
+                if (image != null && !image.isEmpty()) {
+                    String imageUrl = adminService.saveImage(image);
+                    if (buildingUrls.length() > 0) {
+                        buildingUrls.append(",");
+                    }
+                    buildingUrls.append(imageUrl);
+                }
+            }
+            propertyDto.setBuildingImage(buildingUrls.toString());
+        }
+
+        // 내부 이미지 처리 - 모든 이미지 저장
+        if (interiorImages != null && interiorImages.length > 0) {
+            StringBuilder interiorUrls = new StringBuilder();
+            for (MultipartFile image : interiorImages) {
+                if (image != null && !image.isEmpty()) {
+                    String imageUrl = adminService.saveImage(image);
+                    if (interiorUrls.length() > 0) {
+                        interiorUrls.append(",");
+                    }
+                    interiorUrls.append(imageUrl);
+                }
+            }
+            propertyDto.setInteriorImage(interiorUrls.toString());
+        }
+    }
+
+    // 특징 처리 메서드
+    private void processFeatures(PropertyDto propertyDto, String[] features) {
+        if (features != null && features.length > 0) {
+            String description = propertyDto.getDescription() != null ? propertyDto.getDescription() : "";
+            StringBuilder featureText = new StringBuilder(description);
+            featureText.append("\n\n특징:\n");
+            for (String feature : features) {
+                featureText.append("- ").append(feature).append("\n");
+            }
+            propertyDto.setDescription(featureText.toString());
         }
     }
 }

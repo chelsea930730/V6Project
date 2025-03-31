@@ -21,4 +21,13 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
 
     // 페이징 처리와 함께 생성일 기준 내림차순 정렬
     Page<Property> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    // ID로 검색
+    Page<Property> findByPropertyId(Long propertyId, Pageable pageable);
+
+    // 제목으로 검색
+    Page<Property> findByTitleContaining(String title, Pageable pageable);
+
+    // ID 또는 제목으로 검색
+    Page<Property> findByPropertyIdOrTitleContaining(Long propertyId, String title, Pageable pageable);
 }
