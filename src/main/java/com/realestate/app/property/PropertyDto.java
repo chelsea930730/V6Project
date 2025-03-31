@@ -156,4 +156,7 @@ public class PropertyDto {
         dto.setReserved(property.getReserved());
         return dto;
     }
+
+    public void setId(Long propertyId) {
+    }
 } 

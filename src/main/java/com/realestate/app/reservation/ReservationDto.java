@@ -1,5 +1,6 @@
 package com.realestate.app.reservation;
 
+import com.realestate.app.property.PropertyDto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -11,6 +12,7 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,4 +36,13 @@ public class ReservationDto {
     
     @Length(max = 500, message = "문의사항은 500자를 초과할 수 없습니다")
     private String message;
+
+    public void setReservationId(Long aLong) {
+    }
+
+    public void setStatus(String name) {
+    }
+
+    public void setProperties(List<PropertyDto> propertyDtos) {
+    }
 }
