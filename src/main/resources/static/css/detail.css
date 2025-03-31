@@ -134,52 +134,68 @@
 
 /* 건물 상세 사진 섹션 */
 .building-photos2 {
-	max-width: calc(100% - 100px);
-	margin: 10px auto;
-	padding: 20px;
+	max-width: 1200px;
+	margin: 40px auto;
+	padding: 0 50px;
 }
 
 .building-photos2 h2 {
 	text-align: center;
-	margin-bottom: 30px;
+	margin-bottom: 20px;
+	font-size: 1.5em;
 	color: #333;
-	white-space: nowrap;
 }
 
 /* 사진 그리드 수정 */
 .photo-grid2 {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr); /* 3열 그리드 */
-	gap: 15px;
-	padding: 20px;
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 20px;
+	overflow-x: auto;
+	padding: 10px 0;
+	justify-content: center;
 }
 
 /* 각 사진 아이템 */
 .photo-grid2 .photo-item {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	text-align: center;
-}
-
-.photo-grid2 .photo-item img {
-	width: 100%;
+	flex: 0 0 auto;
+	width: 300px;
 	height: 200px;
-	object-fit: cover;
 	border-radius: 8px;
-	margin-bottom: 10px;
+	overflow: hidden;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* 사진 설명 텍스트 */
-.photo-grid2 .photo-title {
-	font-weight: bold;
-	margin-bottom: 5px;
-	color: #333;
+.photo-grid2 .photo-item img,
+.property-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.3s ease;
 }
 
-.photo-grid2 .photo-description {
-	color: #666;
-	font-size: 0.9em;
+.photo-grid2 .photo-item img:hover,
+.property-image:hover {
+	transform: scale(1.05);
+}
+
+/* 스크롤바 스타일링 */
+.photo-grid2::-webkit-scrollbar {
+	height: 8px;
+}
+
+.photo-grid2::-webkit-scrollbar-track {
+	background: #f1f1f1;
+	border-radius: 4px;
+}
+
+.photo-grid2::-webkit-scrollbar-thumb {
+	background: #888;
+	border-radius: 4px;
+}
+
+.photo-grid2::-webkit-scrollbar-thumb:hover {
+	background: #555;
 }
 
 /* 상세 정보 테이블 */
@@ -232,6 +248,8 @@
 	max-width: 1200px;  /* 테이블과 동일한 최대 너비 */
 	margin: 40px auto;
 	padding: 0 50px;
+	margin-bottom: 50px; /* 아래쪽 여백 줄임 */
+	position: relative;
 }
 
 .amenities-content {
@@ -239,12 +257,16 @@
 	padding: 18px;
 	background: rgb(255, 255, 255);
 	border-radius: 8px;
-	box-shadow: 1px 1px 3px rgba(0.1,0.1,0.1,0.1); /* 긴 텍스트 자동 줄바꿈 */
+	box-shadow: 1px 1px 3px rgba(0.1,0.1,0.1,0.1);
 }
 
 /* 위치 정보 */
 .location {
 	text-align: center;
+	margin-top: 50px; /* 위쪽 여백 줄임 */
+	clear: both;
+	position: relative;
+	padding-top: 0; /* 상단 패딩 제거 */
 }
 
 .location #map {

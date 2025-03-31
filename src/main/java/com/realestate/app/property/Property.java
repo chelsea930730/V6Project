@@ -52,7 +52,7 @@ public class Property {
     private BigDecimal area;
 
     @Column(name = "built_year")
-    private String builtYear;  // '2001년'과 같은 문자열 형태 저장
+    private String builtYear; // '2001년'과 같은 문자열 형태 저장
 
     @Column(precision = 20, scale = 7)
     private BigDecimal latitude;

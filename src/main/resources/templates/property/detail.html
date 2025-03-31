@@ -183,92 +183,34 @@
 <!-- 추가 사진 섹션 -->
 <section class="building-photos2">
     <h2>건물 사진</h2>
-    <div class="photo-grid2" id="propertyPhotos2" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; max-width: 1200px; margin: 0 auto;">
+    <div class="photo-grid2" id="propertyPhotos2">
         <!-- 썸네일 이미지 -->
         <div class="photo-item" th:if="${property.thumbnailImage != null}">
             <img th:src="${property.thumbnailImage}" alt="썸네일 이미지" class="property-image">
         </div>
         
         <!-- 평면도 이미지들 -->
-        <th:block th:if="${property.floorplanImage != null}">
+        <div th:if="${property.floorplanImage != null}">
             <div class="photo-item" th:each="url : ${#strings.arraySplit(property.floorplanImage, ',')}">
                 <img th:src="${url}" alt="평면도" class="property-image">
             </div>
-        </th:block>
+        </div>
         
         <!-- 건물 이미지들 -->
-        <th:block th:if="${property.buildingImage != null}">
+        <div th:if="${property.buildingImage != null}">
             <div class="photo-item" th:each="url : ${#strings.arraySplit(property.buildingImage, ',')}">
-                <img th:src="${url}" alt="건물 사진" class="property-image">
+                <img th:src="${url}" alt="건물 외관" class="property-image">
             </div>
-        </th:block>
+        </div>
         
         <!-- 내부 이미지들 -->
-        <th:block th:if="${property.interiorImage != null}">
+        <div th:if="${property.interiorImage != null}">
             <div class="photo-item" th:each="url : ${#strings.arraySplit(property.interiorImage, ',')}">
                 <img th:src="${url}" alt="내부 사진" class="property-image">
             </div>
-        </th:block>
-
-        <!-- 추가 이미지 1 -->
-        <th:block th:if="${property.extraImage1 != null}">
-            <div class="photo-item" th:each="url : ${#strings.arraySplit(property.extraImage1, ',')}">
-                <img th:src="${url}" alt="추가 이미지 1" class="property-image">
-            </div>
-        </th:block>
-
-        <!-- 추가 이미지 2 -->
-        <th:block th:if="${property.extraImage2 != null}">
-            <div class="photo-item" th:each="url : ${#strings.arraySplit(property.extraImage2, ',')}">
-                <img th:src="${url}" alt="추가 이미지 2" class="property-image">
-            </div>
-        </th:block>
+        </div>
     </div>
 </section>
-
-<style>
-.building-photos2 {
-    margin: 20px auto;
-    max-width: 1200px;
-}
-
-.photo-grid2 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    padding: 20px;
-}
-
-.photo-item {
-    aspect-ratio: 4/3;
-    overflow: hidden;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.property-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.property-image:hover {
-    transform: scale(1.05);
-}
-
-@media (max-width: 768px) {
-    .photo-grid2 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 480px) {
-    .photo-grid2 {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
 
 <div class="details-section">
     <table class="details-table">
@@ -281,10 +223,10 @@
                 <th>건물 타입</th>
                 <td colspan="3" id="buildingType" th:text="${property.buildingType}"></td>
           </tr>
-          <tr>
+        <tr>
             <th>층수</th>
             <td colspan="3" id="floor" th:text="${property.floor}"></td>
-          </tr>
+        </tr>
           <tr>
                 <th>등록일</th>
                 <td colspan="3" id="registDate" th:text="${#temporals.format(property.createdAt, 'yyyy년 M월 d일')}"></td>
@@ -303,20 +245,17 @@
 
     <div class="amenities">
        <h2>방의 특징과 설비</h2>
-          <div class="amenities-content" id="amenitiesList">
-              <p th:text="${property.nearbyFacilities}"></p>
-        <!-- 편의시설 목록이 동적으로 추가됨 -->
-      </ul>
+       <div class="amenities-content" id="amenitiesList">
+           <p th:text="${property.nearbyFacilities}"></p>
+       </div>
     </div>
 
     <div class="location">
       <h2>위치 정보</h2>
-      <br>
       <div id="map">
         <!-- 지도가 표시될 영역 -->
       </div>
     </div>
-  </div>
 
     <input type="hidden" id="propertyIdValue" th:value="${property.propertyId}">
 

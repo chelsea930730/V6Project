@@ -11,10 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import jakarta.validation.Valid;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,11 +77,9 @@ public class ReservationController {
     
     // 예약 제출 처리
     @PostMapping("/reservation")
-    public String submitReservation(@Valid @ModelAttribute("reservation") ReservationDto reservationDto,
-                                   BindingResult bindingResult,
+    public String submitReservation(@ModelAttribute("reservation") ReservationDto reservationDto,
                                    @RequestParam(value = "propertyIds", required = false) List<Long> propertyIds,
                                    Authentication authentication,
-                                   Model model,
                                    RedirectAttributes redirectAttributes) {
         // 로그인 상태 확인
         boolean isLoggedIn = authentication != null && authentication.isAuthenticated() && 
@@ -91,16 +87,6 @@ public class ReservationController {
         
         if (!isLoggedIn) {
             return "redirect:/user/login";
-        }
-        
-        // 유효성 검증 실패 시 폼 다시 표시
-        if (bindingResult.hasErrors()) {
-            // 선택된 매물이 있는 경우
-            if (propertyIds != null && !propertyIds.isEmpty()) {
-                List<Property> properties = propertyService.findByIds(propertyIds);
-                model.addAttribute("properties", properties);
-            }
-            return "mypage/reservation";
         }
         
         // 사용자 정보 가져오기
