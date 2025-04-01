@@ -66,7 +66,8 @@ public class SecurityConfig {
                     "/property/**", "/css/**", "/js/**", "/img/**", "/static/**",
                     "/navi.html", "/webjars/**", "/fonts/**", "/images/**",
                     "/api/properties/filter",
-                    "/property/filter"
+                    "/property/filter",
+                    "/uploads/**"
                 ).permitAll()
                 .requestMatchers(
                     "/admin/dashboard", "/admin/addproperty", "/admin/create", 
