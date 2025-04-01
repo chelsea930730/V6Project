@@ -18,6 +18,73 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // 검색 폼 이벤트 처리
+    const searchForm = document.querySelector('.search-form');
+    const searchInput = document.querySelector('.search-input');
+    const searchType = document.querySelector('.search-select');
+
+    if (searchForm) {
+        // 검색어 입력 필드에서 Enter 키 누르면 검색 실행
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (searchInput.value.trim()) {
+                    searchForm.submit();
+                }
+            }
+        });
+
+        // 검색 전 유효성 검사
+        searchForm.addEventListener('submit', function(e) {
+            if (!searchInput.value.trim()) {
+                e.preventDefault();
+                alert('검색어를 입력해주세요.');
+                searchInput.focus();
+            } else if (searchType.value === 'id' && !/^\d+$/.test(searchInput.value.trim())) {
+                // ID 검색인 경우 숫자만 허용
+                if (!confirm('매물 ID는 숫자만 입력 가능합니다. 입력한 값으로 제목 검색을 수행하시겠습니까?')) {
+                    e.preventDefault();
+                    searchInput.focus();
+                } else {
+                    // 사용자가 확인하면 검색 유형을 '제목'으로 변경
+                    searchType.value = 'title';
+                }
+            }
+        });
+
+        // 검색 타입 변경 시 입력창 placeholder 변경
+        searchType.addEventListener('change', function() {
+            switch(this.value) {
+                case 'id':
+                    searchInput.placeholder = '매물 ID 입력 (숫자만)';
+                    break;
+                case 'title':
+                    searchInput.placeholder = '매물 제목 검색';
+                    break;
+                default:
+                    searchInput.placeholder = '검색어를 입력하세요';
+            }
+            searchInput.focus();
+        });
+    }
+
+    // 검색 초기화 링크에 이벤트 리스너 추가
+    const resetSearchLink = document.querySelector('.search-status a');
+    if (resetSearchLink) {
+        resetSearchLink.addEventListener('click', function(e) {
+            // 애니메이션 효과 추가
+            const searchStatus = document.querySelector('.search-status');
+            if (searchStatus) {
+                e.preventDefault();
+                searchStatus.style.transition = 'opacity 0.3s';
+                searchStatus.style.opacity = '0';
+                setTimeout(() => {
+                    window.location.href = this.getAttribute('href');
+                }, 300);
+            }
+        });
+    }
+
     // 선택된 항목 수 업데이트
     function updateSelectedCount() {
         const selectedCount = document.querySelectorAll(

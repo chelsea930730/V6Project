@@ -59,6 +59,9 @@ public class PropertyDto {
     @Length(max = 2000, message = "설명은 2000자를 초과할 수 없습니다")
     private String description;
     
+    @Length(max = 2000, message = "상세조건은 2000자를 초과할 수 없습니다")
+    private String detailDescription;
+    
     @NotNull(message = "면적은 필수입니다")
     @DecimalMin(value = "0.0", message = "면적은 0보다 작을 수 없습니다")
     private BigDecimal area;
@@ -106,6 +109,7 @@ public class PropertyDto {
         property.setBuildingType(Property.BuildingType.valueOf(this.buildingType));
         property.setStatus(Property.Status.valueOf(this.status));
         property.setDescription(this.description);
+        property.setDetailDescription(this.detailDescription);
         property.setArea(this.area);
         property.setBuiltYear(this.builtYear);
         property.setLatitude(this.latitude);
@@ -140,6 +144,7 @@ public class PropertyDto {
         dto.setBuildingType(property.getBuildingType().name());
         dto.setStatus(property.getStatus().name());
         dto.setDescription(property.getDescription());
+        dto.setDetailDescription(property.getDetailDescription());
         dto.setArea(property.getArea());
         dto.setBuiltYear(property.getBuiltYear());
         dto.setLatitude(property.getLatitude());

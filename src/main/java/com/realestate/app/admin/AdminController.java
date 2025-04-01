@@ -46,6 +46,8 @@ import java.util.stream.IntStream;
 import java.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
+
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
@@ -318,7 +320,7 @@ public class AdminController {
             @RequestParam(value = "interiorImages", required = false) MultipartFile[] interiorImages,
             @RequestParam(value = "extraImage1", required = false) MultipartFile[] extraImage1,
             @RequestParam(value = "extraImage2", required = false) MultipartFile[] extraImage2,
-            @RequestParam(value = "features", required = false) String[] features,
+            @RequestParam(value = "detailDescription", required = false) String[] detailDescription,
             Model model,
             RedirectAttributes redirectAttributes) {
 
@@ -333,7 +335,7 @@ public class AdminController {
         try {
             // 이미지 처리 및 특징 처리 로직
             processPropertyImages(propertyDto, thumbnailImage, floorplanImages, buildingImages, interiorImages, extraImage1, extraImage2);
-            processFeatures(propertyDto, features);
+            processFeatures(propertyDto, detailDescription);
 
             // 매물 저장
             PropertyDto savedProperty = propertyService.savePropertyDto(propertyDto);
@@ -357,18 +359,11 @@ public class AdminController {
 
             // 기존 특징들을 파싱
             List<String> features = new ArrayList<>();
-            String description = propertyDto.getDescription();
-            if (description != null && description.contains("특징:")) {
-                String[] parts = description.split("특징:\n");
-                if (parts.length > 1) {
-                    String[] featureLines = parts[1].split("\n");
-                    for (String line : featureLines) {
-                        if (line.startsWith("- ")) {
-                            features.add(line.substring(2));
-                        }
-                    }
-                    // 원래 설명만 남기기
-                    propertyDto.setDescription(parts[0].trim());
+            String detailDesc = propertyDto.getDetailDescription();
+            if (detailDesc != null && !detailDesc.isEmpty()) {
+                String[] parts = detailDesc.split(", ");
+                for (String part : parts) {
+                    features.add(part.trim());
                 }
             }
 
@@ -416,7 +411,7 @@ public class AdminController {
             @RequestParam(value = "interiorImages", required = false) MultipartFile[] interiorImages,
             @RequestParam(value = "extraImage1", required = false) MultipartFile[] extraImage1,
             @RequestParam(value = "extraImage2", required = false) MultipartFile[] extraImage2,
-            @RequestParam(value = "features", required = false) String[] features,
+            @RequestParam(value = "detailDescription", required = false) String[] detailDescription,
             Model model,
             RedirectAttributes redirectAttributes) {
         try {
@@ -453,7 +448,7 @@ public class AdminController {
             processPropertyImages(propertyDto, thumbnailImage, floorplanImages, buildingImages, interiorImages, extraImage1, extraImage2);
 
             // 특징 처리
-            processFeatures(propertyDto, features);
+            processFeatures(propertyDto, detailDescription);
 
             // 매물 ID 설정
             propertyDto.setPropertyId(id);
@@ -559,13 +554,8 @@ public class AdminController {
     // 특징 처리 메서드
     private void processFeatures(PropertyDto propertyDto, String[] features) {
         if (features != null && features.length > 0) {
-            String description = propertyDto.getDescription() != null ? propertyDto.getDescription() : "";
-            StringBuilder featureText = new StringBuilder(description);
-            featureText.append("\n\n특징:\n");
-            for (String feature : features) {
-                featureText.append("- ").append(feature).append("\n");
-            }
-            propertyDto.setDescription(featureText.toString());
+            String detailDescriptionText = String.join(", ", features);
+            propertyDto.setDetailDescription(detailDescriptionText);
         }
     }
 
@@ -580,5 +570,87 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("errorMessage", "매물 삭제에 실패했습니다: " + e.getMessage());
         }
         return "redirect:/admin/property/list";
+    }
+
+    @PostMapping("/createProperty")
+    public ResponseEntity<?> createProperty(
+            @RequestParam("title") String title,
+            @RequestParam("monthlyPrice") BigDecimal monthlyPrice,
+            @RequestParam("managementFee") BigDecimal managementFee,
+            @RequestParam(value = "shikikin", required = false) BigDecimal shikikin,
+            @RequestParam(value = "reikin", required = false) BigDecimal reikin,
+            @RequestParam("address") String address,
+            @RequestParam("district") String district,
+            @RequestParam("station") String station,
+            @RequestParam("line") String line,
+            @RequestParam("roomType") String roomType,
+            @RequestParam("buildingType") String buildingType,
+            @RequestParam("status") String status,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "detailDescription", required = false) String[] detailDescription,
+            @RequestParam("area") BigDecimal area,
+            @RequestParam("floor") String floor,
+            @RequestParam("builtYear") String builtYear,
+            @RequestParam(value = "initialCost", required = false) String initialCost,
+            @RequestParam(value = "nearbyFacilities", required = false) String nearbyFacilities,
+            @RequestParam(value = "id", required = false) Long id,
+            @RequestParam(value = "thumbnailImage", required = false) MultipartFile thumbnailImage,
+            @RequestParam(value = "floorplanImages", required = false) MultipartFile floorplanImage,
+            @RequestParam(value = "buildingImages", required = false) MultipartFile buildingImage,
+            @RequestParam(value = "interiorImages", required = false) MultipartFile interiorImage,
+            @RequestParam(value = "interiorImages", required = false) List<MultipartFile> otherImages) {
+        
+        try {
+            PropertyDto propertyDto = new PropertyDto();
+            propertyDto.setTitle(title);
+            propertyDto.setMonthlyPrice(monthlyPrice);
+            propertyDto.setManagementFee(managementFee);
+            propertyDto.setShikikin(shikikin);
+            propertyDto.setReikin(reikin);
+            propertyDto.setLocation(address);
+            propertyDto.setDistrict(district);
+            propertyDto.setStation(station);
+            propertyDto.setSubwayLine(line);
+            propertyDto.setRoomType(roomType);
+            propertyDto.setBuildingType(buildingType);
+            propertyDto.setStatus(status);
+            propertyDto.setDescription(description);  // 비고 정보
+            
+            // 상세조건 처리
+            if (detailDescription != null && detailDescription.length > 0) {
+                String detailDescriptionText = String.join(", ", detailDescription);
+                propertyDto.setDetailDescription(detailDescriptionText);  // 상세조건 저장
+            }
+            
+            propertyDto.setArea(area);
+            propertyDto.setFloor(floor);
+            propertyDto.setBuiltYear(builtYear);
+            propertyDto.setInitialCost(initialCost);
+            propertyDto.setNearbyFacilities(nearbyFacilities);
+            
+            if (id != null) {
+                propertyDto.setPropertyId(id);
+            }
+            
+            // 이미지 처리 로직...
+            
+            // 수정 또는 저장 처리
+            PropertyDto savedProperty;
+            if (id != null) {
+                Property updatedProperty = propertyService.updateProperty(propertyDto);
+                savedProperty = PropertyDto.fromEntity(updatedProperty);
+            } else {
+                savedProperty = propertyService.savePropertyDto(propertyDto);
+            }
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "매물이 성공적으로 " + (id != null ? "수정" : "등록") + "되었습니다.",
+                "propertyId", savedProperty.getPropertyId()
+            ));
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "매물 " + (id != null ? "수정" : "등록") + " 처리 중 오류가 발생했습니다: " + e.getMessage()));
+        }
     }
 }

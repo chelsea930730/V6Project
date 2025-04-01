@@ -268,8 +268,11 @@
           </tr>
 
           <tr>
-                <th>비고</th>
-                <td colspan="3" id="notes" th:text="${property.description}"></td>
+                <th>상세조건 / 비고</th>
+                <td colspan="3">
+                    <span id="detailDescription" th:text="${property.detailDescription}"></span> / 
+                    <span id="notes" th:text="${property.description}"></span>
+                </td>
           </tr>
     </table>
 </div>

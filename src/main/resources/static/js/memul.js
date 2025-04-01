@@ -483,7 +483,13 @@ function createPropertyElement(property) {
 			<div>${property.location}</div>
 			<div>${property.subwayLine}</div>
 			${property.station ? `<div>${property.station}</div>` : ''}
-			${property.description ? `<div>${property.description}</div>` : ''}
+			${(property.detailDescription || property.description) ? 
+				`<div>
+					${property.detailDescription ? `<span>${property.detailDescription}</span>` : ''}
+					${property.detailDescription && property.description ? ' / ' : ''}
+					${property.description ? `<span>${property.description}</span>` : ''}
+				</div>` : ''
+			}
 		</div>
 	`;
 	
