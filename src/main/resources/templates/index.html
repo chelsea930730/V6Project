@@ -185,20 +185,35 @@
 <section class="available-properties">
   <h2>지금 남아있는 매물 확인</h2>
   <div class="property-list">
-    <div class="property-item">
-      <img src="/img/room1.jpeg" alt="매물 이미지 1">
-      <p>#신주쿠 역까지 도보 5분</p>
-      <span>편리한 역세권! 넓고 쾌적한 공간에서 새로운 생활을 시작하세요.</span>
+    <!-- 랜덤 매물이 있을 경우 -->
+    <div th:if="${randomProperties != null && !randomProperties.isEmpty()}" class="random-properties-list">
+      <!-- 각 매물에 대해 반복 -->
+      <div th:each="property : ${randomProperties}" class="property-item">
+        <!-- 이미지 처리: 이미지가 있으면 표시, 없으면 대체 텍스트 -->
+        <div th:if="${property.thumbnailImage != null}" class="property-image">
+          <img th:src="${property.thumbnailImage}" th:alt="${property.title + ' 이미지'}">
+        </div>
+        <div th:unless="${property.thumbnailImage != null}" class="no-image-container">
+          <span>이미지 준비중</span>
+        </div>
+        
+        <!-- 매물 정보 -->
+        <p th:text="${property.location + (property.station != null ? ' ' + property.station + '역 인근' : '')}">
+          #위치정보
+        </p>
+        <span>
+          <strong th:text="${'월세 ' + #numbers.formatInteger(property.monthlyPrice, 0, 'COMMA') + '円'}">금액</strong>
+          <br>
+          <span th:text="${property.title}">매물 타이틀</span>
+        </span>
+        <!-- 상세 페이지 링크 -->
+        <a th:href="@{/property/{id}(id=${property.propertyId})}" class="property-detail-link">상세보기</a>
+      </div>
     </div>
-    <div class="property-item">
-      <img src="/img/room2.jpeg" alt="매물 이미지 2">
-      <p>#4월 입주 워홀 비자 가능</p>
-      <span>심사 간편 & 계약 빠르게! 복잡한 절차 없이 쉽고 빠르게 입주하세요.</span>
-    </div>
-    <div class="property-item">
-      <img src="/img/room3.jpeg" alt="매물 이미지 3">
-      <p>#2인 입주 #펫 가능</p>
-      <span>자연과 함께하는 삶! 조용한 주거 환경에서 여유로운 일상을 즐겨보세요.</span>
+    
+    <!-- 매물이 없는 경우 -->
+    <div th:if="${randomProperties == null || randomProperties.isEmpty()}" class="no-properties">
+      <p>현재 표시할 매물이 없습니다.</p>
     </div>
   </div>
 </section>
@@ -210,8 +225,8 @@
     <div class="info-item">
       <img src="/img/memul.jpeg" alt="찾아오시는 길 이미지">
       <h3>찾아오시는 길</h3>
-      <p>주소: 123-4567 東京都新宿区X X町1−2</p>
-      <p>오에도선 아카시주쿠역 A3출구 도보 7분</p>
+      <p>주소:부산 중구 충장대로 11 2층, 3층</p>
+      <p>데이터사이언스아카데미 302호</p>
     </div>
     <div class="info-item">
       <img src="/img/room3.jpeg" alt="문의 방법 이미지">
