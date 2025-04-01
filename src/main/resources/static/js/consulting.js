@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
             checkbox.addEventListener('change', function() {
                 updateSelectedCount();
                 updateCancelButtonState();
-
+                
                 // 모든 체크박스가 선택되었는지 확인하여 selectAll 상태 업데이트
                 const allChecked = Array.from(checkboxes).every(cb => cb.checked);
                 if (selectAllCheckbox) {
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (cancelSelectedBtn) {
             const selectedCount = document.querySelectorAll('tbody .form-check-input:checked').length;
             cancelSelectedBtn.disabled = selectedCount === 0;
-
+            
             // 버튼 텍스트는 항상 "선택한 예약 삭제"로 유지
             if (selectedCount > 0) {
                 cancelSelectedBtn.innerHTML = `<i class="fas fa-trash-alt"></i> 선택한 예약 삭제 (${selectedCount})`;
@@ -52,36 +52,36 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-
+    
     // 예약 취소 버튼 이벤트
     if (cancelSelectedBtn) {
         cancelSelectedBtn.addEventListener('click', function() {
             const selectedCheckboxes = document.querySelectorAll('tbody .form-check-input:checked');
             const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
-
+            
             if (selectedIds.length === 0) {
                 return;
             }
-
+            
             if (confirm(`선택한 ${selectedIds.length}개의 예약을 취소하고 목록에서 삭제하시겠습니까?`)) {
                 adminCancelReservations(selectedIds);
             }
         });
     }
-
+    
     // 관리자 예약 취소 API 호출 (실제 삭제를 위한 함수)
     function adminCancelReservations(reservationIds) {
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
         const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-
+        
         const headers = {
             'Content-Type': 'application/json'
         };
-
+        
         if (csrfHeader && csrfToken) {
             headers[csrfHeader] = csrfToken;
         }
-
+        
         fetch('/admin/reservations/cancel', {
             method: 'POST',
             headers: headers,
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('오류: ' + error.message);
         });
     }
-
+    
     // 상태 변경 처리 - 새로운 방식 (계약 불가는 삭제하지 않고 상태만 변경)
     setupStatusButtons();
 
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
             applyFilters();
         });
     }
-
+    
     // 필터 초기화 버튼
     const resetFilterButton = document.getElementById('resetFilterButton');
     if (resetFilterButton) {
@@ -125,18 +125,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const endDateFilter = document.getElementById('endDateFilter');
             const searchType = document.getElementById('searchType');
             const searchQuery = document.getElementById('searchQuery');
-
+            
             if (statusFilter) statusFilter.value = '';
             if (startDateFilter) startDateFilter.value = '';
             if (endDateFilter) endDateFilter.value = '';
             if (searchType) searchType.value = 'name';
             if (searchQuery) searchQuery.value = '';
-
+            
             // 페이지 리로드 (모든 파라미터 제거)
             window.location.href = window.location.pathname;
         });
     }
-
+    
     // 상태 필터 변경 이벤트
     const statusFilter = document.getElementById('statusFilter');
     if (statusFilter) {
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 필터가 자동으로 적용되지 않도록 변경, 버튼 클릭 시 적용되도록 함
         });
     }
-
+    
     // 검색 버튼 클릭 이벤트
     const searchButton = document.getElementById('searchButton');
     if (searchButton) {
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
             applyFilters();
         });
     }
-
+    
     // 검색어 입력 필드에서 Enter 키 이벤트
     const searchQuery = document.getElementById('searchQuery');
     if (searchQuery) {
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
+    
     // 필터 적용 함수 수정 - 모든 조건을 충족해야만 결과가 나오도록 변경 (AND 조건)
     function applyFilters() {
         const status = document.getElementById('statusFilter').value;
@@ -171,38 +171,38 @@ document.addEventListener('DOMContentLoaded', function() {
         const endDate = document.getElementById('endDateFilter').value;
         const searchType = document.getElementById('searchType').value;
         const search = document.getElementById('searchQuery').value;
-
+        
         // 날짜 유효성 검증 (시작일이 종료일보다 이후면 제출 불가)
         if (startDate && endDate) {
             const start = new Date(startDate);
             const end = new Date(endDate);
-
+            
             if (start > end) {
                 alert('종료일은 시작일보다 이후여야 합니다.');
                 return; // 함수 종료
             }
         }
-
+        
         // 현재 URL 가져오기
         let url = new URL(window.location.href);
-
+        
         // 모든 검색 파라미터 초기화 (페이지 번호는 항상 0으로 초기화)
         url.search = '';
         url.searchParams.set('page', '0'); // 필터 변경 시 항상 첫 페이지로
-
+        
         // 각 조건별로 파라미터 추가 - 값이 있는 경우에만
         if (status) {
             url.searchParams.set('status', status);
         }
-
+        
         if (startDate) {
             url.searchParams.set('startDate', startDate);
         }
-
+        
         if (endDate) {
             url.searchParams.set('endDate', endDate);
         }
-
+        
         if (search) {
             url.searchParams.set('search', search);
             if (searchType) {
@@ -211,10 +211,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 url.searchParams.set('searchType', 'name'); // 기본값 설정
             }
         }
-
+        
         // 항상 AND 조건을 적용
         url.searchParams.set('filterCondition', 'AND');
-
+        
         // 변경된 URL로 이동
         window.location.href = url.toString();
     }
@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     searchQueryInput.placeholder = '검색어 입력...';
             }
         });
-
+        
         // 페이지 로드 시 초기 placeholder 설정
         const currentSearchType = searchTypeSelect.value;
         if (currentSearchType) {
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'endDateFilter',
             'searchQuery'
         ];
-
+        
         filterInputs.forEach(id => {
             const element = document.getElementById(id);
             if (element) {
@@ -284,29 +284,29 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateDateRange() {
         const startDateInput = document.getElementById('startDateFilter');
         const endDateInput = document.getElementById('endDateFilter');
-
+        
         if (!startDateInput || !endDateInput) return;
-
+        
         // 종료일 변경 시 유효성 검사
         endDateInput.addEventListener('change', function() {
             if (!startDateInput.value) return; // 시작일이 비어있으면 검사하지 않음
-
+            
             const startDate = new Date(startDateInput.value);
             const endDate = new Date(this.value);
-
+            
             if (endDate < startDate) {
                 alert('종료일은 시작일보다 이후여야 합니다.');
                 this.value = ''; // 종료일 입력값 초기화
             }
         });
-
+        
         // 시작일 변경 시 유효성 검사
         startDateInput.addEventListener('change', function() {
             if (!endDateInput.value) return; // 종료일이 비어있으면 검사하지 않음
-
+            
             const startDate = new Date(this.value);
             const endDate = new Date(endDateInput.value);
-
+            
             if (startDate > endDate) {
                 alert('시작일은 종료일보다 이전이어야 합니다.');
                 this.value = ''; // 시작일 입력값 초기화
@@ -318,43 +318,43 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateFilterSummary() {
         const summaryElement = document.createElement('div');
         summaryElement.className = 'filter-summary mt-2';
-
+        
         const url = new URL(window.location.href);
         const params = url.searchParams;
-
+        
         let filterCount = 0;
         let summaryText = '';
-
+        
         // 상태 필터
         if (params.has('status') && params.get('status')) {
             filterCount++;
             const statusText = getStatusText(params.get('status'));
             summaryText += `상태: ${statusText}, `;
         }
-
+        
         // 날짜 필터
         if (params.has('startDate') && params.get('startDate')) {
             filterCount++;
             summaryText += `시작일: ${params.get('startDate')}, `;
         }
-
+        
         if (params.has('endDate') && params.get('endDate')) {
             filterCount++;
             summaryText += `종료일: ${params.get('endDate')}, `;
         }
-
+        
         // 검색 필터
         if (params.has('search') && params.get('search')) {
             filterCount++;
-            const searchTypeText = params.has('searchType') ?
+            const searchTypeText = params.has('searchType') ? 
                 getSearchTypeText(params.get('searchType')) : '전체';
             summaryText += `검색(${searchTypeText}): ${params.get('search')}, `;
         }
-
+        
         // 필터 요약 정보가 있는 경우에만 표시
         if (filterCount > 0) {
             summaryText = summaryText.slice(0, -2); // 마지막 쉼표와 공백 제거
-
+            
             const filterSection = document.querySelector('.filter-section');
             if (filterSection) {
                 summaryElement.innerHTML = `
@@ -363,13 +363,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span class="filter-text">${summaryText}</span>
                     </div>
                 `;
-
+                
                 // 기존 요약 정보가 있으면 제거
                 const existingSummary = filterSection.querySelector('.filter-summary');
                 if (existingSummary) {
                     existingSummary.remove();
                 }
-
+                
                 // 새 요약 정보 추가
                 filterSection.appendChild(summaryElement);
             }
@@ -409,7 +409,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 페이지 로드시 실행되는 초기화 함수
     document.addEventListener('DOMContentLoaded', function() {
         // ... (기존 코드)
-
+        
         // 필터 적용 버튼 클릭 이벤트
         const applyFilterButton = document.getElementById('applyFilterButton');
         if (applyFilterButton) {
@@ -417,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 applyFilters();
             });
         }
-
+        
         // 필터 초기화 버튼
         const resetFilterButton = document.getElementById('resetFilterButton');
         if (resetFilterButton) {
@@ -428,12 +428,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('endDateFilter').value = '';
                 document.getElementById('searchType').value = 'name'; // 기본값
                 document.getElementById('searchQuery').value = '';
-
+                
                 // 페이지 리로드 (모든 파라미터 제거)
                 window.location.href = window.location.pathname;
             });
         }
-
+        
         // 상태 필터 변경 시 스타일 업데이트
         const statusFilter = document.getElementById('statusFilter');
         if (statusFilter) {
@@ -441,7 +441,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 highlightActiveFilter(this);
             });
         }
-
+        
         // 날짜 필터 변경 시 스타일 업데이트
         const dateFilters = ['startDateFilter', 'endDateFilter'];
         dateFilters.forEach(id => {
@@ -452,7 +452,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
         });
-
+        
         // 검색 타입 변경 시 스타일 업데이트
         const searchType = document.getElementById('searchType');
         if (searchType) {
@@ -462,14 +462,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateSearchPlaceholder();
             });
         }
-
+        
         // 검색어 입력 시 스타일 업데이트
         const searchQuery = document.getElementById('searchQuery');
         if (searchQuery) {
             searchQuery.addEventListener('input', function() {
                 highlightActiveFilter(this);
             });
-
+            
             // Enter 키로 검색 가능하도록
             searchQuery.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
@@ -478,42 +478,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
-
+        
         // 날짜 범위 유효성 검사 설정
         validateDateRange();
-
+        
         // 엔터 키 이벤트 리스너 설정
         setupEnterKeyListeners();
-
+        
         // 활성화된 필터에 스타일 적용
         styleActiveFilters();
-
+        
         // 활성화된 필터 배지 표시
         displayActiveFilters();
-
+        
         // 필터 요약 정보 업데이트
         updateFilterSummary();
-
+        
         // 선택한 예약 삭제 버튼 텍스트 수정
         const cancelSelectedBtn = document.getElementById('cancelSelectedBtn');
         if (cancelSelectedBtn) {
             cancelSelectedBtn.innerHTML = `<i class="fas fa-trash-alt"></i> 선택한 예약 삭제`;
-
+            
             // 버튼 클릭 이벤트
             cancelSelectedBtn.addEventListener('click', function() {
                 const selectedCheckboxes = document.querySelectorAll('tbody .form-check-input:checked');
                 const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
-
+                
                 if (selectedIds.length === 0) {
                     return;
                 }
-
+                
                 if (confirm(`선택한 ${selectedIds.length}개의 예약을 목록에서 삭제하시겠습니까? (데이터베이스에서는 삭제되지 않습니다)`)) {
                     hideReservations(selectedIds);
                 }
             });
         }
-
+        
         // 필터 조건 라디오 버튼 이벤트 리스너
         const filterConditionRadios = document.querySelectorAll('input[name="filterCondition"]');
         if (filterConditionRadios.length > 0) {
@@ -545,7 +545,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateSearchPlaceholder() {
         const searchType = document.getElementById('searchType');
         const searchQuery = document.getElementById('searchQuery');
-
+        
         if (searchType && searchQuery) {
             switch(searchType.value) {
                 case 'name':
@@ -570,7 +570,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function styleActiveFilters() {
         const url = new URL(window.location.href);
         const params = url.searchParams;
-
+        
         // 상태 필터
         if (params.has('status') && params.get('status')) {
             const statusFilter = document.getElementById('statusFilter');
@@ -579,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusFilter.value = params.get('status');
             }
         }
-
+        
         // 날짜 필터
         if (params.has('startDate') && params.get('startDate')) {
             const startDateFilter = document.getElementById('startDateFilter');
@@ -588,7 +588,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 startDateFilter.value = params.get('startDate');
             }
         }
-
+        
         if (params.has('endDate') && params.get('endDate')) {
             const endDateFilter = document.getElementById('endDateFilter');
             if (endDateFilter) {
@@ -596,7 +596,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 endDateFilter.value = params.get('endDate');
             }
         }
-
+        
         // 검색 필터
         if (params.has('search') && params.get('search')) {
             const searchQuery = document.getElementById('searchQuery');
@@ -604,7 +604,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 searchQuery.classList.add('filter-active');
                 searchQuery.value = params.get('search');
             }
-
+            
             if (params.has('searchType')) {
                 const searchType = document.getElementById('searchType');
                 if (searchType) {
@@ -613,7 +613,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
-
+        
         // 검색 placeholder 업데이트
         updateSearchPlaceholder();
     }
@@ -622,12 +622,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayActiveFilters() {
         const activeFiltersContainer = document.getElementById('activeFilters');
         if (!activeFiltersContainer) return;
-
+        
         activeFiltersContainer.innerHTML = '';
-
+        
         const url = new URL(window.location.href);
         const params = url.searchParams;
-
+        
         // 상태 필터
         if (params.has('status') && params.get('status')) {
             addFilterBadge('상태: ' + getStatusText(params.get('status')), () => {
@@ -636,7 +636,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.location.href = url.toString();
             });
         }
-
+        
         // 날짜 필터
         if (params.has('startDate') && params.get('startDate')) {
             addFilterBadge('시작일: ' + params.get('startDate'), () => {
@@ -645,7 +645,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.location.href = url.toString();
             });
         }
-
+        
         if (params.has('endDate') && params.get('endDate')) {
             addFilterBadge('종료일: ' + params.get('endDate'), () => {
                 params.delete('endDate');
@@ -653,10 +653,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.location.href = url.toString();
             });
         }
-
+        
         // 검색 필터
         if (params.has('search') && params.get('search')) {
-            const searchTypeText = params.has('searchType') ?
+            const searchTypeText = params.has('searchType') ? 
                 getSearchTypeText(params.get('searchType')) : '전체';
             addFilterBadge(`${searchTypeText}: ${params.get('search')}`, () => {
                 params.delete('search');
@@ -665,15 +665,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.location.href = url.toString();
             });
         }
-
+        
         // 필터 배지 추가 함수
         function addFilterBadge(text, removeCallback) {
             const badge = document.createElement('span');
             badge.className = 'filter-badge';
             badge.innerHTML = `${text} <i class="fas fa-times"></i>`;
-
+            
             badge.querySelector('i').addEventListener('click', removeCallback);
-
+            
             activeFiltersContainer.appendChild(badge);
         }
     }
@@ -691,7 +691,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     row.style.height = '0';
                     row.style.padding = '0';
                     row.style.overflow = 'hidden';
-
+                    
                     // 애니메이션 후 완전히 제거
                     setTimeout(() => {
                         row.remove();
@@ -699,14 +699,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
-
+        
         // 선택 상태 초기화
         updateSelectedCount();
         updateCancelButtonState();
-
+        
         // 성공 메시지 표시
         showNotification('선택한 예약이 목록에서 제거되었습니다.', 'success');
-
+        
         // 테이블이 비어있는지 확인
         setTimeout(() => {
             const remainingRows = document.querySelectorAll('tbody tr:not([style*="height: 0"])');
@@ -735,30 +735,30 @@ document.addEventListener('DOMContentLoaded', function() {
     function showFilterMessage() {
         const url = new URL(window.location.href);
         const params = url.searchParams;
-
+        
         let hasFilters = false;
         let filterCount = 0;
-
+        
         if (params.has('status') && params.get('status')) {
             hasFilters = true;
             filterCount++;
         }
-
+        
         if (params.has('startDate') && params.get('startDate')) {
             hasFilters = true;
             filterCount++;
         }
-
+        
         if (params.has('endDate') && params.get('endDate')) {
             hasFilters = true;
             filterCount++;
         }
-
+        
         if (params.has('search') && params.get('search')) {
             hasFilters = true;
             filterCount++;
         }
-
+        
         if (hasFilters) {
             const filterSection = document.querySelector('.filter-section');
             if (filterSection) {
@@ -770,7 +770,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <strong>${filterCount}개의 필터</strong>가 적용되었습니다. 모든 조건을 충족하는 결과만 표시됩니다.
                     </div>
                 `;
-
+                
                 const existingMessage = document.querySelector('.filter-message');
                 if (existingMessage) {
                     existingMessage.replaceWith(messageElement);
@@ -791,48 +791,48 @@ document.addEventListener('DOMContentLoaded', function() {
     function enhanceDateRangeFilter() {
         const startDateInput = document.getElementById('startDateFilter');
         const endDateInput = document.getElementById('endDateFilter');
-
+        
         if (!startDateInput || !endDateInput) return;
-
+        
         // 날짜 캘린더가 닫히도록 하는 함수
         function closeDatepicker(input) {
             // input 요소의 focus를 제거하여 캘린더 닫기
             input.blur();
         }
-
+        
         // 시작일 선택 시 처리
         startDateInput.addEventListener('change', function() {
             // 시작일 캘린더 닫기
             closeDatepicker(this);
-
+            
             if (this.value) {
                 // 종료일 최소값을 시작일로 설정
                 endDateInput.min = this.value;
-
+                
                 // 종료일 입력 필드 활성화
                 endDateInput.disabled = false;
-
+                
                 // 종료일 캘린더 자동으로 열기
                 setTimeout(() => {
                     endDateInput.focus();
                 }, 100);
             }
         });
-
+        
         // 종료일 선택 시 처리
         endDateInput.addEventListener('change', function() {
             // 종료일 캘린더 닫기
             closeDatepicker(this);
-
+            
             if (startDateInput.value && this.value) {
                 const startDate = new Date(startDateInput.value);
                 const endDate = new Date(this.value);
-
+                
                 // 종료일이 시작일보다 이전이면 경고
                 if (endDate < startDate) {
                     alert('종료일은 시작일보다 이후여야 합니다.');
                     this.value = '';
-
+                    
                     // 캘린더 다시 열기
                     setTimeout(() => {
                         this.focus();
@@ -840,21 +840,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-
+        
         // 초기 상태 설정
         if (!startDateInput.value) {
             endDateInput.disabled = true;
         } else {
             endDateInput.min = startDateInput.value;
         }
-
+        
         // 날짜 필드에 직접 입력 시 유효성 검사
         [startDateInput, endDateInput].forEach(input => {
             input.addEventListener('blur', function() {
                 if (this.value && startDateInput.value && endDateInput.value) {
                     const startDate = new Date(startDateInput.value);
                     const endDate = new Date(endDateInput.value);
-
+                    
                     if (this === endDateInput && endDate < startDate) {
                         alert('종료일은 시작일보다 이후여야 합니다.');
                         this.value = '';
@@ -867,10 +867,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // DOM이 로드된 후 실행하는 함수들
     document.addEventListener('DOMContentLoaded', function() {
         // ... 기존 코드 ...
-
+        
         // 날짜 범위 필터 개선 적용
         enhanceDateRangeFilter();
-
+        
         // ... 기존 코드 ...
     });
 
@@ -909,11 +909,11 @@ document.addEventListener('DOMContentLoaded', function() {
             applyFutureDateFilter();
         });
     }
-
+    
     // 미래 기간 필터 적용 함수
     function applyFutureDateFilter() {
         const filterValue = document.getElementById('futureDateFilter').value;
-
+        
         if (!filterValue) {
             // 전체 기간 선택 시 날짜 필터 초기화
             document.getElementById('startDateFilter').value = '';
@@ -921,18 +921,18 @@ document.addEventListener('DOMContentLoaded', function() {
             applyFilters();
             return;
         }
-
+        
         // 오늘 날짜 가져오기
         const today = new Date();
         today.setHours(0, 0, 0, 0); // 오늘 자정으로 설정
-
+        
         // 시작일은 항상 오늘
         const formattedToday = formatDate(today);
         document.getElementById('startDateFilter').value = formattedToday;
-
+        
         // 종료일 설정
         let endDate = new Date(today);
-
+        
         if (filterValue === 'today') {
             // 오늘만 보기
             document.getElementById('endDateFilter').value = formattedToday;
@@ -942,7 +942,7 @@ document.addEventListener('DOMContentLoaded', function() {
             endDate.setDate(today.getDate() + days);
             document.getElementById('endDateFilter').value = formatDate(endDate);
         }
-
+        
         // 필터 적용
         applyFilters();
     }
@@ -955,7 +955,7 @@ function setupStatusButtons() {
             const currentStatus = this.getAttribute('data-current-status');
             const reservationId = this.getAttribute('data-id');
             const buttonRect = this.getBoundingClientRect();
-
+            
             // 상태 옵션 생성 (계약 불가 색상을 주황색으로 변경)
             const options = [
                 { id: 'PENDING', text: '예약 대기', class: 'status-btn btn-warning' },
@@ -963,7 +963,7 @@ function setupStatusButtons() {
                 { id: 'COMPL', text: '계약 완료', class: 'status-btn btn-success' },
                 { id: 'CANCELLED', text: '계약 불가', class: 'status-btn btn-orange' }
             ];
-
+            
             // 상태 메뉴 생성
             const menu = document.createElement('div');
             menu.className = 'status-menu';
@@ -975,7 +975,7 @@ function setupStatusButtons() {
             menu.style.border = '1px solid #ddd';
             menu.style.borderRadius = '4px';
             menu.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
-
+            
             // 현재 상태를 제외한 옵션 추가
             options.forEach(option => {
                 if (option.id !== currentStatus) {
@@ -986,26 +986,26 @@ function setupStatusButtons() {
                     item.style.cursor = 'pointer';
                     item.style.width = '100px';
                     item.style.textAlign = 'center';
-
+                    
                     item.addEventListener('mouseover', () => {
                         item.style.backgroundColor = '#f5f5f5';
                     });
-
+                    
                     item.addEventListener('mouseout', () => {
                         item.style.backgroundColor = 'white';
                     });
-
+                    
                     item.addEventListener('click', () => {
                         changeReservationStatus(reservationId, option.id, button, option.text, option.class);
                         document.body.removeChild(menu);
                     });
-
+                    
                     menu.appendChild(item);
                 }
             });
-
+            
             document.body.appendChild(menu);
-
+            
             // 메뉴 외부 클릭 시 닫기
             document.addEventListener('click', function closeMenu(e) {
                 if (!menu.contains(e.target) && e.target !== button) {
@@ -1024,22 +1024,22 @@ function changeReservationStatus(reservationId, newStatus, button, statusText, s
     // CSRF 토큰 가져오기
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
     const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-
+    
     const headers = {
         'Content-Type': 'application/json'
     };
-
+    
     if (csrfHeader && csrfToken) {
         headers[csrfHeader] = csrfToken;
     }
-
-    const requestBody = JSON.stringify({
+    
+    const requestBody = JSON.stringify({ 
         reservationId: reservationId,
         status: newStatus
     });
-
+    
     console.log(`상태 변경 요청: ID=${reservationId}, 새 상태=${newStatus}`);
-
+    
     // 상태 변경 요청 (삭제하지 않고 상태만 변경)
     fetch(`/api/reservations/update-status-only`, {
         method: 'POST',
@@ -1057,12 +1057,12 @@ function changeReservationStatus(reservationId, newStatus, button, statusText, s
     })
     .then(data => {
         console.log('응답 데이터:', data);
-
+        
         // UI 업데이트
         button.textContent = statusText;
         button.className = statusClass;
         button.setAttribute('data-current-status', newStatus);
-
+        
         // 성공 메시지 표시
         showNotification('상태가 성공적으로 변경되었습니다.', 'success');
     })
@@ -1116,14 +1116,14 @@ function loadReservationDetails(reservationId) {
             document.getElementById('reservationStatus').value = data.status;
             document.getElementById('messageContent').value = data.message || '';
             document.getElementById('adminNotes').value = data.adminNotes || '';
-
+            
             const propertyListContainer = document.getElementById('propertyList');
             propertyListContainer.innerHTML = '';
-
+            
             if (data.properties && data.properties.length > 0) {
                 const propertyList = document.createElement('ul');
                 propertyList.className = 'list-group';
-
+                
                 data.properties.forEach(property => {
                     const item = document.createElement('li');
                     item.className = 'list-group-item';
@@ -1134,14 +1134,14 @@ function loadReservationDetails(reservationId) {
                     `;
                     propertyList.appendChild(item);
                 });
-
+                
                 propertyListContainer.appendChild(propertyList);
             } else {
                 propertyListContainer.innerHTML = '<p class="text-muted">등록된 매물 정보가 없습니다.</p>';
             }
-
+            
             document.getElementById('chatLink').href = `/mypage/chat.html?user=${data.user.email}`;
-
+            
             const consultingModal = new bootstrap.Modal(document.getElementById('consultingModal'));
             consultingModal.show();
         })
@@ -1154,7 +1154,7 @@ function loadReservationDetails(reservationId) {
 // 날짜를 datetime-local 입력에 맞는 형식으로 변환
 function formatDateForInput(dateString) {
     if (!dateString) return '';
-
+    
     const date = new Date(dateString);
     return date.toISOString().slice(0, 16); // "YYYY-MM-DDThh:mm" 형식으로 변환
 }
@@ -1172,20 +1172,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 message: formData.get('message'),
                 adminNotes: formData.get('adminNotes')
             };
-
+            
             // CSRF 토큰 가져오기
             const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
             const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-
+            
             // 요청 헤더 설정
             const headers = {
                 'Content-Type': 'application/json'
             };
-
+            
             if (csrfHeader && csrfToken) {
                 headers[csrfHeader] = csrfToken;
             }
-
+            
             fetch('/api/reservations/update-simple', {
                 method: 'POST',
                 headers: headers,

@@ -27,7 +27,8 @@ import jakarta.persistence.criteria.JoinType;
 
 import org.springframework.data.jpa.domain.Specification;
 import com.realestate.app.reservation.SecurityUtils;
-import com.realestate.app.property.PropertyDto;
+
+import java.util.ArrayList;
 
 @Service
 @AllArgsConstructor
@@ -59,8 +60,6 @@ public class ReservationService {
         // message 필드 설정
         reservation.setMessage(dto.getMessage());
         
-        // propertyIds가 null이 아니고 비어있지 않을 경우에만 매물 추가
-        if (propertyIds != null && !propertyIds.isEmpty()) {
         // 모든 매물을 예약에 추가
         for (Long propertyId : propertyIds) {
             Property property = propertyService.getPropertyById(propertyId);
@@ -70,7 +69,6 @@ public class ReservationService {
             propertyService.saveProperty(property);
             
             reservation.addProperty(property);
-            }
         }
         
         // 하나의 예약 저장
@@ -624,22 +622,33 @@ public class ReservationService {
         
         return reservations.stream().map(reservation -> {
             ReservationDto dto = new ReservationDto();
-            dto.setReservationId(Long.valueOf(String.valueOf(reservation.getReservationId())));
+            dto.setReservationId(reservation.getReservationId());
             dto.setReservedDate(reservation.getReservedDate().atStartOfDay());
             dto.setStatus(reservation.getStatus().name());
             dto.setMessage(reservation.getMessage());
             
-            // 매물 정보가 있는 경우 설정
+            // 사용자 정보 설정
+            if (reservation.getUser() != null) {
+                dto.setName(reservation.getUser().getName());
+                dto.setEmail(reservation.getUser().getEmail());
+                dto.setPhone(reservation.getUser().getPhone());
+            }
+            
+            // 매물 ID와 제목, 위치만 설정
             if (reservation.getProperties() != null && !reservation.getProperties().isEmpty()) {
-                List<PropertyDto> propertyDtos = reservation.getProperties().stream()
-                    .map(property -> {
-                        PropertyDto propertyDto = new PropertyDto();
-                        propertyDto.setTitle(property.getTitle());
-                        // 필요한 경우 다른 속성도 설정
-                        return propertyDto;
-                    })
-                    .collect(Collectors.toList());
-                dto.setProperties(propertyDtos);
+                List<Long> propertyIds = new ArrayList<>();
+                List<String> propertyTitles = new ArrayList<>();
+                List<String> propertyLocations = new ArrayList<>();
+                
+                for (Property property : reservation.getProperties()) {
+                    propertyIds.add(property.getPropertyId());
+                    propertyTitles.add(property.getTitle());
+                    propertyLocations.add(property.getLocation());
+                }
+                
+                dto.setPropertyIds(propertyIds);
+                dto.setPropertyTitles(propertyTitles);
+                dto.setPropertyLocations(propertyLocations);
             }
             
             return dto;
@@ -673,19 +682,21 @@ public class ReservationService {
                 dto.setPhone(reservation.getUser().getPhone());
             }
             
-            // 매물 정보가 있는 경우 설정
+            // 매물 정보를 ID, 제목, 위치로만 설정
             if (reservation.getProperties() != null && !reservation.getProperties().isEmpty()) {
-                List<PropertyDto> propertyDtos = reservation.getProperties().stream()
-                    .map(property -> {
-                        PropertyDto propertyDto = new PropertyDto();
-                        propertyDto.setId(property.getPropertyId());
-                        propertyDto.setTitle(property.getTitle());
-                        propertyDto.setLocation(property.getLocation());
-                        // 필요한 경우 다른 속성도 설정
-                        return propertyDto;
-                    })
-                    .collect(Collectors.toList());
-                dto.setProperties(propertyDtos);
+                List<Long> propertyIds = new ArrayList<>();
+                List<String> propertyTitles = new ArrayList<>();
+                List<String> propertyLocations = new ArrayList<>();
+                
+                for (Property property : reservation.getProperties()) {
+                    propertyIds.add(property.getPropertyId());
+                    propertyTitles.add(property.getTitle());
+                    propertyLocations.add(property.getLocation());
+                }
+                
+                dto.setPropertyIds(propertyIds);
+                dto.setPropertyTitles(propertyTitles);
+                dto.setPropertyLocations(propertyLocations);
             }
             
             return dto;

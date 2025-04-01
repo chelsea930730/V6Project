@@ -37,4 +37,7 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
     // ID 또는 제목으로 검색
     Page<Property> findByPropertyIdOrTitleContaining(Long propertyId, String title, Pageable pageable);
 
+    // 랜덤 매물 가져오기
+    @Query(value = "SELECT * FROM property ORDER BY RAND() LIMIT :limit", nativeQuery = true)
+    List<Property> findRandomProperties(@Param("limit") int limit);
 }
