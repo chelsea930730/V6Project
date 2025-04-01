@@ -131,6 +131,11 @@ public class ReservationController {
                 userService.updateUser(user);
             }
             
+            // propertyIds가 null이거나 비어있을 경우에도 처리할 수 있도록 수정
+            if (propertyIds == null) {
+                propertyIds = new ArrayList<>();
+            }
+            
             // 예약 저장
             reservationService.saveReservationWithProperties(reservationDto, propertyIds, user);
             redirectAttributes.addFlashAttribute("success", "상담 예약이 성공적으로 접수되었습니다.");

@@ -1,3 +1,7 @@
+body {
+	font-family: 'Cafe24 Ssurround air OTF Light', sans-serif;
+}
+
 /* 테이블 스타일 */
 .table {
 	font-size: 0.95rem;
@@ -10,6 +14,15 @@
 	border-bottom: 1px solid #eaeaea;
 	font-weight: 600;
 	padding: 12px 20px;
+	vertical-align: middle !important; /* 텍스트 수직 가운데 정렬 */
+	padding-top: 12px;
+	padding-bottom: 12px;
+	white-space: nowrap; /* 줄바꿈 방지 */
+	height: 50px; /* 최소 높이 고정 (선택 사항) */
+}
+.table thead th label {
+	margin-bottom: 0;
+	line-height: 1.2; /* 텍스트 줄간격 조정 */
 }
 
 .table tbody tr:hover {
@@ -74,9 +87,9 @@
 }
 
 /* 상태 버튼의 기존 스타일 재정의하여 충돌 방지 */
-.status-btn.btn-warning, 
-.status-btn.btn-primary, 
-.status-btn.btn-success, 
+.status-btn.btn-warning,
+.status-btn.btn-primary,
+.status-btn.btn-success,
 .status-btn.btn-orange {
 	background-color: transparent;
 	border-color: transparent;
@@ -434,8 +447,12 @@
 .btn {
 	border-radius: 20px;
 	font-weight: 500;
-	padding: 8px 16px;
-	transition: all 0.3s ease;
+	padding: 6px 16px;
+	font-size: 14px;
+	height: 38px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .btn-primary {

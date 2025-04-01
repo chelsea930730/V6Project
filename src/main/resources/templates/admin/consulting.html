@@ -20,24 +20,24 @@
         padding-top: 0 !important;
         margin: 0;
       }
-      
+
       /* 사이드바가 상단에 정확히 붙도록 설정 */
       .admin-sidebar {
         top: 0;
         margin-top: 0;
         padding-top: 20px;
       }
-      
+
       /* 메인 컨텐츠 영역 조정 */
       main {
         margin-left: 250px;
         padding-top: 0;
       }
-      
+
       .container-fluid {
         padding-top: 0;
       }
-      
+
       /* 상태 선택 드롭다운 스타일 */
       .status-dropdown {
         position: absolute;
@@ -48,31 +48,43 @@
         z-index: 1000;
         min-width: 120px;
       }
-      
+
       .status-dropdown-item {
         padding: 8px 12px;
         cursor: pointer;
       }
-      
+
       .status-dropdown-item:hover {
         background-color: #f8f9fa;
       }
-      
+
       /* 채팅 버튼 스타일 */
       .chat-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap; /* 줄바꿈 방지 */
+        min-width: 80px; /* 버튼 최소 너비 지정 */
+        height: 38px;
+        padding: 6px 12px;
+        font-size: 14px;
+        font-weight: 500;
         background-color: #6a99cd;
         color: white;
         border: none;
-        padding: 4px 10px;
-        border-radius: 4px;
+        border-radius: 20px;
         cursor: pointer;
         transition: background-color 0.3s;
       }
-      
+
+      .chat-button i {
+        margin-right: 6px; /* 아이콘과 텍스트 간 간격 */
+      }
+
       .chat-button:hover {
         background-color: #355c86;
       }
-      
+
       /* 필터 영역 스타일 */
       .filter-section {
         display: flex;
@@ -81,8 +93,8 @@
         align-items: center;
         margin-bottom: 15px;
       }
-      
-      .filter-section .form-control, 
+
+      .filter-section .form-control,
       .filter-section .form-select {
         max-width: 200px;
       }
@@ -112,7 +124,7 @@
                   <button id="cancelSelectedBtn" class="btn btn-sm btn-danger" disabled>
                     <i class="fas fa-trash-alt"></i> 선택한 예약 삭제
                   </button>
-                  
+
                   <div class="filter-row d-flex gap-2 flex-wrap">
                     <div>
                       <label for="statusFilter" class="form-label">예약 상태</label>
@@ -124,17 +136,17 @@
                         <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">계약 불가</option>
                       </select>
                     </div>
-                    
+
                     <div>
                       <label for="startDateFilter" class="form-label">시작일</label>
                       <input type="date" id="startDateFilter" class="form-control form-control-sm" th:value="${startDate}">
                     </div>
-                    
+
                     <div>
                       <label for="endDateFilter" class="form-label">종료일</label>
                       <input type="date" id="endDateFilter" class="form-control form-control-sm" th:value="${endDate}">
                     </div>
-                    
+
                     <div>
                       <label for="searchType" class="form-label">검색 유형</label>
                       <select id="searchType" class="form-select form-select-sm">
@@ -144,7 +156,7 @@
                         <option value="property" th:selected="${searchType == 'property'}">매물정보</option>
                       </select>
                     </div>
-                    
+
                     <div>
                       <label for="searchQuery" class="form-label">검색어</label>
                       <div class="input-group">
@@ -154,7 +166,7 @@
                         </button>
                       </div>
                     </div>
-                    
+
                     <div class="d-flex align-items-end">
                       <button id="applyFilterButton" class="btn btn-sm btn-primary me-1">필터 적용</button>
                       <button id="resetFilterButton" class="btn btn-sm btn-outline-secondary" style="min-width: 79px;">
@@ -163,7 +175,7 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <!-- 초기화 버튼 아래에 미래 기간 필터 추가 -->
                 <div class="d-flex align-items-center mt-3">
                   <h6 class="mb-0 me-3">일정관리</h6>
@@ -176,7 +188,7 @@
                     <option value="14">14일 이내</option>
                   </select>
                 </div>
-                
+
                 <!-- 필터 조건 영역 -->
                 <div class="filter-condition mt-2">
                   <div class="form-check form-check-inline">
@@ -210,7 +222,7 @@
                     <tr>
                       <th>
                         <input type="checkbox" id="selectAll" class="form-check-input">
-                        <label for="selectAll" style="margin-left: 5px;">0 selected</label>
+                        <label for="selectAll" style="margin-left: 5px; margin-bottom: 0;">0 selected</label>
                       </th>
                       <th>예약 번호</th>
                       <th>고객명</th>
@@ -233,7 +245,7 @@
                       <td th:text="${reservation.user.email}">user@example.com</td>
                       <td th:text="${#temporals.format(reservation.reservedDate, 'yyyy-MM-dd HH:mm')}">2024-07-15 14:00</td>
                       <td th:if="${reservation.properties != null && !reservation.properties.isEmpty()}">
-                        <h6 class="mb-1" th:text="${reservation.properties[0].title + 
+                        <h6 class="mb-1" th:text="${reservation.properties[0].title +
                          (reservation.properties.size() > 1 ? ' 외 ' + (reservation.properties.size() - 1) + '개' : '')}">
                           시가노마이아까지 도보 15분 이내 매물 희망
                         </h6>
@@ -242,16 +254,16 @@
                         <span>매물 정보 없음</span>
                       </td>
                       <td>
-                        <button class="status-btn" 
+                        <button class="status-btn"
                                 th:classappend="${
-                                  reservation.status.name() == 'PENDING' ? 'btn-warning' : 
+                                  reservation.status.name() == 'PENDING' ? 'btn-warning' :
                                   reservation.status.name() == 'CONFIRMED' ? 'btn-primary' :
                                   reservation.status.name() == 'COMPL' ? 'btn-success' :
                                   'btn-orange'
                                 }"
                                 th:attr="data-id=${reservation.reservationId}, data-current-status=${reservation.status.name()}"
                                 th:text="${
-                                  reservation.status.name() == 'PENDING' ? '예약 대기' : 
+                                  reservation.status.name() == 'PENDING' ? '예약 대기' :
                                   reservation.status.name() == 'CONFIRMED' ? '예약 중' :
                                   reservation.status.name() == 'COMPL' ? '계약 완료' :
                                   '계약 불가'

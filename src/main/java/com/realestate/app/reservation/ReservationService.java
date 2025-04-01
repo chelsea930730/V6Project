@@ -59,6 +59,8 @@ public class ReservationService {
         // message 필드 설정
         reservation.setMessage(dto.getMessage());
         
+        // propertyIds가 null이 아니고 비어있지 않을 경우에만 매물 추가
+        if (propertyIds != null && !propertyIds.isEmpty()) {
         // 모든 매물을 예약에 추가
         for (Long propertyId : propertyIds) {
             Property property = propertyService.getPropertyById(propertyId);
@@ -68,6 +70,7 @@ public class ReservationService {
             propertyService.saveProperty(property);
             
             reservation.addProperty(property);
+            }
         }
         
         // 하나의 예약 저장

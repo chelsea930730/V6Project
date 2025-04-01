@@ -940,3 +940,81 @@ document.getElementById('linePopup')?.addEventListener('click', function(e) {
         e.preventDefault();
     }
 });
+
+// 선택한 매물을 장바구니에 담는 함수
+function addSelectedToCart() {
+    // 체크된 매물 ID 수집
+    const checkedProperties = document.querySelectorAll('.property-item input[type="checkbox"]:checked');
+    const propertyIds = Array.from(checkedProperties).map(checkbox => checkbox.value);
+    
+    if (propertyIds.length === 0) {
+        alert('장바구니에 담을 매물을 선택해주세요.');
+        return;
+    }
+    
+    console.log('장바구니에 담을 매물 ID:', propertyIds);
+    
+    // CSRF 토큰 가져오기 (Spring Security 사용 시)
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+    
+    // 서버에 요청 보내기
+    // CartController에서 기대하는 형식으로 데이터 전송
+    const formData = new FormData();
+    propertyIds.forEach(id => {
+        formData.append('propertyIds', id);
+    });
+    
+    const headers = {};
+    if (csrfHeader && csrfToken) {
+        headers[csrfHeader] = csrfToken;
+    }
+    
+    fetch('/cart/add', {
+        method: 'POST',
+        headers: headers,
+        body: formData
+    })
+    .then(response => {
+        if (response.redirected) {
+            // 로그인 페이지로 리디렉션된 경우
+            window.location.href = response.url;
+            return;
+        }
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                alert('로그인이 필요한 서비스입니다.');
+                window.location.href = '/user/login';
+                return;
+            }
+            throw new Error('장바구니 추가 중 오류가 발생했습니다.');
+        }
+        
+        // 성공 메시지
+        alert(`${propertyIds.length}개의 매물이 장바구니에 담겼습니다.`);
+        
+        // 체크박스 해제
+        checkedProperties.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+    })
+    .catch(error => {
+        console.error('에러:', error);
+        alert('장바구니 추가 중 오류가 발생했습니다. 로그인 상태를 확인해주세요.');
+    });
+}
+
+// 전역 스코프에 함수 등록
+window.addSelectedToCart = addSelectedToCart;
+
+// 페이지 로드 시 장바구니 버튼에 이벤트 리스너 추가
+document.addEventListener('DOMContentLoaded', function() {
+    // ... 기존 코드 유지 ...
+    
+    // 장바구니 버튼 이벤트 리스너
+    const cartButton = document.querySelector('.add-cart-button');
+    if (cartButton) {
+        cartButton.addEventListener('click', addSelectedToCart);
+    }
+});
