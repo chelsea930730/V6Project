@@ -376,6 +376,92 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+// 예약 상세 정보 로드 함수 수정
+const originalLoadReservationDetails = loadReservationDetails;
+loadReservationDetails = function(reservationId) {
+    fetch(`/api/reservations/${reservationId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('예약 정보를 불러오는데 실패했습니다.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById('reservationId').value = data.reservationId;
+            document.getElementById('reservationNumber').textContent = 'NO.' + data.reservationId;
+            document.getElementById('customerName').textContent = data.user.name;
+            document.getElementById('customerEmail').textContent = data.user.email;
+            document.getElementById('customerPhone').textContent = data.user.phone || '연락처 없음';
+            document.getElementById('reservationDate').value = formatDateForInput(data.reservedDate);
+            document.getElementById('reservationStatus').value = data.status;
+            document.getElementById('messageContent').value = data.message || '';
+            document.getElementById('adminNotes').value = data.adminNotes || '';
+            
+            const propertyListContainer = document.getElementById('propertyList');
+            propertyListContainer.innerHTML = '';
+            
+            if (data.properties && data.properties.length > 0) {
+                const propertyList = document.createElement('ul');
+                propertyList.className = 'list-group';
+                
+                data.properties.forEach(property => {
+                    const item = document.createElement('li');
+                    item.className = 'list-group-item';
+                    
+                    // 상태 변경 드롭다운을 위한 배열
+                    const statusOptions = [
+                        { value: '예약가능', text: '예약가능' },
+                        { value: '예약중', text: '예약중' },
+                        { value: '거래완료', text: '거래완료' }
+                    ];
+                    
+                    item.innerHTML = `
+                        <strong>${property.title}</strong><br>
+                        ${property.location}<br>
+                        월세: ${property.monthlyPrice.toLocaleString()}円<br>
+                        <div class="d-flex mt-2 gap-2">
+                            <a href="/property/${property.propertyId}" class="btn btn-sm btn-primary" target="_blank">
+                                상세보기
+                            </a>
+                            <select class="form-select form-select-sm btn-sm" 
+                                    style="width: auto; height: 31px;" 
+                                    data-property-id="${property.propertyId}">
+                                ${statusOptions.map(option => 
+                                    `<option value="${option.value}" ${property.status === option.value ? 'selected' : ''}>
+                                        ${option.text}
+                                    </option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                    `;
+                    
+                    propertyList.appendChild(item);
+                    
+                    // 상태 변경 이벤트 리스너 등록 (DOM이 생성된 후 추가)
+                    const statusSelect = item.querySelector('select[data-property-id]');
+                    if (statusSelect) {
+                        statusSelect.addEventListener('change', function() {
+                            updatePropertyStatus(this.dataset.propertyId, this.value);
+                        });
+                    }
+                });
+                
+                propertyListContainer.appendChild(propertyList);
+                
+            } else {
+                propertyListContainer.innerHTML = '<p class="text-muted">등록된 매물 정보가 없습니다.</p>';
+            }
+            
+            document.getElementById('chatLink').href = `/mypage/chat.html?user=${data.user.email}`;
+            
+            const consultingModal = new bootstrap.Modal(document.getElementById('consultingModal'));
+            consultingModal.show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(error.message);
+        });
+};
     // 상태 텍스트 변환 함수
     function getStatusText(status) {
         switch(status) {
@@ -1127,11 +1213,40 @@ function loadReservationDetails(reservationId) {
                 data.properties.forEach(property => {
                     const item = document.createElement('li');
                     item.className = 'list-group-item';
+                    
+                    // 상태 변경 드롭다운을 위한 배열
+                    const statusOptions = [
+                        { value: '예약가능', text: '예약가능' },
+                        { value: '예약중', text: '예약중' },
+                        { value: '거래완료', text: '거래완료' }
+                    ];
+                    
                     item.innerHTML = `
                         <strong>${property.title}</strong><br>
                         ${property.location}<br>
-                        월세: ${property.monthlyPrice.toLocaleString()}円
+                        월세: ${property.monthlyPrice.toLocaleString()}円<br>
+                        <div class="d-flex mt-2 gap-2">
+                            <a href="/property/${property.propertyId}" class="btn btn-sm btn-primary" target="_blank">
+                                상세보기
+                            </a>
+                            <select class="form-select form-select-sm btn-sm" 
+                                    style="width: auto; height: 31px;" 
+                                    data-property-id="${property.propertyId}">
+                                ${statusOptions.map(option => 
+                                    `<option value="${option.value}" ${property.status === option.value ? 'selected' : ''}>
+                                        ${option.text}
+                                    </option>`
+                                ).join('')}
+                            </select>
+                        </div>
                     `;
+                    
+                    // 상태 변경 이벤트 리스너 등록
+                    const statusSelect = item.querySelector('select[data-property-id]');
+                    statusSelect.addEventListener('change', function() {
+                        updatePropertyStatus(this.dataset.propertyId, this.value);
+                    });
+                    
                     propertyList.appendChild(item);
                 });
                 
@@ -1149,6 +1264,53 @@ function loadReservationDetails(reservationId) {
             console.error('Error:', error);
             alert(error.message);
         });
+}
+
+// 매물 상태 업데이트 함수 수정
+// 매물 상태 업데이트 함수 수정 - 정상 작동하는 버전
+function updatePropertyStatus(propertyId, newStatus) {
+    // CSRF 토큰 가져오기
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+    
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    
+    if (csrfHeader && csrfToken) {
+        headers[csrfHeader] = csrfToken;
+    }
+    
+    console.log(`매물 상태 변경 요청: ID=${propertyId}, 새 상태=${newStatus}`);
+    
+    try {
+        fetch(`/api/properties/${propertyId}/status`, {
+            method: 'PUT',
+            headers: headers,
+            body: JSON.stringify({ status: newStatus })
+        })
+        .then(response => {
+            console.log(`응답 상태 코드: ${response.status}`);
+            
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.error('오류 응답:', text);
+                    throw new Error(text || '상태 변경에 실패했습니다.');
+                });
+            }
+            
+            // 성공 메시지 표시 (API 응답 대기 없이)
+            showNotification('매물 상태가 성공적으로 변경되었습니다.', 'success');
+            return { success: true };
+        })
+        .catch(error => {
+            console.error('상태 변경 오류:', error);
+            showNotification('API 호출 중 오류: ' + error.message, 'error');
+        });
+    } catch (error) {
+        console.error('예외 발생:', error);
+        showNotification('오류가 발생했습니다: ' + error.message, 'error');
+    }
 }
 
 // 날짜를 datetime-local 입력에 맞는 형식으로 변환

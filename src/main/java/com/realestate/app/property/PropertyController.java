@@ -6,8 +6,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/property")
@@ -103,5 +105,23 @@ public class PropertyController {
             case "大田区" -> "오타구";
             default -> japaneseDistrict;
         };
+    }
+
+    @PutMapping("/api/properties/{id}/status")
+    @ResponseBody
+    public ResponseEntity<?> updatePropertyStatus(
+        @PathVariable Long id,
+        @RequestBody Map<String, String> request) {
+        
+        try {
+            String newStatus = request.get("status");
+            Property property = propertyService.getPropertyById(id);
+            property.setStatus(Property.Status.valueOf(newStatus));
+            propertyService.saveProperty(property);
+            
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("매물 상태 업데이트에 실패했습니다: " + e.getMessage());
+        }
     }
 }
