@@ -57,6 +57,15 @@ public class PropertyService {
             propertyDto.setReikin(BigDecimal.ZERO);
         }
 
+        // features 값에서 상세조건을 detailDescription에 저장
+        String features = propertyDto.getDetailDescription();
+        if (features != null && !features.isEmpty()) {
+            // 상세조건을 detailDescription에 저장
+            propertyDto.setDetailDescription(features);
+        }
+
+        // description은 그대로 description에 저장 (비고)
+
         Property property = propertyDto.toEntity();
 
         if (property.getLocation() != null) {
@@ -445,8 +454,31 @@ public class PropertyService {
         }
     }
 
+    @Transactional
     public Property updateProperty(PropertyDto propertyDto) {
+        Property existingProperty = propertyRepository.findById(propertyDto.getPropertyId())
+                .orElseThrow(() -> new RuntimeException("매물을 찾을 수 없습니다: " + propertyDto.getPropertyId()));
+
+        // 기존 데이터 유지하면서 업데이트
         Property property = propertyDto.toEntity();
+        property.setCreatedAt(existingProperty.getCreatedAt());
+
+        // features 값에서 상세조건을 detailDescription에 저장
+        String features = propertyDto.getDetailDescription();
+        if (features != null && !features.isEmpty()) {
+            // 상세조건을 detailDescription에 저장
+            property.setDetailDescription(features);
+        }
+
+        // description은 그대로 description에 저장 (비고)
+
+        // 주변 시설 정보 명시적으로 설정
+        property.setNearbyFacilities(propertyDto.getNearbyFacilities());
+
+        // 디버깅용 로그
+        log.info("매물 업데이트 중: ID={}, nearbyFacilities={}",
+                property.getPropertyId(), property.getNearbyFacilities());
+
         return propertyRepository.save(property);
     }
 

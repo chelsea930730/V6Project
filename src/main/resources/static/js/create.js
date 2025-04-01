@@ -531,8 +531,8 @@ document.addEventListener('DOMContentLoaded', function() {
 			formData.append('roomType', roomType.value);
 			
 			// 특징
-			const features = Array.from(document.querySelectorAll('input[name="features"]:checked')).map(cb => cb.value);
-			features.forEach(feature => formData.append('features', feature));
+			const features = Array.from(document.querySelectorAll('input[name="detailDescription"]:checked')).map(cb => cb.value);
+			features.forEach(feature => formData.append('detailDescription', feature));
 			
 			// 노선과 역
 			if (!lineInput.value || !stationInput.value) {
@@ -584,6 +584,12 @@ document.addEventListener('DOMContentLoaded', function() {
 			const url = propertyId ? `/api/properties/${propertyId}` : '/api/properties';
 			const method = propertyId ? 'PUT' : 'POST';
 			
+			// 디버깅용 로그 추가
+			console.log('Form data for submission:');
+			for (const [key, value] of formData.entries()) {
+				console.log(`${key}: ${value}`);
+			}
+
 			fetch(url, {
 					method: method,
 					body: formData
@@ -671,17 +677,16 @@ document.addEventListener('DOMContentLoaded', function() {
 							}
 							
 							// description에서 features 추출
-							if (data.description) {
-									const featuresMatch = data.description.match(/특징:[\s\S]*?-\s(.*?)$/gm);
-									if (featuresMatch) {
-											featuresMatch.forEach(featureText => {
-													const feature = featureText.replace(/특징:[\s\S]*?-\s/, '').trim();
-													const featureCheckbox = form.querySelector(`[name="features"][value="${feature}"]`);
+							const featuresMatch = data.detailDescription ? data.detailDescription.split(", ") : [];
+							if (featuresMatch && featuresMatch.length > 0) {
+									featuresMatch.forEach(feature => {
+											if (feature && feature.trim()) {
+													const featureCheckbox = form.querySelector(`[name="detailDescription"][value="${feature.trim()}"]`);
 													if (featureCheckbox) {
 															featureCheckbox.checked = true;
 													}
-											});
-									}
+											}
+									});
 							}
 							
 							// 노선 및 역 설정

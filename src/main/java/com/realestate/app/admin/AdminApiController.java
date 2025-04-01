@@ -39,7 +39,7 @@ public class AdminApiController {
             @RequestParam("floor") String floor,
             @RequestParam("buildingType") String buildingType,
             @RequestParam("roomType") String roomType,
-            @RequestParam("features") String[] features,
+            @RequestParam(value = "detailDescription", required = false) String[] detailDescription,
             @RequestParam("station") String station,
             @RequestParam("line") String line,
             @RequestParam("address") String address,
@@ -99,14 +99,10 @@ public class AdminApiController {
             property.setDescription(description);
             property.setNearbyFacilities(nearbyFacilities);
 
-            // 특징들을 description에 추가
-            if (features != null && features.length > 0) {
-                StringBuilder featureText = new StringBuilder(description);
-                featureText.append("\n\n특징:\n");
-                for (String feature : features) {
-                    featureText.append("- ").append(feature).append("\n");
-                }
-                property.setDescription(featureText.toString());
+            // 특징 처리
+            if (detailDescription != null && detailDescription.length > 0) {
+                String detailDescriptionText = String.join(", ", detailDescription);
+                property.setDetailDescription(detailDescriptionText);
             }
 
             // 썸네일 이미지 처리
@@ -214,7 +210,7 @@ public class AdminApiController {
             @RequestParam("floor") String floor,
             @RequestParam("buildingType") String buildingType,
             @RequestParam("roomType") String roomType,
-            @RequestParam("features") String[] features,
+            @RequestParam(value = "detailDescription", required = false) String[] detailDescription,
             @RequestParam("station") String station,
             @RequestParam("line") String line,
             @RequestParam("address") String address,
@@ -222,8 +218,9 @@ public class AdminApiController {
             @RequestParam("status") String status,
             @RequestParam("builtYear") String builtYear,
             @RequestParam("description") String description,
-            @RequestParam("shikikin") String shikikin,
-            @RequestParam("reikin") String reikin,
+            @RequestParam(value = "nearbyFacilities", required = false) String nearbyFacilities,
+            @RequestParam(value = "shikikin", required = false) BigDecimal shikikin,
+            @RequestParam(value = "reikin", required = false) BigDecimal reikin,
             @RequestParam(value = "thumbnailImage", required = false) MultipartFile thumbnailImage,
             @RequestParam(value = "floorplanImages", required = false) MultipartFile[] floorplanImages,
             @RequestParam(value = "buildingImages", required = false) MultipartFile[] buildingImages,
@@ -247,39 +244,30 @@ public class AdminApiController {
             property.setDistrict(district);
             
             // 시키킨 처리 - 비어있거나 숫자가 아닌 경우 0으로 설정
-            if (shikikin == null || shikikin.trim().isEmpty()) {
+            if (shikikin == null || shikikin.compareTo(BigDecimal.ZERO) == 0) {
                 property.setShikikin(BigDecimal.ZERO);
             } else {
-                try {
-                    property.setShikikin(new BigDecimal(shikikin.replaceAll("[^0-9]", "")));
-                } catch (NumberFormatException e) {
-                    property.setShikikin(BigDecimal.ZERO);
-                }
+                property.setShikikin(shikikin);
             }
             
             // 레이킨 처리 - 비어있거나 숫자가 아닌 경우 0으로 설정
-            if (reikin == null || reikin.trim().isEmpty()) {
+            if (reikin == null || reikin.compareTo(BigDecimal.ZERO) == 0) {
                 property.setReikin(BigDecimal.ZERO);
             } else {
-                try {
-                    property.setReikin(new BigDecimal(reikin.replaceAll("[^0-9]", "")));
-                } catch (NumberFormatException e) {
-                    property.setReikin(BigDecimal.ZERO);
-                }
+                property.setReikin(reikin);
             }
             
             property.setStatus(Property.Status.valueOf(status));
             property.setBuiltYear(builtYear);
             property.setDescription(description);
+            property.setNearbyFacilities(nearbyFacilities);
 
-            // 특징들을 description에 추가
-            if (features != null && features.length > 0) {
-                StringBuilder featureText = new StringBuilder(description);
-                featureText.append("\n\n특징:\n");
-                for (String feature : features) {
-                    featureText.append("- ").append(feature).append("\n");
-                }
-                property.setDescription(featureText.toString());
+            log.info("매물 업데이트 중: ID={}, nearbyFacilities={}", id, nearbyFacilities);
+
+            // 특징 처리
+            if (detailDescription != null && detailDescription.length > 0) {
+                String detailDescriptionText = String.join(", ", detailDescription);
+                property.setDetailDescription(detailDescriptionText);
             }
 
             // 썸네일 이미지 처리

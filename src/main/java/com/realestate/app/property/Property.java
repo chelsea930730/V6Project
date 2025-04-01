@@ -49,6 +49,10 @@ public class Property {
     private Status status;
 
     private String description;
+
+    @Column(name = "detail_description", columnDefinition = "TEXT")
+    private String detailDescription;
+
     private BigDecimal area;
 
     @Column(name = "built_year")
