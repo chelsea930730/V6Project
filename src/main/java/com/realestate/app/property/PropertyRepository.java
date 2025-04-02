@@ -40,4 +40,8 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
     // 랜덤 매물 가져오기
     @Query(value = "SELECT * FROM property ORDER BY RAND() LIMIT :limit", nativeQuery = true)
     List<Property> findRandomProperties(@Param("limit") int limit);
+
+    // 썸네일 이미지가 있는 매물 중에서 랜덤으로 가져오기
+    @Query(value = "SELECT * FROM property WHERE thumbnail_image IS NOT NULL ORDER BY RAND() LIMIT :limit", nativeQuery = true)
+    List<Property> findRandomPropertiesWithThumbnail(@Param("limit") int limit);
 }

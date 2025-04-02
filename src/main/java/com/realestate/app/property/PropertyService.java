@@ -476,7 +476,7 @@ public class PropertyService {
 
     // 랜덤 매물 가져오기
     public List<Property> getRandomProperties(int count) {
-        // 전체 매물 수 확인
+        // 전체 매물 수 확인 (썸네일이 있는 매물만)
         long totalProperties = propertyRepository.count();
         int limit = (int) Math.min(totalProperties, count);
 
@@ -484,7 +484,54 @@ public class PropertyService {
             return new ArrayList<>();
         }
 
-        // 매물 중에서 랜덤으로 limit 개수만큼 가져오기
-        return propertyRepository.findRandomProperties(limit);
+        // 썸네일이 있는 매물 중에서 랜덤으로 limit 개수만큼 가져오기
+        return propertyRepository.findRandomPropertiesWithThumbnail(limit);
+    }
+
+    // 이미 필터링된 매물 목록에 대해 노선 필터링 적용
+    public List<Property> filterBySubwayLine(List<Property> properties, String line) {
+        log.info("노선 필터링 적용: {}", line);
+        
+        String convertedLine = convertLineNameToFullName(line);
+        return properties.stream()
+            .filter(property -> property.getSubwayLine() != null && 
+                   property.getSubwayLine().contains(convertedLine))
+            .collect(Collectors.toList());
+    }
+
+    // 이미 필터링된 매물 목록에 대해 노선/역 필터링 적용
+    public List<Property> filterBySubwayLineAndStation(List<Property> properties, 
+                                                     List<String> lines, 
+                                                     List<String> stations) {
+        log.info("노선 및 역 필터링 적용 - 선택된 노선: {}, 선택된 역: {}", lines, stations);
+        
+        // 노선 필터링
+        if (lines != null && !lines.isEmpty()) {
+            properties = properties.stream()
+                .filter(property -> lines.stream()
+                    .anyMatch(line -> {
+                        String convertedLine = convertLineNameToFullName(line);
+                        return property.getSubwayLine() != null && 
+                               property.getSubwayLine().contains(convertedLine);
+                    }))
+                .collect(Collectors.toList());
+        }
+        
+        // 역 필터링
+        if (stations != null && !stations.isEmpty()) {
+            properties = properties.stream()
+                .filter(property -> stations.stream()
+                    .anyMatch(station -> {
+                        if (property.getStation() == null) return false;
+                        // 공백을 제거하고 비교
+                        String normalizedPropertyStation = property.getStation().replaceAll("\\s+", "");
+                        String normalizedStation = station.replaceAll("\\s+", "");
+                        return normalizedPropertyStation.equals(normalizedStation);
+                    }))
+                .collect(Collectors.toList());
+        }
+        
+        log.info("필터링 결과 매물 수: {}", properties.size());
+        return properties;
     }
 }

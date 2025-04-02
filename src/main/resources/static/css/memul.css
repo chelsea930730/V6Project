@@ -121,22 +121,16 @@ body {
 
 /* 필터 박스 */
 .filter-box {
-	position: sticky;
-	top: 100px;
 	width: 300px;
-	background: #fff;
 	padding: 20px;
-	border-radius: 10px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-	display: flex;
-	flex-direction: column;
-	font-family: 'Cafe24 Ssurround air OTF Light';
-	height: fit-content;
-	/* ✅ 기존 height 속성 수정 */
-	max-height: calc(100vh - 150px); /* 화면 높이에 맞춰 최대 높이 제한 */
-	overflow-y: auto;
-	overflow-x: hidden;
-	direction: rtl;
+	background-color: #fff;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-right: 20px;
+	height: auto;  /* 고정 높이 제거 */
+	overflow: visible;  /* 스크롤 제거 */
+	position: sticky;
+	top: 20px;
 }
 
 .filter-box * {
