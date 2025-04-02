@@ -276,8 +276,8 @@ for (const line in stations) {
 	if (stations.hasOwnProperty(line)) {
 		stations[line] = stations[line].map(koreanName => {
 			const japaneseName = stationToJapanese[koreanName];
-			// DB 형식에 맞게 "일본어(한글)" 형식으로 변환
-			return japaneseName ? `${japaneseName}(${koreanName})` : koreanName;
+			// DB 형식에 맞게 "일본어 (한글)" 형식으로 변환 (공백 추가)
+			return japaneseName ? `${japaneseName} (${koreanName})` : koreanName;
 		});
 	}
 }
@@ -472,7 +472,11 @@ function createPropertyElement(property) {
 				</td>
 				<td>${property.builtYear}</td>
 				<td>
-					<div class="status-available">${property.status}</div>
+					<div class="${
+						property.status === '예약가능' ? 'status-badge available' : 
+						property.status === '예약중' ? 'status-badge in-progress' : 
+						property.status === '거래완료' ? 'status-badge completed' : 'status-badge'
+					}">${property.status}</div>
 				</td>
 				<td>
 					<a href="/property/${property.propertyId}" class="detail-button">상세보기</a>
@@ -483,7 +487,13 @@ function createPropertyElement(property) {
 			<div>${property.location}</div>
 			<div>${property.subwayLine}</div>
 			${property.station ? `<div>${property.station}</div>` : ''}
-			${property.description ? `<div>${property.description}</div>` : ''}
+			${(property.detailDescription || property.description) ? 
+				`<div>
+					${property.detailDescription ? `<span>${property.detailDescription}</span>` : ''}
+					${property.detailDescription && property.description ? ' / ' : ''}
+					${property.description ? `<span>${property.description}</span>` : ''}
+				</div>` : ''
+			}
 		</div>
 	`;
 	
@@ -557,26 +567,78 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 역 선택 시 필터 적용
 function applyStationFilter(selectedLines, selectedStations) {
-	console.log('노선 선택:', selectedLines);
-	console.log('역 선택:', selectedStations);
+	console.log('필터 적용:', selectedLines, selectedStations);
 	
-	filterState.selectedLines = new Set(selectedLines);
-	filterState.selectedStations = new Set(selectedStations);
+	// 선택된 역 정보만 필터 데이터에 포함
+	let filterData = getCurrentFilterData();
+	filterData.selectedStations = selectedStations.map(item => item.station);
 	
-	// 필터 적용 전에 상태 확인
-	console.log('필터 상태:', filterState);
+	console.log('필터 데이터:', filterData);
 	
-	filterProperties();
-	closeLinePopup();
+	// API 호출하여 필터링된 매물 가져오기
+	fetch('/api/properties/filter', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(filterData)
+	})
+	.then(response => {
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+		return response.json();
+	})
+	.then(data => {
+		console.log('필터링된 매물:', data);
+		if (data.length === 0) {
+			console.log('검색 결과가 없습니다.');
+		}
+		updatePropertyList(data);
+		closeLinePopup();
+	})
+	.catch(error => {
+		console.error('필터 적용 에러:', error);
+		alert('필터 적용 중 오류가 발생했습니다.');
+	});
 }
 
-// 페이지 로드 시 한 번만 실행
-document.addEventListener('DOMContentLoaded', () => {
-	initializePriceSliders();
-	setupFilterEventListeners();
-	// 초기 필터 적용
-	filterProperties();
-}, { once: true });
+// 필터 메시지 업데이트
+function updateFilterMessage(selectedLines, selectedStations) {
+	// 메시지 컨테이너가 없으면 생성
+	let container = document.querySelector('.filter-message');
+	if (!container) {
+		container = document.createElement('div');
+		container.className = 'filter-message';
+		container.style.cssText = 'margin-top: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #ddd;';
+
+		// filter-box 뒤에 삽입
+		const filterBox = document.querySelector('.filter-box');
+		if (filterBox && filterBox.parentNode) {
+			filterBox.parentNode.insertBefore(container, filterBox.nextSibling);
+		}
+	}
+
+	// 메시지 배열 생성
+	let messages = [];
+
+	if (selectedLines && selectedLines.length > 0) {
+		messages.push(`<strong>선택된 노선:</strong> ${selectedLines.join(', ')}`);
+	}
+
+	if (selectedStations && selectedStations.length > 0) {
+		const stationNames = selectedStations.map(station => typeof station === 'object' ? station.station : station);
+		messages.push(`<strong>선택된 역:</strong> ${stationNames.join(', ')}`);
+	}
+
+	// 메시지 표시 또는 컨테이너 숨김
+	if (messages.length > 0) {
+		container.innerHTML = messages.join('<br>');
+		container.style.display = 'block';
+	} else {
+		container.style.display = 'none';
+	}
+}
 
 // 가격 슬라이더 초기화 함수
 function initializePriceSliders() {
@@ -633,8 +695,10 @@ function openLinePopup() {
 	if (popup) {
 		popup.style.display = 'flex';
 		
-		// 이벤트 리스너 초기화 및 재설정
+		// 팝업 초기화 (노선 및 역 선택 이벤트 설정)
 		setupLinePopup();
+
+		console.log('노선 팝업 열기');
 	}
 }
 
@@ -642,195 +706,131 @@ function openLinePopup() {
 function closeLinePopup() {
 	const popup = document.getElementById('linePopup');
 	if (popup) {
-		// 현재 선택된 노선과 역을 유지하기 위해 상태를 저장하는 로직 추가 가능
+		// 팝업 닫기
 		popup.style.display = 'none';
+		console.log('노선 팝업 닫기');
 	}
 }
 
 // 노선 팝업 설정 함수 전체 재작성
 function setupLinePopup() {
-	const lineElements = document.querySelectorAll('.line');
+	console.log('노선 팝업 초기화');
+
+	const lineElements = document.querySelectorAll('#linePopup .line');
 	const stationList = document.getElementById('stationList');
-	const closeBtn = document.querySelector('.close-btn');
 	
-	// 이전에 등록된 이벤트 리스너 제거
+	// 노선 클릭 이벤트 설정
 	lineElements.forEach(line => {
 		line.removeEventListener('click', lineClickHandler);
 		line.addEventListener('click', lineClickHandler);
 	});
-	
-	// 노선 클릭 핸들러 정의
+
 	function lineClickHandler(e) {
 		e.preventDefault();
-		e.stopPropagation(); // 이벤트 버블링 방지
+		e.stopPropagation();
 		
 		const lineName = this.textContent.trim();
-		console.log(`노선 클릭: ${lineName}`); // 디버깅용
-		
-		// 노선 선택 상태 토글
+		console.log(`노선 클릭: ${lineName}`);
+
 		this.classList.toggle('selected-line');
-		
-		// 선택된 노선들 수집
+
 		const selectedLines = [];
-		document.querySelectorAll('.line.selected-line').forEach(el => {
+		document.querySelectorAll('#linePopup .line.selected-line').forEach(el => {
 			selectedLines.push(el.textContent.trim());
 		});
-		
-		// 역 목록 업데이트만 하고 모달은 닫지 않음
+
 		updateStationList(selectedLines);
 	}
 	
 	// 역 클릭 이벤트 처리
-	stationList.addEventListener('click', function(e) {
-		if (e.target.classList.contains('station-item')) {
+	if (stationList) {
+		stationList.removeEventListener('click', stationClickHandler);
+		stationList.addEventListener('click', stationClickHandler);
+	}
+	
+	function stationClickHandler(e) {
+		const stationItem = e.target.closest('.station-item');
+		if (stationItem) {
 			e.preventDefault();
-			e.stopPropagation(); // 이벤트 버블링 방지
-			
-			// 역 선택 상태 토글
-			e.target.classList.toggle('selected-station');
-		}
-	});
-	
-	// 닫기 버튼에 이벤트 핸들러 등록
-	if (closeBtn) {
-		closeBtn.removeEventListener('click', closeBtnHandler);
-		closeBtn.addEventListener('click', closeBtnHandler);
-	}
-	
-	// 닫기 버튼 핸들러 정의
-	function closeBtnHandler(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		
-		// 선택된 노선과 역 정보 수집
-		const selectedLines = [];
-		document.querySelectorAll('.line.selected-line').forEach(el => {
-			selectedLines.push(el.textContent.trim());
-		});
-		
-		const selectedStations = [];
-		document.querySelectorAll('.station-item.selected-station').forEach(el => {
-			selectedStations.push({
-				line: el.dataset.line,
-				station: el.textContent.trim()
-			});
-		});
-		
-		// 필터 적용
-		if (selectedLines.length > 0 || selectedStations.length > 0) {
-			applyStationFilter(selectedLines, selectedStations);
-		}
-		
-		// 모달 닫기
-		closeLinePopup();
-	}
-	
-	// 모달 외부 클릭 시 닫히지 않도록 설정
-	const popupContent = document.querySelector('.popup-content');
-	const linePopup = document.getElementById('linePopup');
-	
-	if (popupContent) {
-		popupContent.addEventListener('click', function(e) {
 			e.stopPropagation();
-		});
-	}
-	
-	if (linePopup) {
-		linePopup.addEventListener('click', function(e) {
-			if (e.target === this) {
-				// 모달 외부 클릭 시 모달을 닫지 않고 이벤트만 중지
-				e.stopPropagation();
-				e.preventDefault();
-			}
-		});
+
+			const selectedLine = stationItem.dataset.line;
+			const stationName = stationItem.textContent.trim();
+
+			console.log('선택된 역 정보:', {
+				line: selectedLine,
+				station: stationName
+			});
+
+			// 바로 필터 적용
+			applyStationFilter([selectedLine], [{
+				line: selectedLine,
+				station: stationName  // 이미 일본어(한글) 형식으로 되어있음
+			}]);
+		}
 	}
 }
 
 // 역 목록 업데이트 함수 수정
 function updateStationList(selectedLines) {
 	const stationList = document.getElementById('stationList');
+	if (!stationList) return;
+
+	// 스타일 조정 - 반드시 보이도록 설정
+	stationList.style.display = 'block';
+
+	// 내용 초기화
 	stationList.innerHTML = '';
 	
-	// 선택된 모든 노선의 역 목록 표시
-	if (selectedLines.length > 0) {
-		selectedLines.forEach(lineName => {
-			// 기존 코드와 동일하게 노선명 변환 처리
-			const convertedLineName = convertLineName(lineName);
-			
-			fetch(`/api/stations?line=${encodeURIComponent(convertedLineName)}`)
-				.then(response => response.json())
-				.then(data => {
-					// 노선별 역 목록 표시 추가
-					const lineTitle = document.createElement('div');
-					lineTitle.className = 'line-title';
-					lineTitle.textContent = lineName;
-					stationList.appendChild(lineTitle);
-					
-					// 역 목록 HTML 생성 및 추가
-					const stationsHTML = generateStationListHTML(lineName, data);
-					stationList.insertAdjacentHTML('beforeend', stationsHTML);
-				})
-				.catch(error => {
-					console.error('역 정보 로딩 오류:', error);
-				});
-		});
-	} else {
+	// 선택된 노선이 없는 경우 메시지 표시
+	if (!selectedLines || selectedLines.length === 0) {
 		stationList.innerHTML = '<div class="no-line-selected">노선을 선택해주세요</div>';
-	}
-}
-
-// 역 목록 HTML 생성 함수 수정
-function generateStationListHTML(lineName, stations) {
-	return stations.map(station => {
-		// 각 역에 노선 데이터 속성 추가
-		const stationName = formatStationName(station.koreanName);
-		return `<div class="station-item" data-line="${lineName}">${stationName}</div>`;
-	}).join('');
-}
-
-// 필터 적용 함수 수정
-function applyStationFilter(selectedLines, selectedStations) {
-	console.log('필터 적용:', selectedLines, selectedStations); // 디버깅용
-	
-	// 필터 데이터 구성
-	const filterData = getCurrentFilterData();
-	
-	// 선택된 노선 정보 추가
-	filterData.selectedLines = selectedLines;
-	
-	// 선택된 역 정보 추가
-	filterData.selectedStations = selectedStations.map(item => item.station);
-	
-	// 필터링 요청
-	filterProperties(filterData);
-	
-	// 필터 메시지 업데이트
-	updateFilterMessage();
-}
-
-// 필터 메시지 업데이트
-function updateFilterMessage() {
-	const container = document.querySelector('.filter-message');
-	if (!container) return;
-
-	let messages = [];
-	
-	if (filterState.selectedLines.size > 0) {
-			messages.push(`선택된 노선: ${Array.from(filterState.selectedLines).join(', ')}`);
+		return;
 	}
 	
-	if (filterState.selectedStations.size > 0) {
-			messages.push(`선택된 역: ${Array.from(filterState.selectedStations).join(', ')}`);
+	// 로딩 메시지 표시
+	stationList.innerHTML = '<div class="loading-stations">역 정보를 불러오는 중...</div>';
+	
+	// 선택된 모든 노선에 대한 역 목록 표시
+	selectedLines.forEach(lineName => {
+		// stations 객체에서 해당 노선의 역 목록 가져오기
+		const stationsForLine = stations[lineName] || [];
+
+		if (stationsForLine.length > 0) {
+			// 로딩 메시지 제거 (첫 번째 노선 처리 시에만)
+			const loadingEl = stationList.querySelector('.loading-stations');
+			if (loadingEl) loadingEl.remove();
+
+			// 노선별 역 목록 헤더 추가
+			const lineHeader = document.createElement('div');
+			lineHeader.className = 'line-header';
+			lineHeader.textContent = `${lineName} 역 목록`;
+			stationList.appendChild(lineHeader);
+
+			// 역 목록 컨테이너 생성
+			const stationsContainer = document.createElement('div');
+			stationsContainer.className = 'stations-container';
+
+			// 역 아이템 추가
+			stationsForLine.forEach(station => {
+				const stationItem = document.createElement('div');
+				stationItem.className = 'station-item';
+				stationItem.dataset.line = lineName;
+				stationItem.textContent = station;
+				stationsContainer.appendChild(stationItem);
+			});
+
+			stationList.appendChild(stationsContainer);
+		}
+	});
+	
+	// 역 목록이 비어있는 경우 메시지 표시
+	if (stationList.children.length === 0) {
+		stationList.innerHTML = '<div class="no-stations">선택한 노선에 대한 역 정보가 없습니다</div>';
 	}
 
-	container.innerHTML = messages.length > 0 ? messages.join('<br>') : '';
+	console.log('역 목록 업데이트 완료');
 }
-
-// 초기화
-document.addEventListener('DOMContentLoaded', () => {
-	setupLinePopup();
-	filterProperties();
-});
 
 // 전체 매물 보기 버튼 클릭 이벤트 처리
 document.addEventListener('DOMContentLoaded', function() {
@@ -890,17 +890,32 @@ function resetFilters() {
     filterProperties();
 }
 
-// index.html의 노선 버튼 클릭 이벤트
+// 노선 변경 버튼 클릭 이벤트 처리
 document.addEventListener('DOMContentLoaded', function() {
-    const lineButtons = document.querySelectorAll('.line');
-    lineButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
+    const lineChangeBtn = document.querySelector('.line-btn');
+    if (lineChangeBtn) {
+        lineChangeBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            const lineName = this.textContent.trim();
-            const convertedLine = lineMapping[lineName] || lineName;
-            window.location.href = `/property/list?line=${encodeURIComponent(convertedLine)}`;
+            e.stopPropagation();
+            openLinePopup();
         });
-    });
+    }
+
+    // index.html과 list.html의 이벤트 구분
+    const isListPage = window.location.pathname.includes('/property/list');
+
+    // 노선 버튼 이벤트 설정 - index.html에서만 적용
+    if (!isListPage) {
+        const indexLineButtons = document.querySelectorAll('.index-page .line');
+        indexLineButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const lineName = this.textContent.trim();
+                const convertedLine = lineMapping[lineName] || lineName;
+                window.location.href = `/property/list?line=${encodeURIComponent(convertedLine)}`;
+            });
+        });
+    }
 });
 
 // 검색 입력 이벤트 처리
@@ -913,18 +928,6 @@ document.addEventListener('DOMContentLoaded', function() {
             filterData.keyword = keyword;
             filterProperties(filterData);
         }, 500));
-    }
-});
-
-// 노선 변경 버튼 클릭 이벤트 처리
-document.addEventListener('DOMContentLoaded', function() {
-    const lineChangeBtn = document.querySelector('.line-btn');
-    if (lineChangeBtn) {
-        lineChangeBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            openLinePopup();
-        });
     }
 });
 
@@ -946,30 +949,30 @@ function addSelectedToCart() {
     // 체크된 매물 ID 수집
     const checkedProperties = document.querySelectorAll('.property-item input[type="checkbox"]:checked');
     const propertyIds = Array.from(checkedProperties).map(checkbox => checkbox.value);
-    
+
     if (propertyIds.length === 0) {
         alert('장바구니에 담을 매물을 선택해주세요.');
         return;
     }
-    
+
     console.log('장바구니에 담을 매물 ID:', propertyIds);
-    
+
     // CSRF 토큰 가져오기 (Spring Security 사용 시)
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
     const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-    
+
     // 서버에 요청 보내기
     // CartController에서 기대하는 형식으로 데이터 전송
     const formData = new FormData();
     propertyIds.forEach(id => {
         formData.append('propertyIds', id);
     });
-    
+
     const headers = {};
     if (csrfHeader && csrfToken) {
         headers[csrfHeader] = csrfToken;
     }
-    
+
     fetch('/cart/add', {
         method: 'POST',
         headers: headers,
@@ -981,7 +984,7 @@ function addSelectedToCart() {
             window.location.href = response.url;
             return;
         }
-        
+
         if (!response.ok) {
             if (response.status === 401) {
                 alert('로그인이 필요한 서비스입니다.');
@@ -990,10 +993,10 @@ function addSelectedToCart() {
             }
             throw new Error('장바구니 추가 중 오류가 발생했습니다.');
         }
-        
+
         // 성공 메시지
         alert(`${propertyIds.length}개의 매물이 장바구니에 담겼습니다.`);
-        
+
         // 체크박스 해제
         checkedProperties.forEach(checkbox => {
             checkbox.checked = false;
@@ -1011,7 +1014,7 @@ window.addSelectedToCart = addSelectedToCart;
 // 페이지 로드 시 장바구니 버튼에 이벤트 리스너 추가
 document.addEventListener('DOMContentLoaded', function() {
     // ... 기존 코드 유지 ...
-    
+
     // 장바구니 버튼 이벤트 리스너
     const cartButton = document.querySelector('.add-cart-button');
     if (cartButton) {

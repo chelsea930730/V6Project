@@ -120,77 +120,77 @@
           <div class="card mb-4">
             <div class="card-body">
               <div class="filter-section">
-                <div class="d-flex justify-content-between align-items-center w-100 mb-3">
-                  <button id="cancelSelectedBtn" class="btn btn-sm btn-danger" disabled>
-                    <i class="fas fa-trash-alt"></i> 선택한 예약 삭제
-                  </button>
+                <!-- 첫 번째 행 - 필터 옵션들 -->
+                <div class="filter-row d-flex gap-2 flex-wrap align-items-end">
+                  <div>
+                    <label for="futureDateFilter" class="form-label">일정관리</label>
+                    <select id="futureDateFilter" class="form-select form-select-sm">
+                      <option value="">전체 기간</option>
+                      <option value="today">오늘</option>
+                      <option value="3">3일 이내</option>
+                      <option value="5">5일 이내</option>
+                      <option value="7">7일 이내</option>
+                      <option value="14">14일 이내</option>
+                    </select>
+                  </div>
 
-                  <div class="filter-row d-flex gap-2 flex-wrap">
-                    <div>
-                      <label for="statusFilter" class="form-label">예약 상태</label>
-                      <select id="statusFilter" class="form-select form-select-sm">
-                        <option value="" th:selected="${status == ''}">전체</option>
-                        <option value="PENDING" th:selected="${status == 'PENDING'}">예약 대기</option>
-                        <option value="CONFIRMED" th:selected="${status == 'CONFIRMED'}">예약 중</option>
-                        <option value="COMPL" th:selected="${status == 'COMPL'}">계약 완료</option>
-                        <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">계약 불가</option>
-                      </select>
-                    </div>
+                  <div>
+                    <label for="startDateFilter" class="form-label">시작일</label>
+                    <input type="date" id="startDateFilter" class="form-control form-control-sm" th:value="${startDate}">
+                  </div>
 
-                    <div>
-                      <label for="startDateFilter" class="form-label">시작일</label>
-                      <input type="date" id="startDateFilter" class="form-control form-control-sm" th:value="${startDate}">
-                    </div>
+                  <div>
+                    <label for="endDateFilter" class="form-label">종료일</label>
+                    <input type="date" id="endDateFilter" class="form-control form-control-sm" th:value="${endDate}">
+                  </div>
 
-                    <div>
-                      <label for="endDateFilter" class="form-label">종료일</label>
-                      <input type="date" id="endDateFilter" class="form-control form-control-sm" th:value="${endDate}">
-                    </div>
+                  <div>
+                    <label for="statusFilter" class="form-label">예약 상태</label>
+                    <select id="statusFilter" class="form-select form-select-sm">
+                      <option value="" th:selected="${status == ''}">전체</option>
+                      <option value="PENDING" th:selected="${status == 'PENDING'}">예약 대기</option>
+                      <option value="CONFIRMED" th:selected="${status == 'CONFIRMED'}">예약 중</option>
+                      <option value="COMPL" th:selected="${status == 'COMPL'}">계약 완료</option>
+                      <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">계약 불가</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label for="searchType" class="form-label">검색 유형</label>
+                    <select id="searchType" class="form-select form-select-sm">
+                      <option value="name" th:selected="${searchType == 'name'}">이름</option>
+                      <option value="email" th:selected="${searchType == 'email'}">이메일</option>
+                      <option value="reservationId" th:selected="${searchType == 'reservationId'}">예약번호</option>
+                      <option value="property" th:selected="${searchType == 'property'}">매물정보</option>
+                    </select>
+                  </div>
 
-                    <div>
-                      <label for="searchType" class="form-label">검색 유형</label>
-                      <select id="searchType" class="form-select form-select-sm">
-                        <option value="name" th:selected="${searchType == 'name'}">이름</option>
-                        <option value="email" th:selected="${searchType == 'email'}">이메일</option>
-                        <option value="reservationId" th:selected="${searchType == 'reservationId'}">예약번호</option>
-                        <option value="property" th:selected="${searchType == 'property'}">매물정보</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label for="searchQuery" class="form-label">검색어</label>
-                      <div class="input-group">
-                        <input type="text" id="searchQuery" class="form-control form-control-sm" placeholder="검색어 입력..." th:value="${search}">
-                        <button id="searchButton" class="btn btn-sm btn-outline-secondary">
-                          <i class="fas fa-search"></i>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div class="d-flex align-items-end">
-                      <button id="applyFilterButton" class="btn btn-sm btn-primary me-1">필터 적용</button>
-                      <button id="resetFilterButton" class="btn btn-sm btn-outline-secondary" style="min-width: 79px;">
-                        <i class="fas fa-sync-alt"></i> 초기화
+                  <div>
+                    <label for="searchQuery" class="form-label">검색어</label>
+                    <div class="input-group">
+                      <input type="text" id="searchQuery" class="form-control form-control-sm" placeholder="검색어 입력..." th:value="${search}">
+                      <button id="searchButton" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-search"></i>
                       </button>
                     </div>
                   </div>
                 </div>
 
-                <!-- 초기화 버튼 아래에 미래 기간 필터 추가 -->
-                <div class="d-flex align-items-center mt-3">
-                  <h6 class="mb-0 me-3">일정관리</h6>
-                  <select id="futureDateFilter" class="form-select form-select-sm" style="min-width: 150px;">
-                    <option value="">전체 기간</option>
-                    <option value="today">오늘</option>
-                    <option value="3">3일 이내</option>
-                    <option value="5">5일 이내</option>
-                    <option value="7">7일 이내</option>
-                    <option value="14">14일 이내</option>
-                  </select>
+                <!-- 두 번째 행 - 버튼들 -->
+                <div class="filter-row d-flex flex-wrap">
+                  <div class="d-flex gap-2">
+                    <button id="applyFilterButton" class="btn btn-sm btn-primary">필터 적용</button>
+                    <button id="resetFilterButton" class="btn btn-sm btn-outline-secondary">
+                      <i class="fas fa-sync-alt"></i> 초기화
+                    </button>
+                    <button id="cancelSelectedBtn" class="btn btn-sm btn-danger" disabled>
+                      <i class="fas fa-trash-alt"></i> 선택한 예약 삭제
+                    </button>
+                  </div>
                 </div>
 
                 <!-- 필터 조건 영역 -->
-                <div class="filter-condition mt-2">
+                <div class="filter-condition">
                   <div class="form-check form-check-inline">
                     <input class="form-check-input" type="radio" name="filterCondition" id="conditionAnd" value="AND" th:checked="${filterCondition == 'AND'}">
                     <label class="form-check-label" for="conditionAnd">
@@ -222,7 +222,6 @@
                     <tr>
                       <th>
                         <input type="checkbox" id="selectAll" class="form-check-input">
-                        <label for="selectAll" style="margin-left: 5px; margin-bottom: 0;">0 selected</label>
                       </th>
                       <th>예약 번호</th>
                       <th>고객명</th>
@@ -243,7 +242,7 @@
                       <td th:text="${'NO.' + reservation.reservationId}">NO.0000001</td>
                       <td th:text="${reservation.user.name}">홍길동</td>
                       <td th:text="${reservation.user.email}">user@example.com</td>
-                      <td th:text="${#temporals.format(reservation.reservedDate, 'yyyy-MM-dd HH:mm')}">2024-07-15 14:00</td>
+                      <td th:text="${#temporals.format(reservation.reservedDate, 'yyyy-MM-dd')}">2024-07-15</td>
                       <td th:if="${reservation.properties != null && !reservation.properties.isEmpty()}">
                         <h6 class="mb-1" th:text="${reservation.properties[0].title +
                          (reservation.properties.size() > 1 ? ' 외 ' + (reservation.properties.size() - 1) + '개' : '')}">
@@ -279,7 +278,7 @@
                       <td>
                         <button class="btn btn-sm btn-outline-primary view-btn"
                                 th:attr="data-id=${reservation.reservationId}">
-                          <i class="fas fa-eye"></i>
+                          <i class="fas fa-search"></i>
                         </button>
                       </td>
                     </tr>

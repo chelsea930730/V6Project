@@ -459,7 +459,7 @@ function updateWidgetUI(isAdmin = false) {
 		}
 		
 		reservationItem.innerHTML = `
-			<div class="reservation-date">${formattedDate} ${formattedTime}</div>
+			<div class="reservation-date">${formattedDate}</div>
 			<div class="reservation-status ${statusClass}">${statusText}</div>
 			<div class="reservation-property">${locationInfo}</div>
 			<a href="/mypage" class="reservation-link">상세보기</a>

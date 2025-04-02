@@ -157,8 +157,13 @@ public class PropertyService {
         if (stations != null && !stations.isEmpty()) {
             properties = properties.stream()
                 .filter(property -> stations.stream()
-                    .anyMatch(station -> property.getStation() != null && 
-                            property.getStation().contains("(" + station + ")")))
+                    .anyMatch(station -> {
+                        if (property.getStation() == null) return false;
+                        // 공백을 제거하고 비교
+                        String normalizedPropertyStation = property.getStation().replaceAll("\\s+", "");
+                        String normalizedStation = station.replaceAll("\\s+", "");
+                        return normalizedPropertyStation.equals(normalizedStation);
+                    }))
                 .collect(Collectors.toList());
         }
         
@@ -214,37 +219,24 @@ public class PropertyService {
 
                 // 상세 정보 필터링
                 boolean detailMatch = detailTypes == null || detailTypes.isEmpty() || 
-                    detailTypes.stream().anyMatch(detail -> {
-                        if (property.getNearbyFacilities() == null) {
-                            return false;
-                        }
-                        switch (detail) {
-                            case "주차장":
-                                return property.getNearbyFacilities().contains("주차장");
-                            case "2인 입주":
-                                return property.getNearbyFacilities().contains("2인 입주");
-                            case "욕실/화장실 분리":
-                                return property.getNearbyFacilities().contains("욕실/화장실 분리");
-                            case "즉시 입주":
-                                return property.getNearbyFacilities().contains("즉시 입주");
-                            case "학생 가능":
-                                return property.getNearbyFacilities().contains("학생 가능");
-                            case "반려동물 가능":
-                                return property.getNearbyFacilities().contains("반려동물 가능");
-                            case "가구 포함":
-                                return property.getNearbyFacilities().contains("가구 포함");
-                            case "에어컨":
-                                return property.getNearbyFacilities().contains("에어컨");
-                            default:
-                                return false;
-                        }
-                    });
+                    (property.getDetailDescription() != null &&
+                     detailTypes.stream().anyMatch(detail ->
+                         property.getDetailDescription().contains(detail)));
 
                 // 키워드 검색
-                boolean keywordMatch = keyword == null 
-                    || keyword.isEmpty() 
-                    || (property.getTitle() != null && property.getTitle().contains(keyword)) 
-                    || (property.getDescription() != null && property.getDescription().contains(keyword));
+                boolean keywordMatch = true;
+                if (keyword != null && !keyword.isEmpty()) {
+                    String japaneseDistrict = convertDistrictToJapanese(keyword);
+                    keywordMatch = (property.getTitle() != null &&
+                                  (property.getTitle().contains(keyword) ||
+                                   property.getTitle().contains(japaneseDistrict))) ||
+                                 (property.getDescription() != null &&
+                                  (property.getDescription().contains(keyword) ||
+                                   property.getDescription().contains(japaneseDistrict))) ||
+                                 (property.getLocation() != null &&
+                                  (property.getLocation().contains(keyword) ||
+                                   property.getLocation().contains(japaneseDistrict)));
+                }
 
                 // 지하철 노선 필터링
                 boolean subwayLineMatch = true;
@@ -371,11 +363,11 @@ public class PropertyService {
 
                 // 상세 조건 필터
                 boolean detailMatch = detailTypes.isEmpty() || 
-                    (property.getDescription() != null && 
+                    (property.getDetailDescription() != null &&
                      detailTypes.stream().anyMatch(detail -> 
-                         property.getDescription().contains(detail)));
+                         property.getDetailDescription().contains(detail)));
 
-                // 키워드 검색 로직 수정
+                // 키워드 검색
                 boolean keywordMatch = true;
                 if (keyword != null && !keyword.isEmpty()) {
                     String japaneseDistrict = convertDistrictToJapanese(keyword);

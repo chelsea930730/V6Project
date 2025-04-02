@@ -59,7 +59,8 @@ h1 {
     background-color: #fff;
     border-radius: var(--card-radius);
     box-shadow: 0 6px 16px var(--shadow-color);
-    overflow: hidden;
+    overflow-x: auto; /* 가로 스크롤 추가 */
+    overflow-y: hidden; /* 세로 스크롤 방지 */
     padding: 20px;
 }
 
@@ -91,6 +92,7 @@ h2:after {
 /* 테이블 스타일 */
 table {
     width: 100%;
+    min-width: 500px; /* 최소 너비 설정 */
     border-collapse: separate;
     border-spacing: 0;
     margin-bottom: 20px;
@@ -107,6 +109,7 @@ th {
     font-size: 14px;
     letter-spacing: 0.3px;
     border: none;
+    white-space: nowrap; /* 헤더 텍스트 줄바꿈 방지 */
 }
 
 td {
@@ -116,6 +119,7 @@ td {
     font-size: 14px;
     color: var(--text-medium);
     background-color: #fff;
+    white-space: nowrap; /* 내용 텍스트 줄바꿈 방지 */
 }
 
 tr:last-child td {
@@ -131,13 +135,15 @@ tr:hover td {
     background-color: #fff;
     color: var(--primary-color);
     border: 1px solid var(--primary-color);
-    padding: 8px 16px;
-    border-radius: var(--btn-radius);
+    padding: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
     cursor: pointer;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     text-decoration: none;
-    font-weight: 500;
-    font-size: 14px;
     transition: var(--transition);
 }
 
@@ -147,6 +153,10 @@ tr:hover td {
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(106, 153, 205, 0.2);
+}
+
+.view-btn span {
+    display: none; /* 텍스트 숨김 */
 }
 
 /* 채팅 버튼 스타일 */
@@ -182,13 +192,14 @@ tr:hover td {
 /* 상태 셀렉트 박스 스타일 */
 .status-select {
     width: 100%;
-    padding: 8px 12px;
+    padding: 6px 8px;
     border: none;
-    border-radius: 20px;
-    font-size: 14px;
+    border-radius: 16px;
+    font-size: 12px;
     appearance: none;
     text-align: center;
-    min-width: 120px;
+    min-width: 90px;
+    max-width: 100px;
     cursor: default;
     font-weight: 500;
 }

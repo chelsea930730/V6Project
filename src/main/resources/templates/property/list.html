@@ -10,8 +10,6 @@
     <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
     <!--  -->
     <link th:href="@{/css/memul.css}" rel="stylesheet">
-    <meta name="_csrf" th:content="${_csrf?.token}" />
-    <meta name="_csrf_header" th:content="${_csrf?.headerName}" />
 </head>
 <body>
 
@@ -134,12 +132,13 @@
 
     </aside>
 
-
+    <!-- 필터 메시지 영역 추가 -->
+    <div class="filter-message" style="display: none;"></div>
 
     <!-- 노선 변경 팝업 -->
     <div id="linePopup" class="popup">
         <div class="popup-content">
-            <button class="close-btn" onclick="closeLinePopup()">&times;</button>
+            <button class="close-btn">&times;</button>
             <h3>노선 선택</h3>
             <div class="jr">
                 <img th:src="@{/img/jr.png}" alt="jr 로고" class="jr-logo">
@@ -235,7 +234,11 @@
                     </td>
                     <td th:text="${property.builtYear}">2018년</td>
                     <td>
-                        <div class="status-available" th:text="${property.status}">예약가능</div>
+                        <div th:class="${'status-badge ' + 
+                            (property.status == '예약가능' ? 'available' : 
+                            property.status == '예약중' ? 'in-progress' : 
+                            property.status == '거래완료' ? 'completed' : '')}" 
+                            th:text="${property.status}">예약가능</div>
                     </td>
                     <td>
                         <a th:href="@{/property/{id}(id=${property.propertyId})}" class="detail-button">상세보기</a>
@@ -255,8 +258,8 @@
                 </div>
             </div>
         </div>
-    </section>
-</div>
+    </div>
+</section>
 
 
 <script th:inline="javascript">

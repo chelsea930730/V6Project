@@ -38,13 +38,13 @@
 			<h2>예약 리스트</h2>
 			<table class="reservation-table">
 				<thead>
-				<tr>
-					<th>예약번호</th>
-					<th>상담 날짜</th>
-					<th>계약 현황</th>
-					<th>문의사항</th>
-					<th>예약 상세보기</th>
-				</tr>
+					<tr>
+						<th>no</th>
+						<th>예약날짜</th>
+						<th>예약현황</th>
+						<th>문의사항</th>
+						<th>상세보기</th>
+					</tr>
 				</thead>
 				<tbody>
 				<!-- 예약 대기, 예약 중인 항목만 표시 - activeReservations 사용 -->
@@ -64,7 +64,10 @@
 								#strings.substring(reservation.message, 0, 10) + '...' :
 								(reservation.message != null ? reservation.message : '-')}">문의사항...</td>
 					<td>
-						<a th:href="@{'/mypage/reservation/' + ${reservation.reservationId}}" class="view-btn">상세보기</a>
+						<a th:href="@{'/mypage/reservation/' + ${reservation.reservationId}}" class="view-btn">
+							<i class="fas fa-search"></i>
+							<span>상세보기</span>
+						</a>
 					</td>
 				</tr>
 				<!-- 진행 중인 예약이 없는 경우 -->
@@ -81,11 +84,11 @@
 			<table class="history-table">
 				<thead>
 				<tr>
-					<th>예약번호</th>
-					<th>상담 날짜</th>
-					<th>계약 현황</th>
+					<th>no</th>
+					<th>예약날짜</th>
+					<th>예약현황</th>
 					<th>문의사항</th>
-					<th>예약 상세보기</th>
+					<th>상세보기</th>
 				</tr>
 				</thead>
 				<tbody>
@@ -106,7 +109,10 @@
 								#strings.substring(reservation.message, 0, 10) + '...' :
 								(reservation.message != null ? reservation.message : '-')}">문의사항...</td>
 					<td>
-						<a th:href="@{'/mypage/reservation/' + ${reservation.reservationId}}" class="view-btn">상세보기</a>
+						<a th:href="@{'/mypage/reservation/' + ${reservation.reservationId}}" class="view-btn">
+							<i class="fas fa-search"></i>
+							<span>상세보기</span>
+						</a>
 					</td>
 				</tr>
 				<!-- 완료된 상담 내역이 없는 경우 -->
