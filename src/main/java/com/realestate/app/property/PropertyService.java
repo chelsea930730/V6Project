@@ -155,8 +155,13 @@ public class PropertyService {
         if (stations != null && !stations.isEmpty()) {
             properties = properties.stream()
                 .filter(property -> stations.stream()
-                    .anyMatch(station -> property.getStation() != null && 
-                            property.getStation().contains("(" + station + ")")))
+                    .anyMatch(station -> {
+                        if (property.getStation() == null) return false;
+                        // 공백을 제거하고 비교
+                        String normalizedPropertyStation = property.getStation().replaceAll("\\s+", "");
+                        String normalizedStation = station.replaceAll("\\s+", "");
+                        return normalizedPropertyStation.equals(normalizedStation);
+                    }))
                 .collect(Collectors.toList());
         }
         

@@ -132,12 +132,13 @@
 
     </aside>
 
-
+    <!-- 필터 메시지 영역 추가 -->
+    <div class="filter-message" style="display: none;"></div>
 
     <!-- 노선 변경 팝업 -->
     <div id="linePopup" class="popup">
         <div class="popup-content">
-            <button class="close-btn" onclick="closeLinePopup()">&times;</button>
+            <button class="close-btn">&times;</button>
             <h3>노선 선택</h3>
             <div class="jr">
                 <img th:src="@{/img/jr.png}" alt="jr 로고" class="jr-logo">
