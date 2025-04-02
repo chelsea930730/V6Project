@@ -108,29 +108,28 @@ body {
 /* 필터 컨테이너 */
 .filter-container {
 	display: flex;
-	max-width: 1400px;
-	margin: 20px auto;
-	gap: 30px;
-	padding: 0 20px;
-	position: relative;
-	min-height: calc(100vh - 70px);
-	justify-content: flex-start;
-	align-items: flex-start;
-	height: 100%;
+	gap: 20px;
+	padding: 20px;
+	width: 100%;
+	max-width: 1600px !important;
+	margin: 0 auto;
 }
 
 /* 필터 박스 */
 .filter-box {
-	width: 300px;
-	padding: 20px;
-	background-color: #fff;
-	border-radius: 8px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	margin-right: 20px;
-	height: auto;  /* 고정 높이 제거 */
-	overflow: visible;  /* 스크롤 제거 */
 	position: sticky;
-	top: 20px;
+	top: 100px;
+	width: 350px !important;
+	background: #fff;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	display: flex;
+	flex-direction: column;
+	font-family: 'Cafe24 Ssurround air OTF Light';
+	height: auto !important;
+	overflow: visible !important;
+	direction: ltr;
 }
 
 .filter-box * {
@@ -291,10 +290,10 @@ select {
 /* 매물 리스트 */
 .property-list {
 	flex: 1;
-	min-width: 800px;
+	min-width: 0;
 	width: 100%;
 	background: #fff;
-	padding: 0;
+	padding: 0 20px !important;
 	border-radius: 10px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 	display: flex;
