@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -470,5 +472,19 @@ public class PropertyService {
                 property.getPropertyId(), property.getNearbyFacilities());
         
         return propertyRepository.save(property);
+    }
+
+    // 랜덤 매물 가져오기
+    public List<Property> getRandomProperties(int count) {
+        // 전체 매물 수 확인
+        long totalProperties = propertyRepository.count();
+        int limit = (int) Math.min(totalProperties, count);
+
+        if (limit == 0) {
+            return new ArrayList<>();
+        }
+
+        // 매물 중에서 랜덤으로 limit 개수만큼 가져오기
+        return propertyRepository.findRandomProperties(limit);
     }
 }
