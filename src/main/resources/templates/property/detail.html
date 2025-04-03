@@ -55,21 +55,42 @@
             const token = document.querySelector("meta[name='_csrf']")?.getAttribute("content");
             const header = document.querySelector("meta[name='_csrf_header']")?.getAttribute("content");
             
-            // 요청 보내기
-            fetch('/cart/add', {
+            // 먼저 장바구니에 이미 있는지 확인
+            fetch(`/cart/check?propertyId=${propertyId}`, {
                   method: 'POST',
                   headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
                         ...(token && header ? { [header]: token } : {})
-                  },
-                  body: `propertyIds=${propertyId}`
+                  }
             })
             .then(response => {
-                  if (response.ok) {
-                        alert('매물이 장바구니에 추가되었습니다.');
-                  } else {
-                        throw new Error('매물을 장바구니에 추가하는데 실패했습니다.');
+                  if (!response.ok) {
+                        throw new Error('매물 확인에 실패했습니다.');
                   }
+                  return response.json();
+            })
+            .then(data => {
+                  // 이미 장바구니에 있는 경우
+                  if (data.exists) {
+                        alert('이미 장바구니에 있는 매물입니다.');
+                        return;
+                  }
+                  
+                  // 장바구니에 없는 경우, 추가 요청 보내기
+                  return fetch('/cart/add', {
+                        method: 'POST',
+                        headers: {
+                              'Content-Type': 'application/x-www-form-urlencoded',
+                              ...(token && header ? { [header]: token } : {})
+                        },
+                        body: `propertyIds=${propertyId}`
+                  })
+                  .then(response => {
+                        if (response.ok) {
+                              alert('매물이 장바구니에 추가되었습니다.');
+                        } else {
+                              throw new Error('매물을 장바구니에 추가하는데 실패했습니다.');
+                        }
+                  });
             })
             .catch(error => {
                   console.error('에러:', error);

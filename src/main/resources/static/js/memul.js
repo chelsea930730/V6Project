@@ -716,9 +716,31 @@ function closeLinePopup() {
 function setupLinePopup() {
 	console.log('노선 팝업 초기화');
 
+	const popup = document.getElementById('linePopup');
+	const closeBtn = popup.querySelector('.close-btn');
 	const lineElements = document.querySelectorAll('#linePopup .line');
 	const stationList = document.getElementById('stationList');
 	
+	// 닫기 버튼 클릭 이벤트
+	if (closeBtn) {
+		closeBtn.addEventListener('click', function(e) {
+			e.preventDefault();
+			closeLinePopup();
+		});
+	}
+
+	// 팝업 외부 클릭 시 닫기
+	popup.addEventListener('click', function(e) {
+		if (e.target === this) {
+			closeLinePopup();
+		}
+	});
+
+	// 팝업 내용 클릭 시 이벤트 전파 중단
+	popup.querySelector('.popup-content').addEventListener('click', function(e) {
+		e.stopPropagation();
+	});
+
 	// 노선 클릭 이벤트 설정
 	lineElements.forEach(line => {
 		line.removeEventListener('click', lineClickHandler);
@@ -971,41 +993,95 @@ function addSelectedToCart() {
     const headers = {};
     if (csrfHeader && csrfToken) {
         headers[csrfHeader] = csrfToken;
+        headers['Content-Type'] = 'application/x-www-form-urlencoded';
     }
 
-    fetch('/cart/add', {
-        method: 'POST',
-        headers: headers,
-        body: formData
-    })
-    .then(response => {
-        if (response.redirected) {
-            // 로그인 페이지로 리디렉션된 경우
-            window.location.href = response.url;
-            return;
-        }
+    // 중복 확인을 위한 병렬 요청 생성
+    const checkPromises = propertyIds.map(id => {
+        return fetch(`/cart/check?propertyId=${id}`, {
+            method: 'POST',
+            headers: headers
+        })
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('unauthorized');
+                }
+                throw new Error('장바구니 확인 중 오류가 발생했습니다.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            return { id, exists: data.exists };
+        });
+    });
 
-        if (!response.ok) {
-            if (response.status === 401) {
+    // 모든 중복 확인 요청 처리
+    Promise.all(checkPromises)
+        .then(results => {
+            // 중복된 매물과 중복되지 않은 매물 분류
+            const existingIds = results.filter(r => r.exists).map(r => r.id);
+            const newIds = results.filter(r => !r.exists).map(r => r.id);
+
+            // 모든 매물이 이미 장바구니에 있는 경우
+            if (newIds.length === 0) {
+                alert('선택한 모든 매물이 이미 장바구니에 있습니다.');
+                return;
+            }
+
+            // 일부 매물만 장바구니에 있는 경우
+            if (existingIds.length > 0) {
+                const message = `${existingIds.length}개의 매물은 이미 장바구니에 있어 제외됩니다.`;
+                alert(message);
+            }
+
+            // 중복되지 않은 매물만 장바구니에 추가
+            const formData = new FormData();
+            newIds.forEach(id => {
+                formData.append('propertyIds', id);
+            });
+
+            return fetch('/cart/add', {
+                method: 'POST',
+                headers: headers,
+                body: new URLSearchParams(formData)
+            });
+        })
+        .then(response => {
+            if (!response) return; // 이미 알림을 표시한 경우 여기서 종료
+
+            if (response.redirected) {
+                // 로그인 페이지로 리디렉션된 경우
+                window.location.href = response.url;
+                return;
+            }
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    alert('로그인이 필요한 서비스입니다.');
+                    window.location.href = '/user/login';
+                    return;
+                }
+                throw new Error('장바구니 추가 중 오류가 발생했습니다.');
+            }
+
+            // 성공 메시지
+            alert('선택한 매물이 장바구니에 담겼습니다.');
+
+            // 체크박스 해제
+            checkedProperties.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        })
+        .catch(error => {
+            console.error('에러:', error);
+            if (error.message === 'unauthorized') {
                 alert('로그인이 필요한 서비스입니다.');
                 window.location.href = '/user/login';
                 return;
             }
-            throw new Error('장바구니 추가 중 오류가 발생했습니다.');
-        }
-
-        // 성공 메시지
-        alert(`${propertyIds.length}개의 매물이 장바구니에 담겼습니다.`);
-
-        // 체크박스 해제
-        checkedProperties.forEach(checkbox => {
-            checkbox.checked = false;
+            alert('장바구니 추가 중 오류가 발생했습니다. 로그인 상태를 확인해주세요.');
         });
-    })
-    .catch(error => {
-        console.error('에러:', error);
-        alert('장바구니 추가 중 오류가 발생했습니다. 로그인 상태를 확인해주세요.');
-    });
 }
 
 // 전역 스코프에 함수 등록

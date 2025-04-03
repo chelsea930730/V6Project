@@ -68,18 +68,23 @@ public class PropertyApiController {
 
             // 초기 필터링 적용
             List<Property> filteredProperties;
+            
+            // 구 필터링 먼저 적용
             if (district != null && !district.isEmpty()) {
                 log.info("지역구 필터링 적용: {}", district);
                 filteredProperties = propertyService.getPropertiesByDistrict(district);
-            } else if (!selectedLines.isEmpty() || !selectedStations.isEmpty()) {
-                log.info("노선/역 필터링 적용 - 선택된 노선: {}, 선택된 역: {}", selectedLines, selectedStations);
-                filteredProperties = propertyService.getPropertiesBySubwayLineAndStation(selectedLines, selectedStations);
-            } else if (line != null && !line.isEmpty()) {
-                log.info("URL 노선 필터링 적용: {}", line);
-                filteredProperties = propertyService.getPropertiesBySubwayLine(line);
             } else {
                 log.info("전체 매물 조회");
                 filteredProperties = propertyService.getAllPropertiesByCreatedAtDesc();
+            }
+            
+            // 노선/역 필터링 추가 적용
+            if (!selectedLines.isEmpty() || !selectedStations.isEmpty()) {
+                log.info("노선/역 필터링 추가 적용 - 선택된 노선: {}, 선택된 역: {}", selectedLines, selectedStations);
+                filteredProperties = propertyService.filterBySubwayLineAndStation(filteredProperties, selectedLines, selectedStations);
+            } else if (line != null && !line.isEmpty()) {
+                log.info("URL 노선 필터링 추가 적용: {}", line);
+                filteredProperties = propertyService.filterBySubwayLine(filteredProperties, line);
             }
 
             // 추가 필터 적용

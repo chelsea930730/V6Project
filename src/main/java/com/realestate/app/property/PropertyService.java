@@ -63,7 +63,7 @@ public class PropertyService {
             // 상세조건을 detailDescription에 저장
             propertyDto.setDetailDescription(features);
         }
-
+        
         // description은 그대로 description에 저장 (비고)
 
         Property property = propertyDto.toEntity();
@@ -219,22 +219,22 @@ public class PropertyService {
 
                 // 상세 정보 필터링
                 boolean detailMatch = detailTypes == null || detailTypes.isEmpty() || 
-                    (property.getDetailDescription() != null &&
-                     detailTypes.stream().anyMatch(detail ->
+                    (property.getDetailDescription() != null && 
+                     detailTypes.stream().anyMatch(detail -> 
                          property.getDetailDescription().contains(detail)));
 
                 // 키워드 검색
                 boolean keywordMatch = true;
                 if (keyword != null && !keyword.isEmpty()) {
                     String japaneseDistrict = convertDistrictToJapanese(keyword);
-                    keywordMatch = (property.getTitle() != null &&
-                                  (property.getTitle().contains(keyword) ||
+                    keywordMatch = (property.getTitle() != null && 
+                                  (property.getTitle().contains(keyword) || 
                                    property.getTitle().contains(japaneseDistrict))) ||
-                                 (property.getDescription() != null &&
-                                  (property.getDescription().contains(keyword) ||
+                                 (property.getDescription() != null && 
+                                  (property.getDescription().contains(keyword) || 
                                    property.getDescription().contains(japaneseDistrict))) ||
-                                 (property.getLocation() != null &&
-                                  (property.getLocation().contains(keyword) ||
+                                 (property.getLocation() != null && 
+                                  (property.getLocation().contains(keyword) || 
                                    property.getLocation().contains(japaneseDistrict)));
                 }
 
@@ -363,7 +363,7 @@ public class PropertyService {
 
                 // 상세 조건 필터
                 boolean detailMatch = detailTypes.isEmpty() || 
-                    (property.getDetailDescription() != null &&
+                    (property.getDetailDescription() != null && 
                      detailTypes.stream().anyMatch(detail -> 
                          property.getDetailDescription().contains(detail)));
 
@@ -450,33 +450,33 @@ public class PropertyService {
     public Property updateProperty(PropertyDto propertyDto) {
         Property existingProperty = propertyRepository.findById(propertyDto.getPropertyId())
                 .orElseThrow(() -> new RuntimeException("매물을 찾을 수 없습니다: " + propertyDto.getPropertyId()));
-
+        
         // 기존 데이터 유지하면서 업데이트
         Property property = propertyDto.toEntity();
         property.setCreatedAt(existingProperty.getCreatedAt());
-
+        
         // features 값에서 상세조건을 detailDescription에 저장
         String features = propertyDto.getDetailDescription();
         if (features != null && !features.isEmpty()) {
             // 상세조건을 detailDescription에 저장
             property.setDetailDescription(features);
         }
-
+        
         // description은 그대로 description에 저장 (비고)
-
+        
         // 주변 시설 정보 명시적으로 설정
         property.setNearbyFacilities(propertyDto.getNearbyFacilities());
-
+        
         // 디버깅용 로그
-        log.info("매물 업데이트 중: ID={}, nearbyFacilities={}",
+        log.info("매물 업데이트 중: ID={}, nearbyFacilities={}", 
                 property.getPropertyId(), property.getNearbyFacilities());
-
+        
         return propertyRepository.save(property);
     }
 
     // 랜덤 매물 가져오기
     public List<Property> getRandomProperties(int count) {
-        // 전체 매물 수 확인
+        // 전체 매물 수 확인 (썸네일이 있는 매물만)
         long totalProperties = propertyRepository.count();
         int limit = (int) Math.min(totalProperties, count);
 
@@ -484,7 +484,54 @@ public class PropertyService {
             return new ArrayList<>();
         }
 
-        // 매물 중에서 랜덤으로 limit 개수만큼 가져오기
-        return propertyRepository.findRandomProperties(limit);
+        // 썸네일이 있는 매물 중에서 랜덤으로 limit 개수만큼 가져오기
+        return propertyRepository.findRandomPropertiesWithThumbnail(limit);
+    }
+
+    // 이미 필터링된 매물 목록에 대해 노선 필터링 적용
+    public List<Property> filterBySubwayLine(List<Property> properties, String line) {
+        log.info("노선 필터링 적용: {}", line);
+        
+        String convertedLine = convertLineNameToFullName(line);
+        return properties.stream()
+            .filter(property -> property.getSubwayLine() != null && 
+                   property.getSubwayLine().contains(convertedLine))
+            .collect(Collectors.toList());
+    }
+
+    // 이미 필터링된 매물 목록에 대해 노선/역 필터링 적용
+    public List<Property> filterBySubwayLineAndStation(List<Property> properties, 
+                                                     List<String> lines, 
+                                                     List<String> stations) {
+        log.info("노선 및 역 필터링 적용 - 선택된 노선: {}, 선택된 역: {}", lines, stations);
+        
+        // 노선 필터링
+        if (lines != null && !lines.isEmpty()) {
+            properties = properties.stream()
+                .filter(property -> lines.stream()
+                    .anyMatch(line -> {
+                        String convertedLine = convertLineNameToFullName(line);
+                        return property.getSubwayLine() != null && 
+                               property.getSubwayLine().contains(convertedLine);
+                    }))
+                .collect(Collectors.toList());
+        }
+        
+        // 역 필터링
+        if (stations != null && !stations.isEmpty()) {
+            properties = properties.stream()
+                .filter(property -> stations.stream()
+                    .anyMatch(station -> {
+                        if (property.getStation() == null) return false;
+                        // 공백을 제거하고 비교
+                        String normalizedPropertyStation = property.getStation().replaceAll("\\s+", "");
+                        String normalizedStation = station.replaceAll("\\s+", "");
+                        return normalizedPropertyStation.equals(normalizedStation);
+                    }))
+                .collect(Collectors.toList());
+        }
+        
+        log.info("필터링 결과 매물 수: {}", properties.size());
+        return properties;
     }
 }

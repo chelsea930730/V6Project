@@ -41,12 +41,12 @@
                   <option value="id" th:selected="${param.searchType == 'id'}">매물 ID</option>
                   <option value="title" th:selected="${param.searchType == 'title'}">매물 제목</option>
                 </select>
-                <input
-                  type="text"
-                  name="keyword"
-                  class="form-control search-input"
+                <input 
+                  type="text" 
+                  name="keyword" 
+                  class="form-control search-input" 
                   placeholder="검색어를 입력하세요"
-                  th:value="${param.keyword}"
+                  th:value="${param.keyword}" 
                   autocomplete="off"
                 />
                 <button type="submit" class="btn btn-primary px-4">
@@ -57,7 +57,7 @@
           </div>
 
           <!-- 검색 상태 표시 -->
-          <div th:if="${param.keyword != null and param.keyword != ''}" class="search-status alert alert-info mb-3 d-flex align-items-center">
+          <div th:if="${param.keyword != null and param.keyword != '' and param.searchType != null}" class="search-status alert alert-info mb-3 d-flex align-items-center">
             <i class="fas fa-search me-2"></i>
             <div>
               <strong>
@@ -169,8 +169,8 @@
               <ul class="pagination">
                 <!-- 이전 페이지 그룹으로 이동 -->
                 <li class="page-item" th:if="${hasPrevious}">
-                  <a class="page-link"
-                     th:href="@{/admin/addproperty(page=${previousPageGroup}, searchType=${param.searchType}, keyword=${param.keyword})}"
+                  <a class="page-link" 
+                     th:href="@{/admin/addproperty(page=${previousPageGroup}, searchType=${param.searchType}, keyword=${param.keyword})}" 
                      aria-label="Previous group">
                     <span aria-hidden="true">&laquo;</span>
                   </a>
@@ -179,15 +179,15 @@
                 <!-- 페이지 번호 -->
                 <li class="page-item" th:each="pageNumber : ${pageNumbers}" 
                     th:classappend="${pageNumber == currentPage} ? 'active'">
-                  <a class="page-link"
-                     th:href="@{/admin/addproperty(page=${pageNumber}, searchType=${param.searchType}, keyword=${param.keyword})}"
+                  <a class="page-link" 
+                     th:href="@{/admin/addproperty(page=${pageNumber}, searchType=${param.searchType}, keyword=${param.keyword})}" 
                      th:text="${pageNumber}">1</a>
                 </li>
                 
                 <!-- 다음 페이지 그룹으로 이동 -->
                 <li class="page-item" th:if="${hasNext}">
-                  <a class="page-link"
-                     th:href="@{/admin/addproperty(page=${nextPageGroup}, searchType=${param.searchType}, keyword=${param.keyword})}"
+                  <a class="page-link" 
+                     th:href="@{/admin/addproperty(page=${nextPageGroup}, searchType=${param.searchType}, keyword=${param.keyword})}" 
                      aria-label="Next group">
                     <span aria-hidden="true">&raquo;</span>
                   </a>

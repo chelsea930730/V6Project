@@ -153,6 +153,26 @@ public class CartController {
     }
     
     /**
+     * 장바구니에 매물이 있는지 확인 (AJAX)
+     */
+    @PostMapping("/check")
+    @ResponseBody
+    public ResponseEntity<?> checkCartItem(@AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+                                          @RequestParam("propertyId") Long propertyId) {
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        Long userId = getUserIdFromAuthenticatedUser(authenticatedUser);
+        boolean exists = cartService.isInCart(userId, propertyId);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("exists", exists);
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
      * AuthenticatedUser에서 userId를 추출하는 유틸리티 메서드
      */
     private Long getUserIdFromAuthenticatedUser(AuthenticatedUser authenticatedUser) {

@@ -61,7 +61,7 @@ public class PropertyDto {
     
     @Length(max = 2000, message = "상세조건은 2000자를 초과할 수 없습니다")
     private String detailDescription;
-
+    
     @NotNull(message = "면적은 필수입니다")
     @DecimalMin(value = "0.0", message = "면적은 0보다 작을 수 없습니다")
     private BigDecimal area;

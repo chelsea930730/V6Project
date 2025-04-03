@@ -521,3 +521,24 @@ body {
 	color: #355c86;
 	font-weight: 500;
 }
+
+/* 상세보기 버튼 스타일 */
+.view-btn {
+	width: 38px !important;
+	height: 38px !important;
+	border-radius: 20px !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	margin: 0 auto !important;
+	padding: 0 !important;
+	transition: all 0.3s ease;
+}
+
+.view-btn:hover {
+	background-color: #355c86 !important;
+	color: white !important;
+	border-color: #355c86 !important;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
