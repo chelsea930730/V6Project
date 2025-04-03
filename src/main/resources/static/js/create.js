@@ -824,4 +824,32 @@ document.addEventListener('DOMContentLoaded', function() {
 			};
 			return lineNameMap[koreanName] || koreanName;
 	}
-}); 
+
+	// 매물 상태 옵션 초기화 (Status enum과 일치시키기)
+	const statusSelect = document.querySelector('[name="status"]');
+	if (statusSelect) {
+			// 현재 선택된 값 저장
+			const currentValue = statusSelect.value;
+
+			// 기존 옵션 제거
+			statusSelect.innerHTML = '';
+
+			// Status enum 값에 맞는 옵션 추가
+			const statusOptions = [
+					{ value: '예약가능', text: '예약가능' },
+					{ value: '예약중', text: '예약중' },
+					{ value: '거래완료', text: '거래완료' }
+			];
+
+			statusOptions.forEach(option => {
+					const optionElement = document.createElement('option');
+					optionElement.value = option.value;
+					optionElement.textContent = option.text;
+					// 이전에 선택된 값이 있으면 그 값 유지
+					if (currentValue === option.value) {
+							optionElement.selected = true;
+					}
+					statusSelect.appendChild(optionElement);
+			});
+	}
+});

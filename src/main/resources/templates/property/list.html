@@ -234,7 +234,11 @@
                     </td>
                     <td th:text="${property.builtYear}">2018년</td>
                     <td>
-                        <div class="status-available" th:text="${property.status}">예약가능</div>
+                        <div th:class="${'status-badge ' +
+                            (property.status == '예약가능' ? 'available' :
+                            property.status == '예약중' ? 'in-progress' :
+                            property.status == '거래완료' ? 'completed' : '')}"
+                            th:text="${property.status}">예약가능</div>
                     </td>
                     <td>
                         <a th:href="@{/property/{id}(id=${property.propertyId})}" class="detail-button">상세보기</a>

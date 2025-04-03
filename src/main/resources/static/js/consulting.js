@@ -32,10 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 선택된 항목 수 업데이트 - 체크박스 레이블 변경
     function updateSelectedCount() {
         const selectedCount = document.querySelectorAll('tbody .form-check-input:checked').length;
-        const label = document.querySelector('label[for="selectAll"]');
-        if (label) {
-            label.textContent = `${selectedCount} selected`;
-        }
+        // label 관련 코드 제거
     }
 
     // 취소 버튼 활성화/비활성화 상태 업데이트

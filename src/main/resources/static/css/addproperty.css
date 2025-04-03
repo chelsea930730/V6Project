@@ -73,6 +73,19 @@ body {
     border: none;
     box-shadow: 0 0 15px rgba(0,0,0,0.05);
     border-radius: 10px;
+    margin-bottom: 20px;
+    height: auto !important;
+}
+
+.card-body {
+    padding: 0 !important;
+    height: auto !important;
+}
+
+.table-responsive {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
 }
 
 /* 버튼 스타일 */
@@ -259,4 +272,43 @@ body {
         transform: translateX(0);
         opacity: 1;
     }
+}
+
+/* 테이블 스타일 */
+.table {
+    margin: 0 !important;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+/* 테이블 헤더 스타일 */
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    padding: 12px 8px;
+}
+
+/* 테이블 셀 스타일 */
+.table td {
+    padding: 12px 8px;
+    vertical-align: middle;
+}
+
+/* 페이지네이션 컨테이너 */
+.pagination-container {
+    margin-top: 10px !important;
+    padding: 10px 0;
+}
+
+/* 메인 컨텐츠 영역 */
+.col-md-9, .col-lg-10 {
+    height: auto !important;
+    min-height: 0 !important;
+}
+
+/* 전체 컨테이너 */
+.container-fluid {
+    height: auto !important;
+    min-height: 0 !important;
+    padding-bottom: 20px;
 } 

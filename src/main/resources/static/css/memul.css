@@ -416,19 +416,32 @@ empty-message{
 	background-color: #3b5998;
 }
 
-/* 예약 가능 상태 스타일 */
-
-/* 예약 가능 상태 */
-.status-available {
-	background-color: #e8f5e9;
-	color: #2e7d32;
-	padding: 0.35rem 0.65rem;
-	border-radius: 15px;
-	font-size: 0.85rem;
-	font-weight: 500;
-
+/* 예약 상태 스타일 */
+.status-badge {
+    display: inline-block;
+    padding: 0.35rem 0.65rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
 }
 
+.status-badge.available {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-badge.in-progress {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+.status-badge.completed {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
 
 /* 지하철 정보 스타일 */
 .subway-info {
@@ -1005,4 +1018,96 @@ empty-message{
     text-align: center;
     color: #666;
     font-style: italic;
+}
+
+/* 매물 리스트 컨테이너 */
+.property-items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 0 !important;
+}
+
+/* 페이징 컨테이너 */
+.pagination-container {
+    margin-top: 10px !important;
+    padding: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 매물 관리 테이블 */
+.property-management-table {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* 테이블 컨테이너 */
+.table-container {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* 테이블 하단 여백 조정 */
+.table {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* 테이블 바디 여백 조정 */
+.table tbody {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* 테이블 컨테이너 전체 스타일 */
+.table-responsive {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: auto;
+}
+
+/* 테이블 기본 스타일 */
+.table {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* 테이블 바디 스타일 */
+.table tbody {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 테이블 셀 스타일 */
+.table td, .table th {
+    padding: 8px;
+    vertical-align: middle;
+}
+
+/* 페이지네이션 컨테이너 */
+.pagination-container {
+    margin-top: 10px !important;
+    padding: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 페이지네이션 스타일 */
+.pagination {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 매물 관리 페이지 전체 컨테이너 */
+.property-management-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 !important;
+    margin: 0 !important;
 }

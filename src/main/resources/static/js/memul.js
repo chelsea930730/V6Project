@@ -472,7 +472,11 @@ function createPropertyElement(property) {
 				</td>
 				<td>${property.builtYear}</td>
 				<td>
-					<div class="status-available">${property.status}</div>
+					<div class="${
+						property.status === '예약가능' ? 'status-badge available' : 
+						property.status === '예약중' ? 'status-badge in-progress' : 
+						property.status === '거래완료' ? 'status-badge completed' : 'status-badge'
+					}">${property.status}</div>
 				</td>
 				<td>
 					<a href="/property/${property.propertyId}" class="detail-button">상세보기</a>
@@ -712,8 +716,30 @@ function closeLinePopup() {
 function setupLinePopup() {
 	console.log('노선 팝업 초기화');
 	
+	const popup = document.getElementById('linePopup');
+	const closeBtn = popup.querySelector('.close-btn');
 	const lineElements = document.querySelectorAll('#linePopup .line');
 	const stationList = document.getElementById('stationList');
+	
+	// 닫기 버튼 클릭 이벤트
+	if (closeBtn) {
+		closeBtn.addEventListener('click', function(e) {
+			e.preventDefault();
+			closeLinePopup();
+		});
+	}
+	
+	// 팝업 외부 클릭 시 닫기
+	popup.addEventListener('click', function(e) {
+		if (e.target === this) {
+			closeLinePopup();
+		}
+	});
+	
+	// 팝업 내용 클릭 시 이벤트 전파 중단
+	popup.querySelector('.popup-content').addEventListener('click', function(e) {
+		e.stopPropagation();
+	});
 	
 	// 노선 클릭 이벤트 설정
 	lineElements.forEach(line => {

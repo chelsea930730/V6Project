@@ -376,8 +376,9 @@ function loadDayReservations(dateStr) {
                     <div>
                         <span class="badge ${statusClass}">${statusText}</span>
                         <div class="reservation-number mt-2 text-muted">${reservationId}</div>
-                        <a href="/mypage/reservation/${reservationId.replace('NO.', '')}" class="btn btn-sm btn-outline-primary mt-2">
-                            <i class="fas fa-eye"></i> 상세보기
+                        <a href="/mypage/reservation/${reservationId.replace('NO.', '')}" class="view-btn">
+                            <i class="fas fa-search"></i>
+                            <span>상세보기</span>
                         </a>
                     </div>
                 </div>

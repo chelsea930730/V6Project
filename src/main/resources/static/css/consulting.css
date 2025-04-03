@@ -19,10 +19,41 @@ body {
 	padding-bottom: 12px;
 	white-space: nowrap; /* 줄바꿈 방지 */
 	height: 50px; /* 최소 높이 고정 (선택 사항) */
+	text-align: center; /* 헤더 텍스트 가운데 정렬 */
 }
-.table thead th label {
-	margin-bottom: 0;
-	line-height: 1.2; /* 텍스트 줄간격 조정 */
+
+.table thead th:first-child {
+	width: 40px; /* 체크박스 열 너비 조정 */
+	text-align: center;
+}
+
+/* 각 열 너비 조정 */
+.table th:nth-child(2) { /* 예약번호 */
+	width: 90px;
+}
+
+.table th:nth-child(3) { /* 고객명 */
+	width: 80px;
+}
+
+.table th:nth-child(4) { /* 이메일 */
+	width: 180px;
+}
+
+.table th:nth-child(5) { /* 상담날짜 */
+	width: 100px;
+}
+
+.table th:nth-child(7) { /* 상태 */
+	width: 120px;
+}
+
+.table th:nth-child(8) { /* 채팅 */
+	width: 100px;
+}
+
+.table th:nth-child(9) { /* 상세보기 */
+	width: 80px;
 }
 
 .table tbody tr:hover {
@@ -30,8 +61,53 @@ body {
 }
 
 .table tbody td {
-	padding: 16px 20px;
+	padding: 12px 20px;
 	vertical-align: middle;
+}
+
+/* 체크박스 열 가운데 정렬 */
+.table tbody td:first-child {
+	text-align: center;
+}
+
+/* 테이블 특정 열 가운데 정렬 - 이미지에서 노란색 하이라이트 된 부분 */
+.table tbody td:nth-child(2), /* 예약번호 */
+.table tbody td:nth-child(3), /* 고객명 */
+.table tbody td:nth-child(4), /* 이메일 */
+.table tbody td:nth-child(5), /* 상담날짜 */
+.table tbody td:nth-child(6), /* 매물 정보 */
+.table tbody td:nth-child(7), /* 상태 */
+.table tbody td:nth-child(8), /* 채팅 */
+.table tbody td:nth-child(9) { /* 상세보기 */
+	text-align: center;
+}
+
+/* 이메일과 매물 정보는 왼쪽 정렬 유지 */
+.table tbody td:nth-child(4), /* 이메일 */
+.table tbody td:nth-child(6) { /* 매물 정보 */
+	text-align: left;
+}
+
+/* 상담 날짜 한 줄로 표시 */
+.table tbody td:nth-child(5) { /* 상담 날짜 */
+	white-space: nowrap;
+	font-weight: 500;
+}
+
+/* 예약번호 스타일 */
+.table tbody td:nth-child(2) { /* 예약번호 */
+	font-weight: 500;
+	color: #355c86;
+}
+
+/* 매물 정보 내용 정리 */
+.table tbody td:nth-child(6) h6 { /* 매물 정보 제목 */
+	margin-bottom: 0;
+	font-size: 0.95rem;
+	max-width: 300px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 /* 체크박스 스타일 */
@@ -180,6 +256,7 @@ body {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	margin: 0 auto; /* 가운데 정렬 */
 }
 
 .status-btn.btn-warning {
@@ -269,7 +346,18 @@ body {
 	background-color: #ffffff;
 	border-radius: 8px;
 	padding: 16px;
+	display: flex;
+	flex-direction: column;
 	gap: 16px;
+}
+
+/* 필터 행 스타일 */
+.filter-row {
+	display: flex;
+	align-items: flex-end;
+	flex-wrap: wrap;
+	gap: 12px;
+	width: 100%;
 }
 
 .filter-section .form-label {
@@ -277,41 +365,42 @@ body {
 	font-weight: 500;
 	margin-bottom: 5px;
 	color: #495057;
+	display: block;
 }
 
 .filter-section .form-control,
 .filter-section .form-select {
 	font-size: 0.9rem;
 	padding: 6px 10px;
-	height: 38px;
+	height: 36px;
+	border-radius: 18px;
+	width: 150px;
+	max-width: 150px;
 }
 
-/* 상태 필터 스타일 */
-#statusFilter {
-	min-width: 140px;
+.filter-section .input-group {
+	width: 220px;
+	max-width: 220px;
 }
 
-/* 검색 영역 스타일 */
-.search-area {
-	display: flex;
-	align-items: flex-end;
-	gap: 10px;
-	flex-wrap: wrap;
+.filter-section .btn {
+	height: 36px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 100px;
+	margin-right: 8px;
 }
 
-/* 취소 버튼 스타일 */
 #cancelSelectedBtn {
+	min-width: 150px;
 	background-color: #ff5a5f;
 	border-color: #ff5a5f;
-	color: white;
-	font-weight: 500;
-	transition: all 0.3s ease;
 }
 
 #cancelSelectedBtn:hover {
 	background-color: #e04147;
-	transform: translateY(-2px);
-	box-shadow: 0 4px 8px rgba(255, 90, 95, 0.25);
+	border-color: #e04147;
 }
 
 #cancelSelectedBtn:disabled {
@@ -319,82 +408,18 @@ body {
 	border-color: #ffcdce;
 	color: #7d7d7d;
 	cursor: not-allowed;
-	transform: none;
-	box-shadow: none;
-}
-
-/* 활성화된 필터 배지 */
-.filter-badge {
-	display: inline-flex;
-	align-items: center;
-	background-color: #e7f0ff;
-	color: #355c86;
-	border-radius: 20px;
-	padding: 6px 12px;
-	font-size: 13px;
-	font-weight: 500;
-	margin-right: 8px;
-	margin-bottom: 8px;
-	transition: all 0.2s ease;
-}
-
-.filter-badge i {
-	margin-left: 6px;
-	cursor: pointer;
-	font-size: 12px;
-	transition: all 0.2s ease;
-}
-
-.filter-badge i:hover {
-	color: #ff5a5f;
-	transform: scale(1.2);
-}
-
-.filter-badge:hover {
-	background-color: #d8e6f9;
-	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* 필터 정보 요약 영역 */
-.filter-summary {
-	margin-top: 15px;
-	padding: 8px 12px;
-	background-color: #f8f9fa;
-	border-radius: 8px;
-	border-left: 3px solid #6a99cd;
-}
-
-.filter-info {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 8px;
-	font-size: 14px;
-}
-
-.filter-count {
-	font-weight: 600;
-	color: #355c86;
-}
-
-.filter-text {
-	color: #555;
-}
-
-/* 필터 배지 컨테이너 */
-.filter-badges {
-	display: flex;
-	flex-wrap: wrap;
-	margin-top: 12px;
 }
 
 /* 검색 버튼 스타일 개선 */
 #searchButton {
-	border-top-right-radius: 20px;
-	border-bottom-right-radius: 20px;
+	border-top-right-radius: 18px;
+	border-bottom-right-radius: 18px;
 	background-color: #6a99cd;
 	color: white;
 	border-color: #6a99cd;
+	height: 36px;
+	min-width: auto;
+	margin-right: 0;
 }
 
 #searchButton:hover {
@@ -402,82 +427,65 @@ body {
 	border-color: #355c86;
 }
 
-/* 필터 버튼 그룹 스타일 */
-.filter-buttons {
-	display: flex;
-	gap: 8px;
+/* 필터 적용 및 초기화 버튼 */
+#applyFilterButton, #resetFilterButton {
+	height: 36px;
+	padding: 0 16px;
 }
 
-/* 마이페이지 스타일과 일치하는 셀렉트 박스 */
-.form-select {
-	border-radius: 20px;
-	padding: 8px 16px;
-	border: 1px solid #e0e0e0;
-	font-size: 14px;
-	transition: all 0.2s ease;
-	box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-	cursor: pointer;
-}
-
-.form-select:hover {
-	border-color: #6a99cd;
-}
-
-.form-select:focus {
-	border-color: #6a99cd;
-	box-shadow: 0 0 0 2px rgba(106, 153, 205, 0.25);
-}
-
-/* 검색 입력 필드 디자인 */
-.form-control {
-	border-radius: 20px;
-	padding: 8px 16px;
-	border: 1px solid #e0e0e0;
-	font-size: 14px;
-	transition: all 0.2s ease;
-	box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-.form-control:focus {
-	border-color: #6a99cd;
-	box-shadow: 0 0 0 2px rgba(106, 153, 205, 0.25);
-}
-
-/* 버튼 스타일 개선 */
-.btn {
-	border-radius: 20px;
-	font-weight: 500;
-	padding: 6px 16px;
-	font-size: 14px;
-	height: 38px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.btn-primary {
+#applyFilterButton {
 	background-color: #6a99cd;
 	border-color: #6a99cd;
+	color: white;
 }
 
-.btn-primary:hover {
+#applyFilterButton:hover {
 	background-color: #355c86;
 	border-color: #355c86;
-	transform: translateY(-2px);
-	box-shadow: 0 4px 8px rgba(106, 153, 205, 0.25);
 }
 
-/* 상태 메뉴 아이템 스타일 */
-.status-menu-item {
-	padding: 8px 16px;
-	cursor: pointer;
-	transition: background-color 0.2s;
-	width: 100px;
-	text-align: center;
+#resetFilterButton {
+	background-color: #f8f9fa;
+	border-color: #ddd;
+	color: #495057;
 }
 
-.status-menu-item:hover {
-	background-color: #f5f5f5;
+#resetFilterButton:hover {
+	background-color: #e9ecef;
+	border-color: #ccc;
+}
+
+/* 상태 필터 스타일 */
+#statusFilter, #futureDateFilter, #searchType {
+	width: 150px;
+	max-width: 150px;
+}
+
+#searchQuery {
+	height: 36px;
+	border-top-left-radius: 18px;
+	border-bottom-left-radius: 18px;
+	border-right: none;
+}
+
+/* 필터 조건 영역 스타일 */
+.filter-condition {
+	padding: 8px 12px;
+	background-color: #f8f9fa;
+	border-radius: 8px;
+	margin-top: 0;
+	border-left: 3px solid #6a99cd;
+}
+
+.filter-condition .form-check-input {
+	width: 0.9rem;
+	height: 0.9rem;
+	margin-top: 0.25rem;
+}
+
+.filter-condition .form-check-label {
+	font-size: 0.85rem;
+	margin-left: 4px;
 }
 
 /* 필터 활성화 및 요약 정보 스타일 */
@@ -486,32 +494,6 @@ body {
 	border-color: #6a99cd;
 	color: #355c86;
 	font-weight: 500;
-}
-
-/* 필터 조건 스타일 */
-.filter-condition {
-	padding: 8px 12px;
-	background-color: #f8f9fa;
-	border-radius: 8px;
-	margin-bottom: 10px;
-	border-left: 3px solid #ddd;
-}
-
-.filter-condition-and {
-	border-left-color: #6a99cd;
-}
-
-.filter-condition-or {
-	border-left-color: #ffc107;
-}
-
-.filter-condition .form-check-label {
-	font-size: 0.9rem;
-}
-
-.filter-condition .form-check-input:checked {
-	background-color: #6a99cd;
-	border-color: #6a99cd;
 }
 
 /* 필터 메시지 스타일 */
