@@ -57,7 +57,7 @@
           </div>
 
           <!-- 검색 상태 표시 -->
-          <div th:if="${param.keyword != null and param.keyword != ''}" class="search-status alert alert-info mb-3 d-flex align-items-center">
+          <div th:if="${param.keyword != null and param.keyword != '' and param.searchType != null}" class="search-status alert alert-info mb-3 d-flex align-items-center">
             <i class="fas fa-search me-2"></i>
             <div>
               <strong>

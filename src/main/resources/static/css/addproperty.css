@@ -25,12 +25,12 @@ body {
 
 /* 테이블 컨테이너 크기 조정 */
 .table-responsive {
-    max-height: calc(100vh - 250px);
-    overflow-y: auto;
+    max-height: none !important;
+    overflow-y: visible !important;
 }
 
 .card-body {
-    min-height: calc(100vh - 150px);
+    min-height: 0 !important;
 }
 
 /* 체크박스 스타일 */
@@ -73,19 +73,11 @@ body {
     border: none;
     box-shadow: 0 0 15px rgba(0,0,0,0.05);
     border-radius: 10px;
-    margin-bottom: 20px;
-    height: auto !important;
+    margin-bottom: 0 !important;
 }
 
-.card-body {
+.card .card-body {
     padding: 0 !important;
-    height: auto !important;
-}
-
-.table-responsive {
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
 }
 
 /* 버튼 스타일 */
@@ -311,4 +303,14 @@ body {
     height: auto !important;
     min-height: 0 !important;
     padding-bottom: 20px;
+}
+
+/* 페이지네이션 스타일 */
+.d-flex.justify-content-center.mt-4 {
+    margin-top: 1rem !important;
+}
+
+/* 테이블 하단 여백 제거 */
+.table {
+    margin-bottom: 0 !important;
 } 
