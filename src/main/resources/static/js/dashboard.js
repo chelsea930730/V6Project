@@ -151,6 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chart: {
             type: 'area',
             height: 300,
+            fontFamily: 'Cafe24 Ssurround air OTF Light',
             toolbar: {
                 show: false
             },
@@ -225,7 +226,8 @@ document.addEventListener('DOMContentLoaded', function() {
         series: [completedCount, pendingCount, cancelledCount],
         chart: {
             type: 'donut',
-            height: 300
+            height: 300,
+            fontFamily: 'Cafe24 Ssurround air OTF Light'
         },
         labels: ['계약 완료', '진행 중인 상담', '계약 불가'],
         colors: ['#28a745', '#007bff', '#ff9800'],
@@ -244,6 +246,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             label: '총 예약',
                             fontSize: '20px',
                             fontWeight: 600,
+                            fontFamily: 'Cafe24 Ssurround air OTF Light',
                             color: '#373d3f',
                             formatter: function(w) {
                                 return w.globals.seriesTotals.reduce((a, b) => a + b, 0) + "건";

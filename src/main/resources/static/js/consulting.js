@@ -418,10 +418,9 @@ loadReservationDetails = function(reservationId) {
                         월세: ${property.monthlyPrice.toLocaleString()}円<br>
                         <div class="d-flex mt-2 gap-2">
                             <a href="/property/${property.propertyId}" class="btn btn-sm btn-primary" target="_blank">
-                                상세보기
+                                <i class="fas fa-search"></i>
                             </a>
-                            <select class="form-select form-select-sm btn-sm" 
-                                    style="width: auto; height: 31px;" 
+                            <select class="form-select form-select-sm" 
                                     data-property-id="${property.propertyId}">
                                 ${statusOptions.map(option => 
                                     `<option value="${option.value}" ${property.status === option.value ? 'selected' : ''}>
@@ -432,19 +431,16 @@ loadReservationDetails = function(reservationId) {
                         </div>
                     `;
                     
-                    propertyList.appendChild(item);
-                    
-                    // 상태 변경 이벤트 리스너 등록 (DOM이 생성된 후 추가)
+                    // 상태 변경 이벤트 리스너 등록
                     const statusSelect = item.querySelector('select[data-property-id]');
-                    if (statusSelect) {
-                        statusSelect.addEventListener('change', function() {
-                            updatePropertyStatus(this.dataset.propertyId, this.value);
-                        });
-                    }
+                    statusSelect.addEventListener('change', function() {
+                        updatePropertyStatus(this.dataset.propertyId, this.value);
+                    });
+                    
+                    propertyList.appendChild(item);
                 });
                 
                 propertyListContainer.appendChild(propertyList);
-                
             } else {
                 propertyListContainer.innerHTML = '<p class="text-muted">등록된 매물 정보가 없습니다.</p>';
             }
@@ -1224,10 +1220,9 @@ function loadReservationDetails(reservationId) {
                         월세: ${property.monthlyPrice.toLocaleString()}円<br>
                         <div class="d-flex mt-2 gap-2">
                             <a href="/property/${property.propertyId}" class="btn btn-sm btn-primary" target="_blank">
-                                상세보기
+                                <i class="fas fa-search"></i>
                             </a>
-                            <select class="form-select form-select-sm btn-sm" 
-                                    style="width: auto; height: 31px;" 
+                            <select class="form-select form-select-sm" 
                                     data-property-id="${property.propertyId}">
                                 ${statusOptions.map(option => 
                                     `<option value="${option.value}" ${property.status === option.value ? 'selected' : ''}>

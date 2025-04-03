@@ -177,58 +177,152 @@ body {
 	box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-/* 드롭다운 메뉴 스타일 */
+/* 상태 선택 박스 스타일 */
 .status-dropdown {
 	position: absolute;
 	background-color: white;
-	border: 1px solid #dee2e6;
-	border-radius: 8px;
-	box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+	border: none;
+	border-radius: 16px;
+	box-shadow: 0 4px 20px rgba(0,0,0,0.08);
 	z-index: 1000;
 	overflow: hidden;
+	min-width: 150px;
+	padding: 8px;
+	margin-top: 4px;
+	display: none;
+}
+
+.status-dropdown.show {
+	display: block;
 }
 
 .status-dropdown-item {
 	padding: 10px 16px;
 	cursor: pointer;
-	transition: all 0.2s;
+	transition: all 0.3s ease;
 	font-size: 14px;
+	border-radius: 12px;
+	margin: 4px 0;
+	font-weight: 500;
+	color: var(--text-medium);
 }
 
-.status-dropdown-item:hover {
-	background-color: #f0f7ff;
-}
-
-/* 모달 내 상태 셀렉트 박스 스타일도 일관되게 수정 */
-#reservationStatus {
-	border-radius: 20px;
-	padding: 8px 16px;
-	cursor: pointer;
-}
-
-#reservationStatus option {
-	padding: 8px;
-}
-
-/* 모달 내 상태 셀렉트 박스 옵션 색상 */
-#reservationStatus option[value="PENDING"] {
-	background-color: #ffdb9a;
+/* 상태별 드롭다운 아이템 스타일 - 파스텔 톤 적용 */
+.status-dropdown-item[data-value="PENDING"] {
+	background-color: #fff3d6;
 	color: #885800;
 }
 
-#reservationStatus option[value="CONFIRMED"] {
+.status-dropdown-item[data-value="PENDING"]:hover {
+	background-color: #ffdb9a;
+}
+
+.status-dropdown-item[data-value="CONFIRMED"] {
+	background-color: #e7f0ff;
+	color: #355c86;
+}
+
+.status-dropdown-item[data-value="CONFIRMED"]:hover {
 	background-color: #6a99cd;
 	color: white;
 }
 
-#reservationStatus option[value="COMPL"] {
-	background-color: #c8e6c9;
+.status-dropdown-item[data-value="COMPL"] {
+	background-color: #e8f5e9;
 	color: #2e7d32;
 }
 
-#reservationStatus option[value="CANCELLED"] {
-	background-color: #ffcdd2;
+.status-dropdown-item[data-value="COMPL"]:hover {
+	background-color: #c8e6c9;
+}
+
+.status-dropdown-item[data-value="CANCELLED"] {
+	background-color: #ffebee;
 	color: #c62828;
+}
+
+.status-dropdown-item[data-value="CANCELLED"]:hover {
+	background-color: #ffcdd2;
+}
+
+/* 선택된 상태 스타일 */
+.status-dropdown-item.selected {
+	font-weight: 600;
+	position: relative;
+}
+
+.status-dropdown-item.selected::after {
+	content: '✓';
+	position: absolute;
+	right: 16px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+/* 상태 선택 박스 기본 스타일 */
+#reservationStatus {
+	appearance: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236a99cd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 12px center;
+	background-size: 16px;
+	padding-right: 40px;
+	cursor: pointer;
+}
+
+/* 상태별 선택 박스 스타일 */
+#reservationStatus[data-value="PENDING"] {
+	background-color: rgba(255, 219, 154, 0.1);
+	color: #885800;
+	border-color: #ffdb9a;
+}
+
+#reservationStatus[data-value="CONFIRMED"] {
+	background-color: rgba(106, 153, 205, 0.1);
+	color: #355c86;
+	border-color: #6a99cd;
+}
+
+#reservationStatus[data-value="COMPL"] {
+	background-color: rgba(200, 230, 201, 0.1);
+	color: #2e7d32;
+	border-color: #c8e6c9;
+}
+
+#reservationStatus[data-value="CANCELLED"] {
+	background-color: rgba(255, 205, 210, 0.1);
+	color: #c62828;
+	border-color: #ffcdd2;
+}
+
+/* 상태 선택 박스 커스텀 스타일 */
+#reservationStatus {
+	position: relative;
+}
+
+#reservationStatus:after {
+	content: '';
+	position: absolute;
+	right: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 0;
+	height: 0;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 5px solid #6a99cd;
+	pointer-events: none;
+}
+
+/* 상태 선택 박스 옵션 호버 효과 */
+#reservationStatus option:hover {
+	background-color: #f0f7ff;
+}
+
+/* 상태 선택 박스 옵션 선택 효과 */
+#reservationStatus option:checked {
+	font-weight: 600;
+	box-shadow: 0 0 0 2px rgba(106, 153, 205, 0.25);
 }
 
 /* 예약 상태를 위한 변수 정의 */
@@ -541,4 +635,166 @@ body {
 	border-color: #355c86 !important;
 	transform: translateY(-2px);
 	box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* 모달 내 매물 목록의 상세보기 버튼 스타일 */
+#propertyList .btn-sm {
+	width: 38px !important;
+	height: 38px !important;
+	border-radius: 20px !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	padding: 0 !important;
+	transition: all 0.3s ease;
+}
+
+#propertyList .btn-sm:hover {
+	background-color: #355c86 !important;
+	color: white !important;
+	border-color: #355c86 !important;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* 모달 내 매물 목록의 상태 선택 박스 스타일 */
+#propertyList .form-select {
+	border-radius: 20px !important;
+	padding: 8px 8px;
+	height: 38px !important;
+	width: 30% !important;
+	transition: all 0.3s ease;
+}
+
+#propertyList .form-select:focus {
+	border-color: #6a99cd;
+	box-shadow: 0 0 0 0.2rem rgba(106, 153, 205, 0.25);
+}
+
+/* 모달 푸터 버튼 스타일 통일 */
+.modal-footer .btn {
+	height: 38px !important;
+	border-radius: 10px !important;
+	padding: 0 16px !important;
+	font-weight: 500 !important;
+	transition: all 0.3s ease !important;
+	white-space: nowrap !important; /* 텍스트 줄바꿈 방지 */
+}
+
+.modal-footer .btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* 채팅으로 이동 버튼 스타일 */
+#chatLink {
+	min-width: 130px !important; /* 최소 너비 설정 */
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+}
+
+/* 상담 정보 섹션 스타일 */
+.col-md-6 h6 {
+	font-weight: 600;
+	color: #355c86;
+	margin-bottom: 16px;
+}
+
+.col-md-6 p {
+	margin-bottom: 12px;
+	display: flex;
+	align-items: center;
+}
+
+.col-md-6 p strong {
+	min-width: 100px;
+	color: #495057;
+}
+
+/* 예약 날짜와 상태 선택 박스 크기 통일 */
+.col-md-6 input[type="datetime-local"],
+#reservationStatus {
+	border-radius: 20px;
+	padding: 8px 16px;
+	height: 38px;
+	border: 1px solid #e0e0e0;
+	transition: all 0.3s ease;
+	width: 100% !important;
+	max-width: 250px !important;
+	appearance: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236a99cd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 12px center;
+	background-size: 16px;
+	padding-right: 40px;
+	cursor: pointer;
+}
+
+.col-md-6 input[type="datetime-local"]:focus,
+#reservationStatus:focus {
+	border-color: #6a99cd;
+	box-shadow: 0 0 0 0.2rem rgba(106, 153, 205, 0.25);
+}
+
+/* 상태 선택 박스 옵션 스타일 */
+#reservationStatus option {
+	padding: 12px 16px;
+	font-size: 14px;
+	font-weight: 500;
+	border-radius: 12px;
+	margin: 4px 0;
+}
+
+/* 상태별 옵션 스타일 - 파스텔 톤 */
+#reservationStatus option[value="PENDING"] {
+	background-color: #FFE4B5;
+	color: #D2691E;
+}
+
+#reservationStatus option[value="PENDING"]:hover {
+	background-color: #355c86;
+	color: white;
+}
+
+#reservationStatus option[value="CONFIRMED"] {
+	background-color: #e7f0ff;
+	color: #355c86;
+}
+
+#reservationStatus option[value="CONFIRMED"]:hover {
+	background-color: #355c86;
+	color: white;
+}
+
+#reservationStatus option[value="COMPL"] {
+	background-color: #e8f5e9;
+	color: #2e7d32;
+}
+
+#reservationStatus option[value="COMPL"]:hover {
+	background-color: #355c86;
+	color: white;
+}
+
+#reservationStatus option[value="CANCELLED"] {
+	background-color: #ffebee;
+	color: #c62828;
+}
+
+#reservationStatus option[value="CANCELLED"]:hover {
+	background-color: #355c86;
+	color: white;
+}
+
+/* 상태 선택 박스 호버 효과 */
+#reservationStatus:hover {
+	border-color: #6a99cd;
+}
+
+/* 상태 선택 박스 선택된 옵션 스타일 */
+#reservationStatus option:checked {
+	font-weight: 600;
+	background-color: #6a99cd;
+	color: white;
 }
