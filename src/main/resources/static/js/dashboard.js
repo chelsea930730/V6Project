@@ -18,194 +18,14 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedMonth = new Date().getMonth();
     let selectedYear = new Date().getFullYear();
     
-    // 월 선택기 추가 (통계 카드 위에)
+    // 연/월 선택기 추가 (통계 카드 위에)
     addYearMonthSelector();
     
-    // 통계 카드 업데이트 함수 - 로딩 중 메시지 제거 및 오류 처리 개선
-    function updateStatCards(year, month) {
-        console.log(`${year}년 ${month+1}월 통계 데이터 업데이트 중...`);
-        
-        // API 호출하여 선택한 월의 데이터 가져오기
-        fetch(`/api/admin/statistics/year/${year}/month/${month + 1}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('월별 통계 데이터를 가져오는데 실패했습니다.');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // 통계 카드 업데이트
-                updateStatisticsCards(data);
-                
-                // 도넛 차트 데이터 업데이트
-                updateDonutChart(data);
-                
-                // 월 선택기에서 해당 월 선택
-                setYearMonthSelectorValue(year, month);
-            })
-            .catch(error => {
-                console.error('통계 데이터 업데이트 오류:', error);
-                
-                // 오류 발생 시 서버에서 전달받은 초기 데이터 표시
-                displayInitialData();
-            });
-    }
+    // 차트 범위 선택기 추가 (차트 위에)
+    addChartRangeSelector();
     
-    // 초기 데이터 표시 함수 (API 호출 실패 시)
-    function displayInitialData() {
-        const propertyChartElement = document.querySelector("#propertyChart");
-        if (!propertyChartElement) return;
-        
-        const completedCount = parseInt(propertyChartElement.getAttribute("data-completed") || "0");
-        const pendingCount = parseInt(propertyChartElement.getAttribute("data-pending") || "0");
-        const cancelledCount = parseInt(propertyChartElement.getAttribute("data-cancelled") || "0");
-        const totalCount = completedCount + pendingCount + cancelledCount;
-        
-        // 통계 카드 업데이트
-        const cardTitles = document.querySelectorAll('.card-title');
-        cardTitles.forEach(title => {
-            const parentElement = title.closest('.card-body');
-            if (!parentElement) return;
-            
-            const subtitleElement = parentElement.querySelector('.card-subtitle');
-            if (!subtitleElement) return;
-            
-            const subtitleText = subtitleElement.textContent.trim();
-            
-            if (subtitleText.includes('총 상담 예약 건수')) {
-                title.textContent = `${totalCount}건`;
-            } else if (subtitleText.includes('진행 중인 상담')) {
-                title.textContent = `${pendingCount}건`;
-            } else if (subtitleText.includes('계약 완료')) {
-                title.textContent = `${completedCount}건`;
-            } else if (subtitleText.includes('계약불가 예약건수')) {
-                title.textContent = `${cancelledCount}건`;
-            }
-        });
-        
-        // 도넛 차트 업데이트
-        if (window.propertyChart) {
-            try {
-                window.propertyChart.updateSeries([completedCount, pendingCount, cancelledCount]);
-            } catch (error) {
-                console.error('도넛 차트 업데이트 오류:', error);
-            }
-        }
-    }
-    
-    // 통계 카드 업데이트 함수
-    function updateStatisticsCards(data) {
-        const cardTitles = document.querySelectorAll('.card-title');
-        cardTitles.forEach(title => {
-            const parentElement = title.closest('.card-body');
-            if (!parentElement) return;
-            
-            const subtitleElement = parentElement.querySelector('.card-subtitle');
-            if (!subtitleElement) return;
-            
-            const subtitleText = subtitleElement.textContent.trim();
-            
-            if (subtitleText.includes('총 상담 예약 건수')) {
-                title.textContent = `${data.totalReservationsCount}건`;
-            } else if (subtitleText.includes('진행 중인 상담')) {
-                title.textContent = `${data.activeReservationsCount}건`;
-            } else if (subtitleText.includes('계약 완료')) {
-                title.textContent = `${data.completedReservationsCount}건`;
-            } else if (subtitleText.includes('계약불가 예약건수')) {
-                title.textContent = `${data.cancelledReservationsCount}건`;
-            }
-        });
-    }
-    
-    // 도넛 차트 업데이트 함수
-    function updateDonutChart(data) {
-        try {
-            if (window.propertyChart && typeof window.propertyChart.updateSeries === 'function') {
-                window.propertyChart.updateSeries([
-                    data.completedReservationsCount,
-                    data.activeReservationsCount,
-                    data.cancelledReservationsCount
-                ]);
-            }
-        } catch (error) {
-            console.error('도넛 차트 업데이트 오류:', error);
-        }
-    }
-    
-    // 연/월 선택기 값 설정 함수
-    function setYearMonthSelectorValue(year, month) {
-        const yearSelector = document.getElementById('statisticsYearSelector');
-        const monthSelector = document.getElementById('statisticsMonthSelector');
-        if (yearSelector && monthSelector) {
-            yearSelector.value = year;
-            monthSelector.value = month;
-        }
-    }
-    
-    // 예약 증감 차트 렌더링
-    const reservationChartOptions = {
-        series: [{
-            name: '예약 건수',
-            data: monthlyStats
-        }],
-        chart: {
-            type: 'area',
-            height: 300,
-            fontFamily: 'Cafe24 Ssurround air OTF Light',
-            toolbar: {
-                show: false
-            },
-            events: {
-                // 차트 데이터 포인트 클릭 이벤트 추가
-                dataPointSelection: function(event, chartContext, config) {
-                    const monthIndex = config.dataPointIndex;
-                    // 선택기 값 업데이트 및 통계 데이터 조회
-                    const yearSelector = document.getElementById('statisticsYearSelector');
-                    const year = parseInt(yearSelector.value);
-                    updateStatCards(year, monthIndex);
-                }
-            }
-        },
-        dataLabels: {
-            enabled: false
-        },
-        stroke: {
-            curve: 'smooth',
-            width: 2
-        },
-        fill: {
-            type: 'gradient',
-            gradient: {
-                shadeIntensity: 1,
-                opacityFrom: 0.7,
-                opacityTo: 0.9,
-                stops: [0, 90, 100]
-            }
-        },
-        xaxis: {
-            categories: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월']
-        },
-        colors: ['#4682B4'],
-        tooltip: {
-            y: {
-                formatter: function(val) {
-                    return val + "건";
-                }
-            }
-        },
-        markers: {
-            size: 4,
-            colors: ["#FFF"],
-            strokeColors: "#4682B4",
-            strokeWidth: 2,
-            hover: {
-                size: 7,
-            }
-        }
-    };
-
-    const reservationChart = new ApexCharts(document.querySelector("#reservationChart"), reservationChartOptions);
-    reservationChart.render();
+    // 초기 차트 로드 (기본 1년 범위)
+    updateChartByDateRange('1year');
     
     // 그래프에 마우스 오버 시 포인터로 변경 (힌트 텍스트 없이)
     document.querySelector("#reservationChart").style.cursor = "pointer";
@@ -227,29 +47,89 @@ document.addEventListener('DOMContentLoaded', function() {
         chart: {
             type: 'donut',
             height: 300,
-            fontFamily: 'Cafe24 Ssurround air OTF Light'
+            fontFamily: 'Cafe24 Ssurround air OTF Light',
+            animations: {
+                enabled: true,
+                easing: 'easeinout',
+                speed: 800,
+                animateGradually: {
+                    enabled: true,
+                    delay: 150
+                },
+                dynamicAnimation: {
+                    enabled: true,
+                    speed: 350
+                }
+            },
+            dropShadow: {
+                enabled: true,
+                color: '#111',
+                top: 7,
+                left: 1,
+                blur: 5,
+                opacity: 0.2
+            }
         },
         labels: ['계약 완료', '진행 중인 상담', '계약 불가'],
-        colors: ['#28a745', '#007bff', '#ff9800'],
+        colors: ['#36b9cc', '#4e73df', '#f6c23e'],
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shade: 'dark',
+                type: 'vertical',
+                shadeIntensity: 0.5,
+                gradientToColors: ['#1cc88a', '#2653d4', '#f6ad5a'],
+                inverseColors: false,
+                opacityFrom: 1,
+                opacityTo: 0.8,
+                stops: [0, 100]
+            }
+        },
+        stroke: {
+            width: 0,
+            colors: ['#fff']
+        },
         legend: {
-            position: 'bottom'
+            position: 'bottom',
+            fontFamily: 'Cafe24 Ssurround air OTF Light',
+            fontSize: '14px'
+        },
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function(val) {
+                    return val + " 건";
+                }
+            }
         },
         plotOptions: {
             pie: {
                 donut: {
                     size: '70%',
+                    background: 'transparent',
                     labels: {
                         show: true,
                         total: {
                             show: true,
                             showAlways: true,
                             label: '총 예약',
-                            fontSize: '20px',
+                            fontSize: '22px',
                             fontWeight: 600,
                             fontFamily: 'Cafe24 Ssurround air OTF Light',
                             color: '#373d3f',
                             formatter: function(w) {
                                 return w.globals.seriesTotals.reduce((a, b) => a + b, 0) + "건";
+                            }
+                        },
+                        value: {
+                            show: true,
+                            fontSize: '16px',
+                            fontFamily: 'Cafe24 Ssurround air OTF Light',
+                            fontWeight: 400,
+                            color: '#373d3f',
+                            offsetY: 8,
+                            formatter: function (val) {
+                                return val + "건";
                             }
                         }
                     }
@@ -278,14 +158,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // 달력 초기화
     initializeCalendar();
     
-    // 초기 로드 시 페이지 로드 시 서버에서 제공한 데이터를 표시
-    displayInitialData();
+    // 초기 데이터 로드 및 현재 월 통계 표시
+    const today = new Date();
+    updateStatCards(today.getFullYear(), today.getMonth());
     
-    // 관리자 대시보드 제목 변경 (연도와 월 표시 제거)
-    updateDashboardTitle();
-    
-    // 연/월 선택 상태 업데이트 (현재 년/월 선택)
-    setYearMonthSelectorValue(selectedYear, selectedMonth);
+    // 관리자 대시보드 제목 변경 (연도와 월 표시로 업데이트)
+    updateSelectedMonthDisplay(today.getFullYear(), today.getMonth());
 });
 
 // 대시보드 제목에서 연도와 월 표시를 제거하는 함수
@@ -309,31 +187,30 @@ function addYearMonthSelector() {
     selectorContainer.style.justifyContent = 'flex-end';
     selectorContainer.style.alignItems = 'center';
     
-    // 현재 날짜 기준 연도와 월 설정
+    // 현재 날짜 및 전후 6개월 계산
     const today = new Date();
     const currentMonth = today.getMonth();
     const currentYear = today.getFullYear();
-    const previousYear = currentYear - 1;
     
-    // 선택기 HTML 생성
+    // 현재 월부터 전후 6개월을 포함하는 셀렉트 박스 생성
     let selectorHTML = `
         <div class="d-flex align-items-center">
-            <label for="statisticsYearSelector" class="me-2">통계 조회:</label>
-            <select id="statisticsYearSelector" class="form-select form-select-sm me-2" style="width: auto;">
-                <option value="${previousYear}">${previousYear}년</option>
-                <option value="${currentYear}" selected>${currentYear}년</option>
-            </select>
-            
-            <select id="statisticsMonthSelector" class="form-select form-select-sm" style="width: auto;">
+            <label for="monthRangeSelector" class="me-2">통계 기간 선택:</label>
+            <select id="monthRangeSelector" class="form-select form-select-sm" style="width: auto;">
     `;
     
-    // 월 옵션 생성
-    const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
-    
-    for (let i = 0; i < 12; i++) {
+    // 이전 6개월부터 현재 월 포함 이후 6개월까지 옵션 생성 (총 13개월)
+    for (let i = -6; i <= 6; i++) {
+        const targetDate = new Date(currentYear, currentMonth + i, 1);
+        const year = targetDate.getFullYear();
+        const month = targetDate.getMonth();
+        const optionValue = `${year}-${month}`;
+        const optionText = `${year}년 ${month + 1}월`;
+        const isSelected = i === 0; // 현재 월 선택
+        
         selectorHTML += `
-            <option value="${i}" ${i === currentMonth ? 'selected' : ''}>
-                ${monthNames[i]}
+            <option value="${optionValue}" ${isSelected ? 'selected' : ''}>
+                ${optionText}
             </option>
         `;
     }
@@ -350,21 +227,12 @@ function addYearMonthSelector() {
     statsRow.parentNode.insertBefore(selectorContainer, statsRow);
     
     // 선택기 이벤트 리스너 추가
-    const yearSelector = document.getElementById('statisticsYearSelector');
-    const monthSelector = document.getElementById('statisticsMonthSelector');
+    const monthRangeSelector = document.getElementById('monthRangeSelector');
     
-    if (yearSelector && monthSelector) {
-        // 연도 변경 이벤트
-        yearSelector.addEventListener('change', function() {
-            const selectedYear = parseInt(this.value);
-            const selectedMonth = parseInt(monthSelector.value);
-            updateStatCards(selectedYear, selectedMonth);
-        });
-        
-        // 월 변경 이벤트
-        monthSelector.addEventListener('change', function() {
-            const selectedYear = parseInt(yearSelector.value);
-            const selectedMonth = parseInt(this.value);
+    if (monthRangeSelector) {
+        // 월 범위 변경 이벤트
+        monthRangeSelector.addEventListener('change', function() {
+            const [selectedYear, selectedMonth] = this.value.split('-').map(Number);
             updateStatCards(selectedYear, selectedMonth);
         });
     }
@@ -424,12 +292,13 @@ function initializeCalendar() {
             // 날짜 표시 업데이트
             updateDateDisplay();
             
-            // 연/월 선택기 값 업데이트
-            const yearSelector = document.getElementById('statisticsYearSelector');
-            const monthSelector = document.getElementById('statisticsMonthSelector');
-            if (yearSelector && monthSelector) {
-                yearSelector.value = currentYear;
-                monthSelector.value = currentMonth;
+            // 월 범위 선택기 값 업데이트
+            const monthRangeSelector = document.getElementById('monthRangeSelector');
+            if (monthRangeSelector) {
+                monthRangeSelector.value = `${currentYear}-${currentMonth}`;
+                
+                // 통계 카드도 업데이트
+                updateStatCards(currentYear, currentMonth);
             }
         });
     }
@@ -448,12 +317,13 @@ function initializeCalendar() {
             // 날짜 표시 업데이트
             updateDateDisplay();
             
-            // 연/월 선택기 값 업데이트
-            const yearSelector = document.getElementById('statisticsYearSelector');
-            const monthSelector = document.getElementById('statisticsMonthSelector');
-            if (yearSelector && monthSelector) {
-                yearSelector.value = currentYear;
-                monthSelector.value = currentMonth;
+            // 월 범위 선택기 값 업데이트
+            const monthRangeSelector = document.getElementById('monthRangeSelector');
+            if (monthRangeSelector) {
+                monthRangeSelector.value = `${currentYear}-${currentMonth}`;
+                
+                // 통계 카드도 업데이트
+                updateStatCards(currentYear, currentMonth);
             }
         });
     }
@@ -620,67 +490,6 @@ function fetchMonthReservationDates() {
         });
 }
 
-// 통계 카드 업데이트 함수 (전역 접근용)
-function updateStatCards(year, month) {
-    console.log(`${year}년 ${month+1}월 통계 데이터 업데이트 중...`);
-    
-    // API를 호출하여 선택한 연/월의 데이터 가져오기
-    fetch(`/api/admin/statistics/year/${year}/month/${month + 1}`)
-        .then(response => {
-            if (!response.ok) {
-                // API 경로가 변경되었을 수 있으므로 기존 경로도 시도
-                return fetch(`/api/admin/statistics/month/${month + 1}`);
-            }
-            return response;
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('월별 통계 데이터를 가져오는데 실패했습니다.');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // 통계 카드 업데이트
-            const cardTitles = document.querySelectorAll('.card-title');
-            cardTitles.forEach(title => {
-                const parentElement = title.closest('.card-body');
-                if (!parentElement) return;
-                
-                const subtitleElement = parentElement.querySelector('.card-subtitle');
-                if (!subtitleElement) return;
-                
-                const subtitleText = subtitleElement.textContent.trim();
-                
-                if (subtitleText.includes('총 상담 예약 건수')) {
-                    title.textContent = `${data.totalReservationsCount}건`;
-                } else if (subtitleText.includes('진행 중인 상담')) {
-                    title.textContent = `${data.activeReservationsCount}건`;
-                } else if (subtitleText.includes('계약 완료')) {
-                    title.textContent = `${data.completedReservationsCount}건`;
-                } else if (subtitleText.includes('계약불가 예약건수')) {
-                    title.textContent = `${data.cancelledReservationsCount}건`;
-                }
-            });
-            
-            // 도넛 차트 데이터 업데이트
-            try {
-                if (window.propertyChart && typeof window.propertyChart.updateSeries === 'function') {
-                    window.propertyChart.updateSeries([
-                        data.completedReservationsCount,
-                        data.activeReservationsCount,
-                        data.cancelledReservationsCount
-                    ]);
-                }
-            } catch (error) {
-                console.error('도넛 차트 업데이트 오류:', error);
-            }
-        })
-        .catch(error => {
-            console.error('통계 데이터 업데이트 오류:', error);
-            // 오류 시 아무 작업도 하지 않음 (기존 표시 유지)
-        });
-}
-
 // 차트 기간 선택기 추가 함수
 function addChartRangeSelector() {
     const chartCard = document.querySelector('#reservationChart').closest('.card-body');
@@ -690,24 +499,26 @@ function addChartRangeSelector() {
     const chartTitle = chartCard.querySelector('.card-title');
     if (!chartTitle) return;
     
+    // 원래 차트 제목 텍스트 저장
+    const originalTitleText = chartTitle.textContent;
+    
     // 기간 선택기 컨테이너 생성
     const rangeContainer = document.createElement('div');
     rangeContainer.className = 'd-flex justify-content-between align-items-center mb-3';
     
     // 기존 제목을 컨테이너에 추가
     const titleDiv = document.createElement('div');
-    titleDiv.appendChild(chartTitle.cloneNode(true));
+    titleDiv.id = 'chartTitleContainer'; // 제목 컨테이너에 ID 추가
+    titleDiv.innerHTML = `<h5 class="card-title">${originalTitleText}</h5>`;
     
     // 기간 선택기 생성
     const rangeSelector = document.createElement('div');
     rangeSelector.className = 'btn-group btn-group-sm';
     rangeSelector.setAttribute('role', 'group');
     rangeSelector.innerHTML = `
-        <button type="button" class="btn btn-outline-secondary chart-range active" data-range="all">전체</button>
-        <button type="button" class="btn btn-outline-secondary chart-range" data-range="year">1년</button>
-        <button type="button" class="btn btn-outline-secondary chart-range" data-range="quarter">3개월</button>
-        <button type="button" class="btn btn-outline-secondary chart-range" data-range="month">1개월</button>
-        <button type="button" class="btn btn-outline-secondary chart-range" data-range="week">1주일</button>
+        <button type="button" class="btn btn-outline-secondary chart-range active" data-range="1year">1년</button>
+        <button type="button" class="btn btn-outline-secondary chart-range" data-range="6months">±6개월</button>
+        <button type="button" class="btn btn-outline-secondary chart-range" data-range="3months">±3개월</button>
     `;
     
     // 컨테이너에 제목과 선택기 추가
@@ -730,110 +541,555 @@ function addChartRangeSelector() {
             
             // 선택한 범위에 따라 차트 업데이트
             const selectedRange = this.getAttribute('data-range');
-            updateChartByRange(selectedRange);
+            updateChartByDateRange(selectedRange);
         });
     });
 }
 
-// 선택한 범위에 따라 차트 업데이트
-function updateChartByRange(range) {
+// 선택한 날짜 범위에 따라 차트 업데이트
+function updateChartByDateRange(range) {
     const today = new Date();
-    let startDate, endDate;
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth();
+    
+    let months = [];
     let categories = [];
     
-    // 범위에 따른 날짜 계산 및 카테고리 설정
     switch(range) {
-        case 'week':
-            // 최근 7일
-            endDate = new Date();
-            startDate = new Date();
-            startDate.setDate(today.getDate() - 6);
-            // 일별 카테고리 생성 (최근 7일)
-            for (let i = 0; i < 7; i++) {
-                const date = new Date(startDate);
-                date.setDate(startDate.getDate() + i);
-                categories.push(formatDate(date, 'MM.dd'));
+        case '3months':
+            // 현재 월 기준 3개월 전부터 3개월 후까지 (총 7개월)
+            for (let i = -3; i <= 3; i++) {
+                let date = new Date(currentYear, currentMonth + i, 1);
+                let formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                months.push(formattedDate);
+                categories.push(`${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}`);
             }
             break;
             
-        case 'month':
-            // 현재 달
-            startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-            endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-            // 일주일 단위 카테고리 생성
-            const daysInMonth = endDate.getDate();
-            for (let i = 0; i < daysInMonth; i += 7) {
-                const date = new Date(startDate);
-                date.setDate(startDate.getDate() + i);
-                categories.push(formatDate(date, 'MM.dd'));
-            }
-            // 월말 추가
-            if (categories[categories.length - 1] !== formatDate(endDate, 'MM.dd')) {
-                categories.push(formatDate(endDate, 'MM.dd'));
+        case '6months':
+            // 현재 월 기준 6개월 전부터 6개월 후까지 (총 13개월)
+            for (let i = -6; i <= 6; i++) {
+                let date = new Date(currentYear, currentMonth + i, 1);
+                let formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                months.push(formattedDate);
+                categories.push(`${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}`);
             }
             break;
             
-        case 'quarter':
-            // 최근 3개월
-            endDate = new Date();
-            startDate = new Date();
-            startDate.setMonth(today.getMonth() - 2);
-            startDate.setDate(1);
-            // 월 단위 카테고리 생성 (최근 3개월)
-            for (let i = 0; i < 3; i++) {
-                const date = new Date(startDate);
-                date.setMonth(startDate.getMonth() + i);
-                categories.push(formatDate(date, 'yy.MM'));
-            }
-            break;
-            
-        case 'year':
-            // 1년 (기본값)
-            startDate = new Date(today.getFullYear(), 0, 1);
-            endDate = new Date(today.getFullYear(), 11, 31);
-            // 월 단위 카테고리 생성 (1년 12개월)
-            categories = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
-            break;
-
-        case 'all':
+        case '1year':
         default:
-            // 전체 데이터 (시작일과 종료일을 설정하지 않음)
+            // 현재 연도의 1월부터 12월까지
+            for (let i = 0; i < 12; i++) {
+                months.push(`${currentYear}-${String(i + 1).padStart(2, '0')}`);
+            }
             categories = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
-            fetchAllData(); // 전체 데이터를 가져오는 함수 호출
-            return; // 차트 업데이트를 여기서 종료
+            break;
     }
     
-    // API 호출하여 선택한 범위의 데이터 가져오기
-    fetchChartDataByRange(startDate, endDate, range, categories);
+    // 각 월의 예약 건수 가져오기
+    fetchMonthlyReservationStats(months, categories, range);
 }
 
-// 전체 데이터 가져오기
-function fetchAllData() {
-    const apiUrl = `/api/admin/statistics/all`; // 전체 데이터를 가져오는 API 엔드포인트
-    
-    // 로딩 표시
+// 각 월의 예약 통계 가져오기
+function fetchMonthlyReservationStats(months, categories, rangeType) {
+    // 차트 요소 참조
     const chartElement = document.querySelector('#reservationChart');
-    if (chartElement) {
-        chartElement.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">차트 데이터를 불러오는 중...</p></div>';
+    
+    // 모든 월의 데이터를 저장할 배열
+    let monthlyData = Array(months.length).fill(0);
+    let fetchCompleted = 0;
+    
+    // 총계를 위한 변수들
+    let totalReservationsCount = 0;
+    let activeReservationsCount = 0;
+    let completedReservationsCount = 0;
+    let cancelledReservationsCount = 0;
+    
+    // 각 월에 대해 API 호출
+    months.forEach((month, index) => {
+        const [year, monthNum] = month.split('-');
+        
+        fetch(`/api/admin/statistics/year/${year}/month/${monthNum}`)
+            .then(response => {
+                if (!response.ok) {
+                    // 대체 API 시도
+                    return fetch(`/api/admin/reservations/month?year=${year}&month=${monthNum}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data) {
+                    // API 응답 형식에 따라 예약 건수 추출
+                    if (data.totalReservationsCount !== undefined) {
+                        monthlyData[index] = data.totalReservationsCount;
+                        
+                        // 총계에 추가
+                        totalReservationsCount += data.totalReservationsCount;
+                        activeReservationsCount += data.activeReservationsCount;
+                        completedReservationsCount += data.completedReservationsCount;
+                        cancelledReservationsCount += data.cancelledReservationsCount;
+                    } else if (Array.isArray(data)) {
+                        monthlyData[index] = data.length;
+                        
+                        // 배열 데이터인 경우 상태별로 계산
+                        let active = 0, completed = 0, cancelled = 0;
+                        data.forEach(reservation => {
+                            if (reservation.status === 'COMPL') {
+                                completed++;
+                            } else if (reservation.status === 'PENDING' || reservation.status === 'CONFIRMED') {
+                                active++;
+                            } else if (reservation.status === 'CANCELLED') {
+                                cancelled++;
+                            }
+                        });
+                        
+                        // 총계에 추가
+                        totalReservationsCount += data.length;
+                        activeReservationsCount += active;
+                        completedReservationsCount += completed;
+                        cancelledReservationsCount += cancelled;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error(`${year}년 ${monthNum}월 데이터 가져오기 오류:`, error);
+            })
+            .finally(() => {
+                fetchCompleted++;
+                
+                // 모든 달의 데이터를 가져왔으면 차트와 통계 카드 업데이트
+                if (fetchCompleted === months.length) {
+                    updateChartData(monthlyData, categories, rangeType);
+                    updateRangeStatistics({
+                        totalReservationsCount,
+                        activeReservationsCount,
+                        completedReservationsCount,
+                        cancelledReservationsCount
+                    });
+                }
+            });
+    });
+    
+    // 일정 시간이 지난 후에도 데이터가 완전히 로드되지 않았다면,
+    // 현재까지 받은 데이터로 차트 업데이트
+    setTimeout(() => {
+        if (fetchCompleted < months.length) {
+            updateChartData(monthlyData, categories, rangeType);
+            updateRangeStatistics({
+                totalReservationsCount,
+                activeReservationsCount,
+                completedReservationsCount,
+                cancelledReservationsCount
+            });
+        }
+    }, 5000);
+}
+
+// 범위 전체 통계 업데이트
+function updateRangeStatistics(data) {
+    const cardTitles = document.querySelectorAll('.card-title');
+    cardTitles.forEach(title => {
+        const parentElement = title.closest('.card-body');
+        if (!parentElement) return;
+        
+        const subtitleElement = parentElement.querySelector('.card-subtitle');
+        if (!subtitleElement) return;
+        
+        const subtitleText = subtitleElement.textContent.trim();
+        
+        if (subtitleText.includes('총 상담 예약 건수')) {
+            title.textContent = `${data.totalReservationsCount}건`;
+        } else if (subtitleText.includes('진행 중인 상담')) {
+            title.textContent = `${data.activeReservationsCount}건`;
+        } else if (subtitleText.includes('계약 완료')) {
+            title.textContent = `${data.completedReservationsCount}건`;
+        } else if (subtitleText.includes('계약불가 예약건수')) {
+            title.textContent = `${data.cancelledReservationsCount}건`;
+        }
+    });
+    
+    // 도넛 차트 업데이트
+    try {
+        if (window.propertyChart && typeof window.propertyChart.updateSeries === 'function') {
+            window.propertyChart.updateSeries([
+                data.completedReservationsCount,
+                data.activeReservationsCount,
+                data.cancelledReservationsCount
+            ]);
+        }
+    } catch (error) {
+        console.error('도넛 차트 업데이트 오류:', error);
+    }
+}
+
+// 차트 데이터 업데이트
+function updateChartData(data, categories, rangeType) {
+    const chartElement = document.querySelector('#reservationChart');
+    if (!chartElement) {
+        console.error('차트 요소를 찾을 수 없습니다.');
+        return;
     }
     
-    // API 호출
-    fetch(apiUrl)
+    // 차트 제목 업데이트
+    let titleText = '예약 증감 현황';
+    switch(rangeType) {
+        case '3months': titleText = '예약 증감 현황 (±3개월)'; break;
+        case '6months': titleText = '예약 증감 현황 (±6개월)'; break;
+        case '1year': titleText = '1년간 예약 증감 현황'; break;
+    }
+    
+    // 차트 엘리먼트 초기화
+    chartElement.innerHTML = '';
+    
+    // 새로운 차트 옵션으로 차트 생성
+    const chartOptions = {
+        series: [{
+            name: '예약 건수',
+            data: data,
+            color: '#4e73df'
+        }],
+        chart: {
+            height: 350,
+            type: 'area',
+            fontFamily: 'Cafe24 Ssurround air OTF Light',
+            toolbar: {
+                show: false
+            },
+            dropShadow: {
+                enabled: true,
+                color: '#000',
+                top: 18,
+                left: 7,
+                blur: 10,
+                opacity: 0.2
+            },
+            animations: {
+                enabled: true,
+                easing: 'easeinout',
+                speed: 800,
+                animateGradually: {
+                    enabled: true,
+                    delay: 150
+                },
+                dynamicAnimation: {
+                    enabled: true,
+                    speed: 350
+                }
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 3
+        },
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shade: 'dark',
+                gradientToColors: ['#1cc88a'],
+                shadeIntensity: 1,
+                type: 'horizontal',
+                opacityFrom: 0.7,
+                opacityTo: 0.3,
+                stops: [0, 100]
+            }
+        },
+        title: {
+            text: titleText,
+            align: 'left',
+            style: {
+                fontSize: '18px',
+                fontWeight: 'bold',
+                fontFamily: 'Cafe24 Ssurround air OTF Light',
+                color: '#5a5c69'
+            }
+        },
+        grid: {
+            borderColor: '#e7e7e7',
+            row: {
+                colors: ['#f3f3f3', 'transparent'],
+                opacity: 0.5
+            }
+        },
+        markers: {
+            size: 6,
+            colors: ['#4e73df'],
+            strokeColors: '#fff',
+            strokeWidth: 2,
+            hover: {
+                size: 8
+            }
+        },
+        xaxis: {
+            categories: categories,
+            labels: {
+                style: {
+                    colors: '#5a5c69',
+                    fontSize: '12px',
+                    fontFamily: 'Cafe24 Ssurround air OTF Light'
+                }
+            },
+            axisBorder: {
+                show: false
+            },
+            axisTicks: {
+                show: false
+            }
+        },
+        yaxis: {
+            labels: {
+                style: {
+                    colors: '#5a5c69',
+                    fontSize: '12px',
+                    fontFamily: 'Cafe24 Ssurround air OTF Light'
+                },
+                formatter: function(val) {
+                    return Math.round(val) + "건";
+                }
+            }
+        },
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function(val) {
+                    return val + " 건";
+                }
+            }
+        },
+        legend: {
+            position: 'top',
+            horizontalAlign: 'right',
+            floating: true,
+            offsetY: -25,
+            offsetX: -5,
+            fontFamily: 'Cafe24 Ssurround air OTF Light'
+        }
+    };
+    
+    // 새 차트 인스턴스 생성
+    window.reservationChart = new ApexCharts(chartElement, chartOptions);
+    window.reservationChart.render();
+}
+
+// 날짜 형식 변환 유틸리티 함수
+function formatDate(date, format) {
+    const year = date.getFullYear().toString().slice(-2); // 2자리 연도
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    
+    return format.replace('yy', year).replace('MM', month).replace('dd', day);
+}
+
+// 통계 카드 업데이트 함수
+function updateStatCards(year, month) {
+    console.log(`${year}년 ${month+1}월 통계 데이터 업데이트 중...`);
+    
+    // API 호출하여 선택한 월의 데이터 가져오기
+    fetch(`/api/admin/statistics/year/${year}/month/${month + 1}`)
         .then(response => {
             if (!response.ok) {
-                throw new Error('전체 통계 데이터를 가져오는데 실패했습니다.');
+                throw new Error('월별 통계 데이터를 가져오는데 실패했습니다.');
             }
             return response.json();
         })
         .then(data => {
-            // 차트 업데이트
-            updateReservationChart(data, categories, 'all');
+            // 통계 카드 업데이트
+            updateStatisticsCards(data);
+            
+            // 도넛 차트 데이터 업데이트
+            updateDonutChart(data);
+            
+            // 월 선택기에서 해당 월 선택
+            setYearMonthSelectorValue(year, month);
+            
+            // 선택된 월 표시 업데이트
+            updateSelectedMonthDisplay(year, month);
         })
         .catch(error => {
-            console.error('전체 데이터 가져오기 오류:', error);
-            // 오류 발생 시 임시 데이터 생성
-            const categories = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
-            const dummyData = generateDummyData('year', categories);
-            updateReservationChart(dummyData, categories, 'all');
+            console.error('통계 데이터 업데이트 오류:', error);
+            
+            // 오류 발생 시 서버에서 전달받은 초기 데이터 표시
+            displayInitialData();
+            
+            // 오류 메시지 표시
+            showErrorMessage('통계 데이터를 불러오는 중 오류가 발생했습니다.');
         });
+}
+
+// 통계 카드에 로딩 표시 추가
+function showLoadingOnCards() {
+    const cardTitles = document.querySelectorAll('.card-title');
+    cardTitles.forEach(title => {
+        title.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div>';
+    });
+}
+
+// 오류 메시지 표시
+function showErrorMessage(message) {
+    // 임시 알림 요소 생성
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+    alertDiv.style.position = 'fixed';
+    alertDiv.style.top = '20px';
+    alertDiv.style.right = '20px';
+    alertDiv.style.zIndex = '9999';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    
+    // 문서에 알림 추가
+    document.body.appendChild(alertDiv);
+    
+    // 5초 후 자동 제거
+    setTimeout(() => {
+        alertDiv.classList.remove('show');
+        setTimeout(() => alertDiv.remove(), 300);
+    }, 5000);
+}
+
+// 선택된 월 표시 업데이트
+function updateSelectedMonthDisplay(year, month) {
+    const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+    const dashboardTitle = document.querySelector('.d-flex h2');
+    if (dashboardTitle) {
+        dashboardTitle.textContent = `관리자 대시보드 (${year}년 ${monthNames[month]})`;
+    }
+}
+
+// 초기 데이터 표시 함수 (API 호출 실패 시)
+function displayInitialData() {
+    const propertyChartElement = document.querySelector("#propertyChart");
+    if (!propertyChartElement) return;
+    
+    const completedCount = parseInt(propertyChartElement.getAttribute("data-completed") || "0");
+    const pendingCount = parseInt(propertyChartElement.getAttribute("data-pending") || "0");
+    const cancelledCount = parseInt(propertyChartElement.getAttribute("data-cancelled") || "0");
+    const totalCount = completedCount + pendingCount + cancelledCount;
+    
+    // 통계 카드 업데이트
+    const cardTitles = document.querySelectorAll('.card-title');
+    cardTitles.forEach(title => {
+        const parentElement = title.closest('.card-body');
+        if (!parentElement) return;
+        
+        const subtitleElement = parentElement.querySelector('.card-subtitle');
+        if (!subtitleElement) return;
+        
+        const subtitleText = subtitleElement.textContent.trim();
+        
+        if (subtitleText.includes('총 상담 예약 건수')) {
+            title.textContent = `${totalCount}건`;
+        } else if (subtitleText.includes('진행 중인 상담')) {
+            title.textContent = `${pendingCount}건`;
+        } else if (subtitleText.includes('계약 완료')) {
+            title.textContent = `${completedCount}건`;
+        } else if (subtitleText.includes('계약불가 예약건수')) {
+            title.textContent = `${cancelledCount}건`;
+        }
+    });
+    
+    // 도넛 차트 업데이트
+    if (window.propertyChart) {
+        try {
+            window.propertyChart.updateSeries([completedCount, pendingCount, cancelledCount]);
+        } catch (error) {
+            console.error('도넛 차트 업데이트 오류:', error);
+        }
+    }
+}
+
+// 통계 카드 업데이트 함수
+function updateStatisticsCards(data) {
+    const cardTitles = document.querySelectorAll('.card-title');
+    cardTitles.forEach(title => {
+        const parentElement = title.closest('.card-body');
+        if (!parentElement) return;
+        
+        const subtitleElement = parentElement.querySelector('.card-subtitle');
+        if (!subtitleElement) return;
+        
+        const subtitleText = subtitleElement.textContent.trim();
+        
+        if (subtitleText.includes('총 상담 예약 건수')) {
+            title.textContent = `${data.totalReservationsCount}건`;
+        } else if (subtitleText.includes('진행 중인 상담')) {
+            title.textContent = `${data.activeReservationsCount}건`;
+        } else if (subtitleText.includes('계약 완료')) {
+            title.textContent = `${data.completedReservationsCount}건`;
+        } else if (subtitleText.includes('계약불가 예약건수')) {
+            title.textContent = `${data.cancelledReservationsCount}건`;
+        }
+    });
+}
+
+// 도넛 차트 업데이트 함수
+function updateDonutChart(data) {
+    try {
+        if (window.propertyChart && typeof window.propertyChart.updateSeries === 'function') {
+            window.propertyChart.updateSeries([
+                data.completedReservationsCount,
+                data.activeReservationsCount,
+                data.cancelledReservationsCount
+            ]);
+        }
+    } catch (error) {
+        console.error('도넛 차트 업데이트 오류:', error);
+    }
+}
+
+// 연/월 선택기 값 설정 함수
+function setYearMonthSelectorValue(year, month) {
+    const monthRangeSelector = document.getElementById('monthRangeSelector');
+    if (monthRangeSelector) {
+        // 옵션 값 생성
+        const optionValue = `${year}-${month}`;
+        
+        // 해당 옵션이 있는지 확인
+        let optionExists = false;
+        for (let i = 0; i < monthRangeSelector.options.length; i++) {
+            if (monthRangeSelector.options[i].value === optionValue) {
+                optionExists = true;
+                monthRangeSelector.selectedIndex = i;
+                break;
+            }
+        }
+        
+        // 옵션이 없으면 새로 추가
+        if (!optionExists) {
+            const option = document.createElement('option');
+            option.value = optionValue;
+            option.text = `${year}년 ${month + 1}월`;
+            monthRangeSelector.appendChild(option);
+            monthRangeSelector.value = optionValue;
+            
+            // 옵션 재정렬
+            sortSelectOptions(monthRangeSelector);
+        }
+    }
+}
+
+// 셀렉트 옵션 재정렬 함수
+function sortSelectOptions(selectElement) {
+    const options = Array.from(selectElement.options);
+    options.sort((a, b) => {
+        const [yearA, monthA] = a.value.split('-').map(Number);
+        const [yearB, monthB] = b.value.split('-').map(Number);
+        
+        if (yearA === yearB) {
+            return monthA - monthB;
+        }
+        return yearA - yearB;
+    });
+    
+    // 정렬된 옵션으로 교체
+    while (selectElement.options.length > 0) {
+        selectElement.remove(0);
+    }
+    
+    options.forEach(option => {
+        selectElement.add(option);
+    });
 }

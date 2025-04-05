@@ -653,4 +653,11 @@ public class AdminController {
                 .body(Map.of("error", "매물 " + (id != null ? "수정" : "등록") + " 처리 중 오류가 발생했습니다: " + e.getMessage()));
         }
     }
+
+    @GetMapping("/update-property-images")
+    public String updatePropertyImages(Model model) {
+        propertyService.updateAllPropertyImages();
+        model.addAttribute("message", "모든 매물의 이미지가 업데이트되었습니다.");
+        return "redirect:/admin/dashboard?imageUpdated=true";
+    }
 }

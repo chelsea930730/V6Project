@@ -255,7 +255,6 @@ document.addEventListener("DOMContentLoaded", function () {
         // 일반 유저는 관리자와의 채팅방으로 설정
         if (isChatPage) {
             document.getElementById('chatRoomTitle').textContent = '관리자와의 채팅';
-            loadChatHistory("admin@realestate.com");
         }
     }
 

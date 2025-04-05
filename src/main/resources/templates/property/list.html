@@ -29,8 +29,9 @@
     </div>
     <br>
 
-    <!-- ADMIN이 아닐 때만 상담 예약 버튼 표시 -->
-    <a id="reservationBtn" th:href="@{/reservation}" class="cta-btn">상담 예약 페이지 이동</a>
+    <!-- USER 역할을 가진 사용자에게만 상담 예약 버튼 표시 -->
+    <a id="reservationBtn" th:href="@{/reservation}" class="cta-btn" 
+       th:if="${#authorization.expression('hasRole(''ROLE_USER'') and !hasRole(''ROLE_ADMIN'')')}">상담 예약 페이지 이동</a>
 </section>
 
 
@@ -181,8 +182,8 @@
                 <option value="price-low">가격 낮은순</option>
                 <option value="price-high">가격 높은순</option>
             </select>
-            <!-- onclick 속성 대신 JS 이벤트 리스너 사용 -->
-            <button class="add-cart-button">선택한 매물 장바구니에 담기</button>
+            <!-- USER 역할을 가진 사용자에게만 장바구니 버튼 표시 -->
+            <button class="add-cart-button" th:if="${#authorization.expression('hasRole(''ROLE_USER'') and !hasRole(''ROLE_ADMIN'')')}">선택한 매물 장바구니에 담기</button>
         </div>
 
         <!-- 매물 목록 컨테이너 - 클래스 이름 변경 -->

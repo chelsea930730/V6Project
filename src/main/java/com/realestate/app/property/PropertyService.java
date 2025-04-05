@@ -15,6 +15,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
+import java.io.File;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -533,5 +535,54 @@ public class PropertyService {
         
         log.info("필터링 결과 매물 수: {}", properties.size());
         return properties;
+    }
+
+    // 모든 매물의 이미지 경로를 업데이트하는 메서드
+    @Transactional
+    public void updateAllPropertyImages() {
+        List<Property> properties = propertyRepository.findAll();
+        File uploadsDir = new File("uploads");
+        File[] imageFiles = uploadsDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".jpeg") || name.toLowerCase().endsWith(".png"));
+        
+        if (imageFiles == null || imageFiles.length == 0) {
+            log.warn("이미지 파일이 uploads 디렉토리에 없습니다");
+            return;
+        }
+        
+        Random random = new Random();
+        
+        // 모든 매물에 대해 임의의 이미지 할당
+        for (Property property : properties) {
+            // 이미지가 이미 할당되어 있으면 건너뜀
+            if (property.getThumbnailImage() != null && !property.getThumbnailImage().isEmpty()) {
+                continue;
+            }
+            
+            // 썸네일 이미지 할당
+            String thumbnailImagePath = "/uploads/" + imageFiles[random.nextInt(imageFiles.length)].getName();
+            property.setThumbnailImage(thumbnailImagePath);
+            
+            // 건물 이미지 할당
+            String buildingImagePath = "/uploads/" + imageFiles[random.nextInt(imageFiles.length)].getName();
+            property.setBuildingImage(buildingImagePath);
+            
+            // 내부 이미지 할당
+            String interiorImagePath = "/uploads/" + imageFiles[random.nextInt(imageFiles.length)].getName();
+            property.setInteriorImage(interiorImagePath);
+            
+            // 평면도 이미지 할당
+            String floorplanImagePath = "/uploads/" + imageFiles[random.nextInt(imageFiles.length)].getName();
+            property.setFloorplanImage(floorplanImagePath);
+            
+            // 추가 이미지 할당
+            String extraImage1Path = "/uploads/" + imageFiles[random.nextInt(imageFiles.length)].getName();
+            property.setExtraImage1(extraImage1Path);
+            
+            String extraImage2Path = "/uploads/" + imageFiles[random.nextInt(imageFiles.length)].getName();
+            property.setExtraImage2(extraImage2Path);
+        }
+        
+        propertyRepository.saveAll(properties);
+        log.info("모든 매물의 이미지 경로가 업데이트되었습니다. 총 " + properties.size() + "개 매물 업데이트됨");
     }
 }
