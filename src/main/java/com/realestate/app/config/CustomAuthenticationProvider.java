@@ -38,7 +38,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         log.info("✅ [로그인 성공] 이메일: {}", email);
         return new UsernamePasswordAuthenticationToken(
-            userDetails,
+            userDetails, 
             null, // 인증 후에는 자격 증명을 지움
             userDetails.getAuthorities()
         );

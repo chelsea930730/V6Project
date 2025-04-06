@@ -33,15 +33,15 @@ public class CartController {
         // 캐스팅을 시도하지 말고 인증 상태만 확인
         boolean isLoggedIn = false;
         String userEmail = null;
-
-        if (authentication != null && authentication.isAuthenticated() &&
+        
+        if (authentication != null && authentication.isAuthenticated() && 
                 !authentication.getPrincipal().equals("anonymousUser")) {
-
+            
             isLoggedIn = true;
-
+            
             // Principal 객체에서 사용자 이메일(username) 얻기
             Object principal = authentication.getPrincipal();
-
+            
             // 안전한 타입 체크와 캐스팅
             if (principal instanceof UserDetails) {
                 userEmail = ((UserDetails) principal).getUsername();
@@ -49,14 +49,14 @@ public class CartController {
                 // 다른 타입의 경우 getName() 사용
                 userEmail = authentication.getName();
             }
-
+            
             // 로그인된 사용자의 장바구니 아이템 가져오기
             if (userEmail != null) {
                 // 이메일로 사용자 ID를 조회한 후 장바구니 아이템 가져오기
                 Long userId = cartService.getUserIdByEmail(userEmail);
                 List<Property> properties = cartService.getCartItems(userId);
                 model.addAttribute("properties", properties);
-
+                
                 // 이미지 정보 등 추가 작업
                 Map<Long, String> propertyImages = new HashMap<>();
                 for (Property property : properties) {
@@ -70,10 +70,10 @@ public class CartController {
             // 로그인하지 않은 경우 빈 목록 표시
             model.addAttribute("properties", new ArrayList<>());
         }
-
+        
         // 로그인 상태 모델에 추가
         model.addAttribute("isLoggedIn", isLoggedIn);
-
+        
         return "cart/cart";
     }
 
@@ -87,7 +87,7 @@ public class CartController {
         if (authenticatedUser == null) {
             return "redirect:/user/login"; // 로그인 경로 수정
         }
-
+        
         Long userId = getUserIdFromAuthenticatedUser(authenticatedUser);
         cartService.addMultipleToCart(userId, propertyIds);
         redirectAttributes.addFlashAttribute("message", propertyIds.size() + "개의 매물이 장바구니에 추가되었습니다.");
@@ -104,7 +104,7 @@ public class CartController {
         if (authenticatedUser == null) {
             return "redirect:/user/login"; // 로그인 경로 수정
         }
-
+        
         Long userId = getUserIdFromAuthenticatedUser(authenticatedUser);
         cartService.removeFromCart(userId, propertyId);
         redirectAttributes.addFlashAttribute("message", "매물이 장바구니에서 제거되었습니다.");
@@ -120,7 +120,7 @@ public class CartController {
         if (authenticatedUser == null) {
             return "redirect:/user/login"; // 로그인 경로 수정
         }
-
+        
         Long userId = getUserIdFromAuthenticatedUser(authenticatedUser);
         cartService.clearCart(userId);
         redirectAttributes.addFlashAttribute("message", "장바구니가 비워졌습니다.");
@@ -137,21 +137,41 @@ public class CartController {
         if (authenticatedUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
+        
         Long userId = getUserIdFromAuthenticatedUser(authenticatedUser);
         List<Long> propertyIds = request.get("propertyIds");
-
+        
         if (propertyIds == null || propertyIds.isEmpty()) {
             return ResponseEntity.badRequest().body("선택된 매물이 없습니다.");
         }
-
+        
         for (Long propertyId : propertyIds) {
             cartService.removeFromCart(userId, propertyId);
         }
-
+        
         return ResponseEntity.ok().build();
     }
-
+    
+    /**
+     * 장바구니에 매물이 있는지 확인 (AJAX)
+     */
+    @PostMapping("/check")
+    @ResponseBody
+    public ResponseEntity<?> checkCartItem(@AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+                                          @RequestParam("propertyId") Long propertyId) {
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        Long userId = getUserIdFromAuthenticatedUser(authenticatedUser);
+        boolean exists = cartService.isInCart(userId, propertyId);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("exists", exists);
+        
+        return ResponseEntity.ok(response);
+    }
+    
     /**
      * AuthenticatedUser에서 userId를 추출하는 유틸리티 메서드
      */

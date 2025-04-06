@@ -2,16 +2,14 @@ package com.realestate.app.property;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.http.ResponseEntity;
 
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/property")
@@ -20,179 +18,110 @@ import java.util.stream.Collectors;
 public class PropertyController {
     private final PropertyService propertyService;
 
-    // 매물 목록 조회
+    // 매물 목록 페이지
     @GetMapping("/list")
     public String listProperties(
-        @RequestParam(required = false) String district,
-        @RequestParam(required = false) String line,
-        @RequestParam(required = false) String station,
-        Model model) {
-        
-        System.out.println("요청 파라미터: district=" + district + ", line=" + line + ", station=" + station);
+            @RequestParam(required = false) String district,
+            @RequestParam(required = false) String line,
+            @RequestParam(required = false) String station,
+            Model model) {
+
+        log.info("Requested parameters - district: {}, line: {}, station: {}", district, line, station);
 
         List<Property> properties;
-        
-        // 모든 매물 가져오기 (나중에 필터링을 위해)
-        List<Property> allProperties = propertyService.getAllProperties();
-        System.out.println("전체 매물 수: " + allProperties.size() + "개");
-        
-        // 필터링된 매물 목록
-        if (district != null) {
-            // 지역구 필터링
-            properties = allProperties.stream()
-                .filter(p -> p.getDistrict() != null && 
-                       (p.getDistrict().contains(district) || 
-                        (district.length() > 2 && p.getDistrict().contains(district.substring(0, district.length()-1)))))
-                .collect(Collectors.toList());
-            
-            System.out.println("지역구 필터링 '" + district + "': " + properties.size() + "개");
+
+        // 필터 조건에 따른 초기 데이터 로드
+        if (district != null && !district.isEmpty()) {
+            properties = propertyService.getPropertiesByDistrict(district);
             model.addAttribute("filterType", "district");
             model.addAttribute("filterValue", district);
-        } 
-        else if (line != null) {
-            // 노선 필터링
-            properties = allProperties.stream()
-                .filter(p -> p.getSubwayLine() != null && 
-                       (p.getSubwayLine().contains(line)))
-                .collect(Collectors.toList());
             
-            System.out.println("노선 필터링 '" + line + "': " + properties.size() + "개");
+            // 일본어 지역구인 경우 한글 이름도 추가
+            if (district.matches(".*[\\u4E00-\\u9FAF].*")) {  // 한자 포함 여부 확인
+                String koreanDistrict = convertDistrictToKorean(district);
+                model.addAttribute("filterValueKorean", koreanDistrict);
+            }
+        } 
+        else if (line != null && !line.isEmpty()) {
+            properties = propertyService.getPropertiesBySubwayLine(line);
             model.addAttribute("filterType", "line");
             model.addAttribute("filterValue", line);
-        }
-        else if (station != null) {
-            // 역 필터링
-            properties = allProperties.stream()
-                .filter(p -> p.getSubwayLine() != null && 
-                       (p.getSubwayLine().contains(station)))
-                .collect(Collectors.toList());
-            
-            System.out.println("역 필터링 '" + station + "': " + properties.size() + "개");
-            model.addAttribute("filterType", "station");
-            model.addAttribute("filterValue", station);
-        }
+        } 
         else {
-            // 필터 없음 - 모든 매물 표시
-            properties = allProperties;
-            System.out.println("필터 없음 - 전체 매물 표시");
+            properties = propertyService.getAllPropertiesByCreatedAtDesc();
         }
-        
-        // 매물 정보 로깅 (디버깅용)
-        if (properties.size() > 0) {
-            Property sample = properties.get(0);
-            System.out.println("샘플 매물 정보:");
-            System.out.println("- 제목: " + sample.getTitle());
-            System.out.println("- 지역구: " + sample.getDistrict());
-            System.out.println("- 지하철: " + sample.getSubwayLine());
-        }
-        
+
         model.addAttribute("properties", properties);
+        log.info("Total properties loaded: {}", properties.size());
+        
         return "property/list";
     }
-    // 매물 상세 조회 
+
+    // 매물 상세 페이지
     @GetMapping("/{id}")
     public String getPropertyDetail(@PathVariable Long id, Model model, Authentication authentication) {
-        // 기존 코드: 매물 정보 조회
-        Property property = propertyService.getPropertyById(id);
-        model.addAttribute("property", property);
-
-        // 인증 상태 확인 및 모델에 추가
-        boolean isLoggedIn = authentication != null && authentication.isAuthenticated()
-                && !authentication.getPrincipal().equals("anonymousUser");
-        model.addAttribute("isLoggedIn", isLoggedIn);
-
-        return "property/detail";
-    }
-
-    @GetMapping("/debug")
-    @ResponseBody
-    public Map<String, Object> debugDatabase() {
-        Map<String, Object> result = new HashMap<>();
-        
-        List<Property> allProperties = propertyService.getAllProperties();
-        
-        // 저장된 모든 지역구와 노선 목록
-        Set<String> districts = allProperties.stream()
-            .map(Property::getDistrict)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toSet());
-        
-        Set<String> subwayLines = allProperties.stream()
-            .map(Property::getSubwayLine)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toSet());
-        
-        // 매물 샘플 정보 (최대 5개)
-        List<Map<String, Object>> sampleProperties = allProperties.stream()
-            .limit(5)
-            .map(p -> {
-                Map<String, Object> data = new HashMap<>();
-                data.put("id", p.getPropertyId());
-                data.put("title", p.getTitle());
-                data.put("district", p.getDistrict());
-                data.put("subwayLine", p.getSubwayLine());
-                data.put("monthlyPrice", p.getMonthlyPrice());
-                return data;
-            })
-            .collect(Collectors.toList());
-        
-        result.put("totalProperties", allProperties.size());
-        result.put("districts", districts);
-        result.put("subwayLines", subwayLines);
-        result.put("sampleProperties", sampleProperties);
-        
-        return result;
-    }
-
-    @PostMapping("/filter")
-    @ResponseBody
-    public ResponseEntity<List<Property>> filterProperties(@RequestBody Map<String, Object> filters) {
         try {
-            log.info("받은 필터 데이터: {}", filters);
+            Property property = propertyService.getPropertyById(id);
+            model.addAttribute("property", property);
+            
+            // 로그인 상태 확인
+            boolean isLoggedIn = authentication != null && 
+                               authentication.isAuthenticated() && 
+                               !authentication.getPrincipal().equals("anonymousUser");
+            model.addAttribute("isLoggedIn", isLoggedIn);
+            
+            return "property/detail";
+        } catch (RuntimeException e) {
+            log.error("Error loading property detail for ID: {}", id, e);
+            return "error/404";
+        }
+    }
 
-            // 필수값 처리
-            BigDecimal minPrice = null;
-            BigDecimal maxPrice = null;
-            if (filters.get("minPrice") != null) {
-                minPrice = new BigDecimal(filters.get("minPrice").toString());
-            }
-            if (filters.get("maxPrice") != null) {
-                maxPrice = new BigDecimal(filters.get("maxPrice").toString());
-            }
+    // 일본어 지역구를 한글로 변환하는 메서드
+    private String convertDistrictToKorean(String japaneseDistrict) {
+        return switch (japaneseDistrict) {
+            case "足立区" -> "아다치구";
+            case "葛飾区" -> "가쓰시카구";
+            case "江戸川区" -> "에도가와구";
+            case "江東区" -> "고토구";
+            case "墨田区" -> "스미다구";
+            case "荒川区" -> "아라카와구";
+            case "台東区" -> "다이토구";
+            case "北区" -> "기타구";
+            case "文京区" -> "분쿄구";
+            case "豊島区" -> "도시마구";
+            case "板橋区" -> "이타바시구";
+            case "練馬区" -> "네리마구";
+            case "杉並区" -> "스기나미구";
+            case "中野区" -> "나카노구";
+            case "新宿区" -> "신주쿠구";
+            case "千代田区" -> "지요다구";
+            case "中央区" -> "주오구";
+            case "渋谷区" -> "시부야구";
+            case "世田谷区" -> "세타가야구";
+            case "港区" -> "미나토구";
+            case "目黒区" -> "메구로구";
+            case "品川区" -> "시나가와구";
+            case "大田区" -> "오타구";
+            default -> japaneseDistrict;
+        };
+    }
 
-            // 선택적 필터값 처리
-            String keyword = (String) filters.get("keyword");
-
-            @SuppressWarnings("unchecked")
-            List<String> buildingTypes = (List<String>) filters.get("buildingTypes");
-
-            @SuppressWarnings("unchecked")
-            List<String> roomTypes = (List<String>) filters.get("roomTypes");
-
-            // 상세 조건 필터
-            @SuppressWarnings("unchecked")
-            List<String> detailTypes = (List<String>) filters.get("detailTypes");
-
-            String buildingYear = (String) filters.get("buildingYear");
-            String station = (String) filters.get("station");
-
-            List<Property> filteredProperties = propertyService.filterProperties(
-                    minPrice,
-                    maxPrice,
-                    buildingTypes,
-                    roomTypes,
-                    buildingYear,
-                    station,
-                    keyword,
-                    detailTypes  // 상세 조건 추가
-            );
-
-            log.info("필터링된 매물 수: {}", filteredProperties.size());
-            return ResponseEntity.ok(filteredProperties);
-
+    @PutMapping("/api/properties/{id}/status")
+    @ResponseBody
+    public ResponseEntity<?> updatePropertyStatus(
+        @PathVariable Long id,
+        @RequestBody Map<String, String> request) {
+        
+        try {
+            String newStatus = request.get("status");
+            Property property = propertyService.getPropertyById(id);
+            property.setStatus(Property.Status.valueOf(newStatus));
+            propertyService.saveProperty(property);
+            
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            log.error("필터링 중 오류 발생: ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.badRequest().body("매물 상태 업데이트에 실패했습니다: " + e.getMessage());
         }
     }
 }

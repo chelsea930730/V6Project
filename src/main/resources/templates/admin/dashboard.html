@@ -20,20 +20,20 @@
         padding-top: 0 !important;
         margin: 0;
       }
-
+      
       /* 사이드바가 상단에 정확히 붙도록 설정 */
       .admin-sidebar {
         top: 0;
         margin-top: 0;
         padding-top: 20px;
       }
-
+      
       /* 메인 컨텐츠 영역 조정 */
       main {
         margin-left: 250px;
         padding-top: 0;
       }
-
+      
       .container-fluid {
         padding-top: 0;
       }
@@ -108,7 +108,7 @@
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">예약 상태 현황</h5>
-                  <div id="propertyChart" style="height: 300px"
+                  <div id="propertyChart" style="height: 300px" 
                        th:data-completed="${completedReservationsCount}"
                        th:data-pending="${activeReservationsCount}"
                        th:data-cancelled="${cancelledReservationsCount}">
@@ -138,8 +138,8 @@
                     </button>
                   </div>
                 </div>
-                <div class="calendar-days mt-3" id="calendarContainer"
-                     th:data-reservation-dates="${reservationDatesJson}"
+                <div class="calendar-days mt-3" id="calendarContainer" 
+                     th:data-reservation-dates="${reservationDatesJson}" 
                      th:data-today="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
                   <!-- 달력은 자바스크립트로 동적 생성됨 -->
                 </div>
@@ -152,14 +152,14 @@
                   <i class="fas fa-calendar-times fa-3x mb-3"></i>
                   <p>선택하신 날짜에 예약된 상담이 없습니다.</p>
                 </div>
-
+                
                 <!-- 선택된 날짜의 예약 목록 -->
                 <div th:each="reservation : ${dayReservations}" class="reservation-item mb-3 p-3 border rounded">
                   <div class="d-flex justify-content-between align-items-center">
                     <div>
-                      <h6 class="mb-1" th:text="${!reservation.properties.isEmpty() ?
-                                                  reservation.properties[0].title +
-                                                  (reservation.properties.size() > 1 ? ' 외 ' + (reservation.properties.size() - 1) + '개' : '') :
+                      <h6 class="mb-1" th:text="${!reservation.properties.isEmpty() ? 
+                                                  reservation.properties[0].title + 
+                                                  (reservation.properties.size() > 1 ? ' 외 ' + (reservation.properties.size() - 1) + '개' : '') : 
                                                   '매물 정보 없음'}">
                         시가노마이아까지 도보 15분 이내 매물 희망
                       </h6>
@@ -175,13 +175,13 @@
                     <div>
                       <span class="badge"
                             th:classappend="${
-                                reservation.status.name() == 'PENDING' ? 'bg-warning text-dark' :
+                                reservation.status.name() == 'PENDING' ? 'bg-warning text-dark' : 
                                 reservation.status.name() == 'CONFIRMED' ? 'bg-primary' :
                                 reservation.status.name() == 'COMPL' ? 'bg-success' :
                                 'bg-orange'
                             }"
                             th:text="${
-                                reservation.status.name() == 'PENDING' ? '예약 대기' :
+                                reservation.status.name() == 'PENDING' ? '예약 대기' : 
                                 reservation.status.name() == 'CONFIRMED' ? '예약 중' :
                                 reservation.status.name() == 'COMPL' ? '계약 완료' :
                                 '계약 불가'
@@ -191,7 +191,7 @@
                       <div class="reservation-number mt-2 text-muted" th:text="${'NO.' + reservation.reservationId}">
                         NO.000125
                       </div>
-                      <a th:href="@{'/admin/consulting?search=' + ${reservation.reservationId} + '&searchType=reservationId'}"
+                      <a th:href="@{'/admin/consulting?search=' + ${reservation.reservationId} + '&searchType=reservationId'}" 
                          class="btn btn-sm btn-outline-primary mt-2">
                         <i class="fas fa-eye"></i> 상세보기
                       </a>

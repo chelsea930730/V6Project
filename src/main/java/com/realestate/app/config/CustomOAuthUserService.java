@@ -29,7 +29,7 @@ import java.util.Optional;
 public class CustomOAuthUserService extends DefaultOAuth2UserService {
     @PersistenceContext
     private EntityManager entityManager;
-
+    
     @Autowired
     private UserRepository userRepository;
 
@@ -37,30 +37,30 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
     @Transactional
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         log.info("🔵 Google OAuth2 로그인 시작");
-
+        
         OAuth2User oAuth2User = super.loadUser(userRequest);
         Map<String, Object> attributes = oAuth2User.getAttributes();
-
+        
         log.info("🔵 OAuth2User 속성: {}", attributes);
-
+        
         String email = (String) attributes.get("email");
         String name = (String) attributes.get("name");
-
+        
         log.info("🔍 추출된 정보 - 이메일: {}, 이름: {}", email, name);
-
+        
         if (email == null) {
             log.error("🚨 [오류] 이메일을 가져올 수 없습니다");
             throw new OAuth2AuthenticationException(new OAuth2Error("invalid_email"), "OAuth2 로그인 실패: 이메일 정보 없음");
         }
-
+        
         try {
             Optional<User> findUser = userRepository.findByEmail(email);
             User user;
-
+            
             if (findUser.isPresent()) {
                 user = findUser.get();
                 log.info("✅ 기존 사용자 로그인: {} (ID: {})", email, user.getUserId());
-
+                
                 // 기존 사용자 정보 업데이트
                 if (user.getProvider() == Provider.LOCAL) {
                     user.setProvider(Provider.GOOGLE);
@@ -76,11 +76,11 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
                         .role(Role.USER)
                         .provider(Provider.GOOGLE)
                         .build();
-
+                
                 user = userRepository.save(user);
                 log.info("✅ 새 사용자 등록 완료 - ID: {}, 이메일: {}", user.getUserId(), email);
             }
-
+            
             return new AuthenticatedUser(user, attributes);
         } catch (Exception e) {
             log.error("🚨 사용자 저장 중 오류 발생: {}", e.getMessage(), e);
@@ -97,19 +97,19 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public User saveOrUpdateUser(String email, String name) {
         log.info("🔄 사용자 저장 시작: {}", email);
-
+        
         try {
             Optional<User> existingUser = userRepository.findByEmail(email);
-
+            
             if (existingUser.isPresent()) {
                 User user = existingUser.get();
                 user.setName(name);
                 user.setProvider(Provider.GOOGLE);
-
+                
                 // 엔티티 매니저 직접 사용
                 entityManager.merge(user);
                 entityManager.flush();
-
+                
                 log.info("✅ 사용자 업데이트 완료: ID = {}", user.getUserId());
                 return user;
             } else {
@@ -120,11 +120,11 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
                         .role(Role.USER)
                         .provider(Provider.GOOGLE)
                         .build();
-
+                
                 // 엔티티 매니저 직접 사용
                 entityManager.persist(newUser);
                 entityManager.flush();
-
+                
                 log.info("✅ 새 사용자 저장 완료: ID = {}", newUser.getUserId());
                 return newUser;
             }

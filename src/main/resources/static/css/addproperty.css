@@ -25,12 +25,12 @@ body {
 
 /* 테이블 컨테이너 크기 조정 */
 .table-responsive {
-    max-height: calc(100vh - 250px);
-    overflow-y: auto;
+    max-height: none !important;
+    overflow-y: visible !important;
 }
 
 .card-body {
-    min-height: calc(100vh - 150px);
+    min-height: 0 !important;
 }
 
 /* 체크박스 스타일 */
@@ -73,6 +73,11 @@ body {
     border: none;
     box-shadow: 0 0 15px rgba(0,0,0,0.05);
     border-radius: 10px;
+    margin-bottom: 0 !important;
+}
+
+.card .card-body {
+    padding: 0 !important;
 }
 
 /* 버튼 스타일 */
@@ -80,6 +85,71 @@ body {
     background-color: #4682B4;
     border-color: #4682B4;
     white-space: nowrap;
+}
+
+/* 검색 폼 스타일 */
+.search-container {
+    margin-bottom: 20px;
+}
+
+.search-form {
+    width: 100%;
+}
+
+.search-select {
+    max-width: 150px;
+    flex: 0 0 auto;
+    border-right: none;
+    background-color: #f8f9fa;
+    font-weight: 500;
+}
+
+.search-input {
+    flex: 1 1 auto;
+    border-left: none;
+    height: 48px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    box-shadow: none;
+    border-color: #ced4da;
+}
+
+.search-form .input-group {
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.search-form .btn {
+    height: 48px;
+    font-weight: 500;
+}
+
+.search-form .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 검색 상태 표시 스타일 */
+.search-status {
+    font-size: 0.9rem;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+}
+
+.search-status .fas {
+    font-size: 1.1rem;
+}
+
+.search-status a {
+    color: #0d6efd;
+    transition: color 0.2s;
+}
+
+.search-status a:hover {
+    color: #0a58ca;
 }
 
 #createPropertyBtn {
@@ -195,3 +265,52 @@ body {
         opacity: 1;
     }
 }
+
+/* 테이블 스타일 */
+.table {
+    margin: 0 !important;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+/* 테이블 헤더 스타일 */
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    padding: 12px 8px;
+}
+
+/* 테이블 셀 스타일 */
+.table td {
+    padding: 12px 8px;
+    vertical-align: middle;
+}
+
+/* 페이지네이션 컨테이너 */
+.pagination-container {
+    margin-top: 10px !important;
+    padding: 10px 0;
+}
+
+/* 메인 컨텐츠 영역 */
+.col-md-9, .col-lg-10 {
+    height: auto !important;
+    min-height: 0 !important;
+}
+
+/* 전체 컨테이너 */
+.container-fluid {
+    height: auto !important;
+    min-height: 0 !important;
+    padding-bottom: 20px;
+}
+
+/* 페이지네이션 스타일 */
+.d-flex.justify-content-center.mt-4 {
+    margin-top: 1rem !important;
+}
+
+/* 테이블 하단 여백 제거 */
+.table {
+    margin-bottom: 0 !important;
+} 

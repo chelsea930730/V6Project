@@ -63,7 +63,7 @@
                 <div class="grid-item">
                     <span class="label">시키킹/레이킹</span>
                     <span class="value">
-                        <span th:text="${property.shikikin}">1</span>/<span th:text="${property.reikin}">0</span>
+                        <span th:text="${#numbers.formatInteger(property.shikikin, 0, 'COMMA')}">1</span>/<span th:text="${#numbers.formatInteger(property.reikin, 0, 'COMMA')}">0</span>
                     </span>
                 </div>
                 <div class="grid-item">

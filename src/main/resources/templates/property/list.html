@@ -10,6 +10,9 @@
     <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
     <!--  -->
     <link th:href="@{/css/memul.css}" rel="stylesheet">
+    <!-- 아이콘용 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 </head>
 <body>
 
@@ -58,13 +61,13 @@
         <div class="slider-container">
             <!-- 통합된 가격 라벨 -->
             <div id="priceLabel" class="price-label">50,000円 ~ 150,000円</div>
-
+            
             <div class="range-bar"></div>
             <div class="slider">
                 <input type="range" id="minPrice" min="50000" max="150000" step="1000" value="50000">
                 <input type="range" id="maxPrice" min="50000" max="150000" step="1000" value="150000">
             </div>
-
+            
             <!-- 최소/최대 표시 (선택사항) -->
             <div class="min-max-labels">
                 <span>최소</span>
@@ -94,10 +97,7 @@
             <label><input type="checkbox" name="room" value="1K"> 1K</label>
             <label><input type="checkbox" name="room" value="1DK"> 1DK</label>
             <label><input type="checkbox" name="room" value="1LDK"> 1LDK</label>
-            <label><input type="checkbox" name="room" value="2K"> 2K</label>
-            <label><input type="checkbox" name="room" value="2DK"> 2DK</label>
-            <label><input type="checkbox" name="room" value="2LDK"> 2LDK</label>
-            <label><input type="checkbox" name="room" value="3K이상"> 3K이상</label>
+            <label><input type="checkbox" name="room" value="2K이상"> 2K이상</label>
         </div>
 
         <br>
@@ -135,34 +135,35 @@
 
     </aside>
 
-
+    <!-- 필터 메시지 영역 추가 -->
+    <div class="filter-message" style="display: none;"></div>
 
     <!-- 노선 변경 팝업 -->
     <div id="linePopup" class="popup">
         <div class="popup-content">
-            <button class="close-btn" onclick="closeLinePopup()">&times;</button>
+            <button class="close-btn">&times;</button>
             <h3>노선 선택</h3>
             <div class="jr">
                 <img th:src="@{/img/jr.png}" alt="jr 로고" class="jr-logo">
-                <span class="line yamanote">야마노테</span>
-                <span class="line chuuo">츄오- 소부</span>
-                <span class="line saikyou">사이쿄</span>
-                <span class="line joban">죠반</span>
-                <span class="line takasaki">타카사키</span>
-                <span class="line yokosuka">요코스카</span>
-                <span class="line keitoku">케이힌토쿠</span>
+                <span class="line yamanote">JR야마노테선</span>
+                <span class="line chuuo">JR츄오소부선</span>
+                <span class="line saikyou">JR사이쿄선</span>
+                <span class="line joban">JR죠반선</span>
+                <span class="line takasaki">JR타카사키선</span>
+                <span class="line yokosuka">JR요코스카선</span>
+                <span class="line keitoku">JR케이힌토쿠선</span>
             </div>
             <div class="tokyometro">
                 <img th:src="@{/img/Tokyo_Metro_logo.svg.png}" alt="도쿄메트로 로고" class="tokyometro-logo" />
-                <span class="line hanzomon">한조몬</span>
-                <span class="line marunouchi">마루노우치</span>
-                <span class="line hibiya">히비야</span>
-                <span class="line chiyoda">치요다</span>
-                <span class="line fukutoshin">후쿠토신</span>
-                <span class="line ginza">긴자</span>
-                <span class="line namboku">난보쿠</span>
-                <span class="line yurakucho">유라쿠쵸</span>
-                <span class="line tozai">토자이</span>
+                <span class="line hanzomon">한조몬선</span>
+                <span class="line marunouchi">마루노우치선</span>
+                <span class="line hibiya">히비야선</span>
+                <span class="line chiyoda">치요다선</span>
+                <span class="line fukutoshin">후쿠토신선</span>
+                <span class="line ginza">긴자선</span>
+                <span class="line namboku">난보쿠선</span>
+                <span class="line yurakucho">유라쿠쵸선</span>
+                <span class="line tozai">토자이선</span>
             </div>
             <h3>역 선택</h3>
             <div id="stationList" class="station-list">
@@ -175,33 +176,20 @@
     <!-- 매물 리스트 -->
     <section class="property-list">
         <h1>매물 리스트</h1>
-
+        
         <!-- 정렬 옵션 -->
         <div class="sort-options">
-            <select class="form-select" style="width: 200px; display: inline-block;">
+            <select class="form-select" id="sortSelect">
                 <option value="newest">최신순</option>
                 <option value="price-low">가격 낮은순</option>
                 <option value="price-high">가격 높은순</option>
             </select>
-
-            <!-- 장바구니 버튼 (초기 상태는 표시) -->
-            <button id="cartButton" onclick="addSelectedToCart()" class="add-cart-button" style="margin-left: 15px;">
-                선택한 매물 장바구니에 담기
-            </button>
+            <!-- onclick 속성 대신 JS 이벤트 리스너 사용 -->
+            <button class="add-cart-button">선택한 매물 장바구니에 담기</button>
         </div>
 
-        <!-- 폼은 숨김 처리 -->
-        <form id="cartForm" th:action="@{/cart/add}" method="post" style="display: none;">
-            <!-- 선택된 매물 ID들이 여기에 동적으로 추가됨 -->
-        </form>
-
-        <!-- 매물이 없을 경우 -->
-        <div th:if="${#lists.isEmpty(properties)}" class="empty-message">
-            등록된 매물이 없습니다.
-        </div>
-
-        <!-- 매물 목록 -->
-        <div class="property-list">
+        <!-- 매물 목록 컨테이너 - 클래스 이름 변경 -->
+        <div class="property-items-container">
             <div th:each="property : ${properties}" class="property-item">
                 <!-- 매물 헤더 -->
                 <div class="property-header">
@@ -226,7 +214,7 @@
                 <tr>
                     <td>
                         <div th:if="${property.thumbnailImage != null}" class="property-image-container">
-                            <img th:src="${property.thumbnailImage}" alt="매물 이미지"
+                            <img th:src="${property.thumbnailImage}" alt="매물 이미지" 
                                  style="width: 150px; height: 100px; object-fit: cover;">
                         </div>
                         <div th:unless="${property.thumbnailImage != null}" class="no-image-container"
@@ -249,7 +237,11 @@
                     </td>
                     <td th:text="${property.builtYear}">2018년</td>
                     <td>
-                        <div class="status-available" th:text="${property.status}">예약가능</div>
+                        <div th:class="${'status-badge ' + 
+                            (property.status == '예약가능' ? 'available' : 
+                            property.status == '예약중' ? 'in-progress' : 
+                            property.status == '거래완료' ? 'completed' : '')}" 
+                            th:text="${property.status}">예약가능</div>
                     </td>
                     <td>
                         <a th:href="@{/property/{id}(id=${property.propertyId})}" class="detail-button">상세보기</a>
@@ -262,54 +254,32 @@
                 <div th:text="${property.location}">도쿄도 세타가야구 상마4쵸메</div>
                 <div th:text="${property.subwayLine}">오다큐선 / 키타센주역 도보 7분</div>
                 <div th:if="${property.station != null}" th:text="${property.station}"></div>
-                <div th:if="${property.description != null}" th:text="${property.description}"></div>
+                <div th:if="${property.detailDescription != null || property.description != null}">
+                    <span th:if="${property.detailDescription != null}" th:text="${property.detailDescription}"></span>
+                    <span th:if="${property.detailDescription != null && property.description != null}"> / </span>
+                    <span th:if="${property.description != null}" th:text="${property.description}"></span>
+                </div>
             </div>
         </div>
     </div>
 </section>
-</div>
 
 
 <script th:inline="javascript">
     // 서버에서 받은 데이터를 전역 변수로 설정
     const serverProperties = /*[[${properties}]]*/ [];
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // 페이지 로드 시 버튼 상태를 초기화
-        const reservationBtn = document.getElementById('reservationBtn');
-        const cartBtn = document.getElementById('cartButton');
-        if (reservationBtn) reservationBtn.style.display = 'none';
-        if (cartBtn) cartBtn.style.display = 'none';
-
-        // 사용자 정보 API 호출
-        fetch('/user/index')
-            .then(response => response.json())
-            .then(data => {
-                console.log('사용자 정보:', data); // 디버깅용 로그
-
-                // 사용자 역할이 'ADMIN'인지 확인
-                const isAdmin = data.role === 'ADMIN';
-                console.log('관리자 여부:', isAdmin); // 디버깅용 로그
-
-                // 버튼 표시 여부 설정 - 관리자가 아닐 때만 표시
-                if (reservationBtn) {
-                    reservationBtn.style.display = isAdmin ? 'none' : 'inline-block';
-                }
-
-                if (cartBtn) {
-                    cartBtn.style.display = isAdmin ? 'none' : 'inline-block';
-                }
-            })
-            .catch(error => {
-                console.error('사용자 정보 확인 실패:', error);
-                // 오류 발생 시에도 버튼을 표시 (비로그인 사용자용)
-                if (reservationBtn) reservationBtn.style.display = 'inline-block';
-                if (cartBtn) cartBtn.style.display = 'inline-block';
-            });
-    });
 </script>
 <script th:src="@{/js/memul.js}"></script>
 <script th:src="@{/js/navbar.js}"></script>
+
+<script>
+// 정렬 처리 함수
+function handleSort(sortType) {
+    const filterData = getCurrentFilterData();
+    filterData.sortType = sortType;
+    filterProperties(filterData);
+}
+</script>
 </body>
 </html>
 

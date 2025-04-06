@@ -63,11 +63,11 @@ public class MyPageController {
         
         model.addAttribute("activeReservations", activeReservations);
         model.addAttribute("completedReservations", completedReservations);
-        model.addAttribute("allReservations",
+        model.addAttribute("allReservations", 
             Stream.concat(activeReservations.stream(), completedReservations.stream())
             .collect(Collectors.toList())
         );
-
+        
         return "mypage/mypage";
     }
     
@@ -104,7 +104,7 @@ public class MyPageController {
             
             // 완료된 예약 (COMPL, CANCELLED 포함)
             List<Reservation> completedReservations = allReservations.stream()
-                .filter(r -> r.getStatus() == ReservationStatus.COMPL ||
+                .filter(r -> r.getStatus() == ReservationStatus.COMPL || 
                              r.getStatus() == ReservationStatus.CANCELLED)
                 .collect(Collectors.toList());
             

@@ -19,7 +19,7 @@ public class AuthenticatedUser implements UserDetails, OAuth2User {
     public AuthenticatedUser(User user) {
         this.user = user;
     }
-
+    
     // OAuth2UserService에서 리턴 값으로 사용
     public AuthenticatedUser(User user, Map<String, Object> attributes) {
         this.user = user;
@@ -33,21 +33,18 @@ public class AuthenticatedUser implements UserDetails, OAuth2User {
 
     // 사용자의 권한 정보 반환
     @Override
-    //Collection 타입 <제네릭:타입 지정>
-    // ? : 타입을 제한하지 않는다
-    // 조건 : GrantedAuthority 타입을 상속받은 객체면 누구나 들어올 수 있다.
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         // "ROLE_" 접두사 추가
         authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
         return authorities;
     }
-
+    
     @Override
     public String getPassword() {
         return user.getPassword();
     }
-
+    
     @Override
     public String getUsername() {
         return user.getEmail();
@@ -78,12 +75,12 @@ public class AuthenticatedUser implements UserDetails, OAuth2User {
     public Map<String, Object> getAttributes() {
         return attributes;
     }
-
+    
     @Override
     public String getName() {
         return user.getName();
     }
-
+    
     // 이 사용자가 OAuth2 사용자인지 확인하는 헬퍼 메서드
     public boolean isOAuth2User() {
         return attributes != null;

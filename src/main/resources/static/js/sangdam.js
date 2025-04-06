@@ -3,13 +3,11 @@ document.addEventListener('DOMContentLoaded', function() {
   
   if (sangdamForm) {
       sangdamForm.addEventListener('submit', function(event) {
-          event.preventDefault(); // 기본 제출 동작 중지
-          
-          // 확인 대화상자 표시
-          if (confirm('이대로 제출하시겠습니까?')) {
-              // 사용자가 확인을 누른 경우 폼 제출
-              this.submit();
+          if (!confirm('이대로 제출하시겠습니까?')) {
+              event.preventDefault(); // 사용자가 취소를 누른 경우에만 제출 중지
+              return;
           }
+          // 확인을 누른 경우 자연스럽게 폼 제출 진행
       });
   }
 });

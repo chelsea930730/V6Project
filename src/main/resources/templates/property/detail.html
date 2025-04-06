@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
+<html lang="en" xmlns:th="http://www.thymeleaf.org" 
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   <head>
     <meta charset="UTF-8" />
@@ -18,7 +18,7 @@
                 margin: 0 auto;
                 display: block;
             }
-
+            
             .location {
                   text-align: center;
             }
@@ -50,26 +50,47 @@
       function addToCart() {
             // 현재 매물 ID 가져오기
             const propertyId = [[${property.propertyId}]];
-
+            
             // CSRF 토큰 가져오기 (Spring Security 사용 시 필요)
             const token = document.querySelector("meta[name='_csrf']")?.getAttribute("content");
             const header = document.querySelector("meta[name='_csrf_header']")?.getAttribute("content");
-
-            // 요청 보내기
-            fetch('/cart/add', {
+            
+            // 먼저 장바구니에 이미 있는지 확인
+            fetch(`/cart/check?propertyId=${propertyId}`, {
                   method: 'POST',
                   headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
                         ...(token && header ? { [header]: token } : {})
-                  },
-                  body: `propertyIds=${propertyId}`
+                  }
             })
             .then(response => {
-                  if (response.ok) {
-                        alert('매물이 장바구니에 추가되었습니다.');
-                  } else {
-                        throw new Error('매물을 장바구니에 추가하는데 실패했습니다.');
+                  if (!response.ok) {
+                        throw new Error('매물 확인에 실패했습니다.');
                   }
+                  return response.json();
+            })
+            .then(data => {
+                  // 이미 장바구니에 있는 경우
+                  if (data.exists) {
+                        alert('이미 장바구니에 있는 매물입니다.');
+                        return;
+                  }
+                  
+                  // 장바구니에 없는 경우, 추가 요청 보내기
+                  return fetch('/cart/add', {
+                        method: 'POST',
+                        headers: {
+                              'Content-Type': 'application/x-www-form-urlencoded',
+                              ...(token && header ? { [header]: token } : {})
+                        },
+                        body: `propertyIds=${propertyId}`
+                  })
+                  .then(response => {
+                        if (response.ok) {
+                              alert('매물이 장바구니에 추가되었습니다.');
+                        } else {
+                              throw new Error('매물을 장바구니에 추가하는데 실패했습니다.');
+                        }
+                  });
             })
             .catch(error => {
                   console.error('에러:', error);
@@ -117,21 +138,58 @@
   <body>
     <div id="navbar-placeholder"></div>
 
-       <div class="main-content">
+    <!-- 거래완료 알림 메시지 추가 -->
+    <div th:if="${property.status != null && property.status.toString() == '거래완료'}" 
+         class="status-complete-alert">
+        <strong>이 매물은 거래가 완료된 매물입니다.</strong>
+    </div>
+
+    <div class="main-content">
           <!-- 왼쪽: 사진 섹션 -->
           <section class="building-photos">
                 <div class="photo-container" style="background: #fff; border-radius: 10px; padding: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
-                    <div class="photo-grid" id="propertyPhotos">
-                          <div th:if="${property.thumbnailImage != null and !#strings.isEmpty(property.thumbnailImage)}" class="property-images" style="display: flex; justify-content: center; align-items: center; min-height: 300px;">
-                                <img th:src="${property.thumbnailImage}"
-                                     alt="매물 대표 이미지"
-                                     style="max-width: 100%; width: auto; height: auto;">
-                          </div>
-                          <div th:unless="${property.thumbnailImage != null and !#strings.isEmpty(property.thumbnailImage)}"
-                               class="no-image-container"
-                               style="width: 100%; min-height: 300px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
-                                <span>이미지 준비중</span>
-                          </div>
+                    <div class="slider-container">
+                        <div class="image-slider" id="propertyImagesSlider">
+                            <!-- 썸네일 이미지 -->
+                            <div class="slide active" th:if="${property.thumbnailImage != null and !#strings.isEmpty(property.thumbnailImage)}">
+                                <img th:src="${property.thumbnailImage}" alt="매물 대표 이미지" class="slider-image">
+                            </div>
+                            
+                            <!-- 평면도 이미지들 -->
+                            <th:block th:if="${property.floorplanImage != null}">
+                                <div class="slide" th:each="url : ${#strings.arraySplit(property.floorplanImage, ',')}">
+                                    <img th:src="${url}" alt="평면도" class="slider-image">
+                                </div>
+                            </th:block>
+                            
+                            <!-- 건물 이미지들 -->
+                            <th:block th:if="${property.buildingImage != null}">
+                                <div class="slide" th:each="url : ${#strings.arraySplit(property.buildingImage, ',')}">
+                                    <img th:src="${url}" alt="건물 외관" class="slider-image">
+                                </div>
+                            </th:block>
+                            
+                            <!-- 내부 이미지들 -->
+                            <th:block th:if="${property.interiorImage != null}">
+                                <div class="slide" th:each="url : ${#strings.arraySplit(property.interiorImage, ',')}">
+                                    <img th:src="${url}" alt="내부 사진" class="slider-image">
+                                </div>
+                            </th:block>
+                            
+                            <!-- 이미지가 없는 경우 -->
+                            <div class="slide no-image" th:unless="${(property.thumbnailImage != null and !#strings.isEmpty(property.thumbnailImage)) or property.floorplanImage != null or property.buildingImage != null or property.interiorImage != null}">
+                                <div class="no-image-container">
+                                    <span>이미지 준비중</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 슬라이더 컨트롤 버튼 -->
+                        <button class="slider-control prev" id="prevSlide">&lt;</button>
+                        <button class="slider-control next" id="nextSlide">&gt;</button>
+                        
+                        <!-- 슬라이더 인디케이터 -->
+                        <div class="slider-indicators" id="sliderIndicators"></div>
                     </div>
                 </div>
           </section>
@@ -167,7 +225,7 @@
                 </div>
 
                 </div>
-
+        
                 <!-- 로그인한 사용자에게만 표시 -->
                 <div class="add-to-cart" th:if="${isLoggedIn}">
                     <button class="cart-button" onclick="addToCart()">Add to cart</button>
@@ -183,92 +241,34 @@
 <!-- 추가 사진 섹션 -->
 <section class="building-photos2">
     <h2>건물 사진</h2>
-    <div class="photo-grid2" id="propertyPhotos2" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; max-width: 1200px; margin: 0 auto;">
+    <div class="photo-grid2" id="propertyPhotos2">
         <!-- 썸네일 이미지 -->
         <div class="photo-item" th:if="${property.thumbnailImage != null}">
             <img th:src="${property.thumbnailImage}" alt="썸네일 이미지" class="property-image">
         </div>
-
+        
         <!-- 평면도 이미지들 -->
-        <th:block th:if="${property.floorplanImage != null}">
+        <div th:if="${property.floorplanImage != null}">
             <div class="photo-item" th:each="url : ${#strings.arraySplit(property.floorplanImage, ',')}">
                 <img th:src="${url}" alt="평면도" class="property-image">
             </div>
-        </th:block>
-
+        </div>
+        
         <!-- 건물 이미지들 -->
-        <th:block th:if="${property.buildingImage != null}">
+        <div th:if="${property.buildingImage != null}">
             <div class="photo-item" th:each="url : ${#strings.arraySplit(property.buildingImage, ',')}">
-                <img th:src="${url}" alt="건물 사진" class="property-image">
+                <img th:src="${url}" alt="건물 외관" class="property-image">
             </div>
-        </th:block>
-
+        </div>
+        
         <!-- 내부 이미지들 -->
-        <th:block th:if="${property.interiorImage != null}">
+        <div th:if="${property.interiorImage != null}">
             <div class="photo-item" th:each="url : ${#strings.arraySplit(property.interiorImage, ',')}">
                 <img th:src="${url}" alt="내부 사진" class="property-image">
             </div>
-        </th:block>
-
-        <!-- 추가 이미지 1 -->
-        <th:block th:if="${property.extraImage1 != null}">
-            <div class="photo-item" th:each="url : ${#strings.arraySplit(property.extraImage1, ',')}">
-                <img th:src="${url}" alt="추가 이미지 1" class="property-image">
-            </div>
-        </th:block>
-
-        <!-- 추가 이미지 2 -->
-        <th:block th:if="${property.extraImage2 != null}">
-            <div class="photo-item" th:each="url : ${#strings.arraySplit(property.extraImage2, ',')}">
-                <img th:src="${url}" alt="추가 이미지 2" class="property-image">
-            </div>
-        </th:block>
+        </div>
     </div>
 </section>
-
-<style>
-.building-photos2 {
-    margin: 20px auto;
-    max-width: 1200px;
-}
-
-.photo-grid2 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    padding: 20px;
-}
-
-.photo-item {
-    aspect-ratio: 4/3;
-    overflow: hidden;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.property-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.property-image:hover {
-    transform: scale(1.05);
-}
-
-@media (max-width: 768px) {
-    .photo-grid2 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 480px) {
-    .photo-grid2 {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
 
 <div class="details-section">
     <table class="details-table">
@@ -281,10 +281,10 @@
                 <th>건물 타입</th>
                 <td colspan="3" id="buildingType" th:text="${property.buildingType}"></td>
           </tr>
-          <tr>
+        <tr>
             <th>층수</th>
             <td colspan="3" id="floor" th:text="${property.floor}"></td>
-          </tr>
+        </tr>
           <tr>
                 <th>등록일</th>
                 <td colspan="3" id="registDate" th:text="${#temporals.format(property.createdAt, 'yyyy년 M월 d일')}"></td>
@@ -295,28 +295,28 @@
           </tr>
 
           <tr>
-                <th>비고</th>
-                <td colspan="3" id="notes" th:text="${property.description}"></td>
+                <th>상세조건 / 비고</th>
+                <td colspan="3">
+                    <span id="detailDescription" th:text="${property.detailDescription}"></span> /
+                    <span id="notes" th:text="${property.description}"></span>
+                </td>
           </tr>
     </table>
 </div>
 
     <div class="amenities">
        <h2>방의 특징과 설비</h2>
-          <div class="amenities-content" id="amenitiesList">
-              <p th:text="${property.nearbyFacilities}"></p>
-        <!-- 편의시설 목록이 동적으로 추가됨 -->
-      </ul>
+       <div class="amenities-content" id="amenitiesList">
+           <p th:text="${property.nearbyFacilities}"></p>
+       </div>
     </div>
 
     <div class="location">
       <h2>위치 정보</h2>
-      <br>
       <div id="map">
         <!-- 지도가 표시될 영역 -->
       </div>
     </div>
-  </div>
 
     <input type="hidden" id="propertyIdValue" th:value="${property.propertyId}">
 

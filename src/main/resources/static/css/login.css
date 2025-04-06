@@ -1,4 +1,3 @@
-/* 전체 로그인 페이지 스타일 */
 body {
   background-color: #f8f9fa;
   margin: 0;
@@ -6,11 +5,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh; /* 화면 중앙 정렬 */
+  height: 100vh;
   font-family: 'Cafe24 Ssurround air OTF Light';
 }
 
-/* 로그인 박스 스타일 */
+/* 로그인 박스 */
 .login-container {
   display: flex;
   align-items: center;
@@ -29,15 +28,12 @@ body {
 }
 
 /* 입력 필드 스타일 */
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-  margin-top: 30px;
+.input-wrapper {
+  margin-top: 20px;
 }
 
-.input-group input {
-  width: 95%;
+.input-wrapper input {
+  width: 100%;
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -45,7 +41,7 @@ body {
   font-family: 'Cafe24 Ssurround air OTF Light';
 }
 
-/* 로그인 버튼 스타일 */
+/* 로그인 버튼 */
 .login-btn {
   background-color: #6a99cd;
   color: white;
@@ -57,22 +53,13 @@ body {
   margin-top: 15px;
   width: 100%;
   font-family: 'Cafe24 Ssurround air OTF Light';
-
-  display: inline-block;
-  text-align: center;
-  text-decoration: none;
-  box-sizing: border-box;
 }
-
-
-
-
 
 .login-btn:hover {
   background-color: #355c86;
 }
 
-/* "회원가입" 링크 스타일 */
+/* 회원가입 링크 */
 .signup-link {
   margin-top: 10px;
   font-size: 14px;
@@ -80,7 +67,7 @@ body {
 
 .signup-link a {
   text-decoration: none;
-  color:#355c86;
+  color: #355c86;
   font-weight: bold;
 }
 
@@ -88,7 +75,7 @@ body {
   text-decoration: underline;
 }
 
-/* Google 로그인 버튼 스타일 */
+/* Google 로그인 */
 .google-btn {
   background-color: white;
   color: #757575;
@@ -119,7 +106,7 @@ body {
   font-size: 18px;
 }
 
-/* 로그인 옵션 구분선 */
+/* 구분선 */
 .login-divider {
   display: flex;
   align-items: center;

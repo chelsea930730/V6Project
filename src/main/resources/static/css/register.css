@@ -1,4 +1,3 @@
-/* 전체 회원가입 페이지 스타일 */
 body {
   font-family: 'Arial', sans-serif;
   background-color: #f8f9fa;
@@ -7,7 +6,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh; /* 화면 중앙 정렬 */
+  height: 100vh;
   font-family: 'Cafe24 Ssurround air OTF Light';
 }
 
@@ -30,15 +29,12 @@ body {
 }
 
 /* 입력 필드 스타일 */
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-  margin-top: 30px;
+.input-wrapper {
+  margin-top: 20px;
 }
 
-.input-group input {
-  width: 95%;
+.input-wrapper input {
+  width: 100%;
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -64,7 +60,7 @@ body {
   background-color: #355c86;
 }
 
-/* "로그인" 링크 스타일 */
+/* 로그인 링크 스타일 */
 .login-link {
   margin-top: 10px;
   font-size: 14px;

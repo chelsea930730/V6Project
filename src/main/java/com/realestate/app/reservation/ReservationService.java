@@ -27,7 +27,8 @@ import jakarta.persistence.criteria.JoinType;
 
 import org.springframework.data.jpa.domain.Specification;
 import com.realestate.app.reservation.SecurityUtils;
-import com.realestate.app.property.PropertyDto;
+
+import java.util.ArrayList;
 
 @Service
 @AllArgsConstructor
@@ -55,21 +56,24 @@ public class ReservationService {
         reservation.setUser(user);
         reservation.setReservedDate(LocalDate.from(dto.getReservedDate()));
         reservation.setStatus(ReservationStatus.PENDING);
-
+        
         // message 필드 설정
         reservation.setMessage(dto.getMessage());
-
-        // 모든 매물을 예약에 추가
-        for (Long propertyId : propertyIds) {
-            Property property = propertyService.getPropertyById(propertyId);
-
-            // 매물을 예약 상태로 변경
-            property.setReserved(true);
-            propertyService.saveProperty(property);
-
-            reservation.addProperty(property);
+        
+        // propertyIds가 null이 아니고 비어있지 않을 경우에만 매물 추가
+        if (propertyIds != null && !propertyIds.isEmpty()) {
+            // 모든 매물을 예약에 추가
+            for (Long propertyId : propertyIds) {
+                Property property = propertyService.getPropertyById(propertyId);
+                
+                // 매물을 예약 상태로 변경
+                property.setReserved(true);
+                propertyService.saveProperty(property);
+                
+                reservation.addProperty(property);
+            }
         }
-
+        
         // 하나의 예약 저장
         reservationRepository.save(reservation);
     }
@@ -97,14 +101,14 @@ public class ReservationService {
     @Transactional
     public void cancelReservations(List<Long> reservationIds) {
         List<Reservation> reservations = reservationRepository.findAllById(reservationIds);
-
+        
         for (Reservation reservation : reservations) {
             // PENDING 상태인 예약만 취소 가능
             if (reservation.getStatus() == ReservationStatus.PENDING) {
                 reservation.setStatus(ReservationStatus.CANCELLED);
             }
         }
-
+        
         reservationRepository.saveAll(reservations);
     }
 
@@ -113,7 +117,7 @@ public class ReservationService {
     }
 
     public List<Reservation> findByUserIdAndCompletedStatuses(Long userId) {
-        return reservationRepository.findByUser_UserIdAndStatusIn(userId,
+        return reservationRepository.findByUser_UserIdAndStatusIn(userId, 
             Arrays.asList(ReservationStatus.COMPL, ReservationStatus.CANCELLED));
     }
 
@@ -324,10 +328,10 @@ public class ReservationService {
         if (reservationIds == null || reservationIds.isEmpty()) {
             return 0;
         }
-
+        
         List<Reservation> reservations = reservationRepository.findAllById(reservationIds);
         int cancelledCount = 0;
-
+        
         for (Reservation reservation : reservations) {
             // 매물을 다시 사용 가능한 상태로 변경
             if (reservation.getProperties() != null) {
@@ -338,16 +342,16 @@ public class ReservationService {
                     }
                 }
             }
-
+            
             // 취소 카운터 증가
             incrementCancellationCounter();
-
+            
             // 예약 삭제
             reservationRepository.delete(reservation);
-
+            
             cancelledCount++;
         }
-
+        
         return cancelledCount;
     }
 
@@ -367,7 +371,7 @@ public class ReservationService {
                 newCounter.setCount(0);
                 return newCounter;
             });
-
+        
         // 카운터 증가
         counter.setCount(counter.getCount() + 1);
         cancellationCounterRepository.save(counter);
@@ -406,14 +410,14 @@ public class ReservationService {
         if (reservationIds == null || reservationIds.isEmpty()) {
             return 0;
         }
-
+        
         int cancelledCount = 0;
-
+        
         for (Long id : reservationIds) {
             Optional<Reservation> optionalReservation = reservationRepository.findById(id);
             if (optionalReservation.isPresent()) {
                 Reservation reservation = optionalReservation.get();
-
+                
                 try {
                     // 매물을 다시 이용 가능한 상태로 변경
                     // properties의 null check와 isEmpty check를 분리하여 안전하게 처리
@@ -431,17 +435,17 @@ public class ReservationService {
                     System.err.println("매물 정보 업데이트 중 오류 발생: " + e.getMessage());
                     e.printStackTrace();
                 }
-
+                
                 // 취소된 예약 통계 업데이트
                 updateCancellationStatistics();
-
+                
                 // 예약 삭제
                 reservationRepository.delete(reservation);
-
+                
                 cancelledCount++;
             }
         }
-
+        
         return cancelledCount;
     }
 
@@ -454,7 +458,7 @@ public class ReservationService {
             LocalDate now = LocalDate.now();
             int year = now.getYear();
             int month = now.getMonthValue();
-
+            
             // 취소 통계 조회 또는 생성
             CancellationStatistics statistics = cancellationStatisticsRepository
                 .findByYearAndMonth(year, month)
@@ -465,10 +469,10 @@ public class ReservationService {
                     newStats.setCount(0);
                     return newStats;
                 });
-
+            
             // 취소 횟수 증가
             statistics.setCount(statistics.getCount() + 1);
-
+            
             // 저장
             cancellationStatisticsRepository.save(statistics);
         } catch (Exception e) {
@@ -511,43 +515,43 @@ public class ReservationService {
     public List<Reservation> findByUser(User user) {
         return reservationRepository.findByUser(user);
     }
-
+    
     // 날짜 범위 내 전체 예약 수 - 반환 타입을 long으로 변경
     public long countReservationsByDateRange(LocalDate startDate, LocalDate endDate) {
         return reservationRepository.countByReservedDateBetween(startDate, endDate);
     }
-
-    // 날짜 범위와 상태에 따른 예약 수 - 반환 타입을 long으로 변경
+    
+    // 날짜 범위와 상태에 따른 예약 수 - 반환 타입을 long으로 변경 
     public long countReservationsByDateRangeAndStatuses(LocalDate startDate, LocalDate endDate, List<ReservationStatus> statuses) {
         return reservationRepository.countByReservedDateBetweenAndStatusIn(startDate, endDate, statuses);
     }
 
     // 모든 필터를 AND 조건으로 적용하는 메서드
     public Page<Reservation> findAllWithAllFilters(
-            String status, String startDate, String endDate,
+            String status, String startDate, String endDate, 
             String searchType, String search, Pageable pageable) {
-
+        
         Specification<Reservation> spec = Specification.where(null);
-
+        
         // 상태 필터 추가
         if (status != null && !status.isEmpty()) {
-            spec = spec.and((root, query, cb) ->
+            spec = spec.and((root, query, cb) -> 
                 cb.equal(root.get("status"), ReservationStatus.valueOf(status)));
         }
-
+        
         // 날짜 범위 필터 추가
         if (startDate != null && !startDate.isEmpty()) {
             LocalDate start = LocalDate.parse(startDate);
-            spec = spec.and((root, query, cb) ->
+            spec = spec.and((root, query, cb) -> 
                 cb.greaterThanOrEqualTo(root.get("reservedDate"), start));
         }
-
+        
         if (endDate != null && !endDate.isEmpty()) {
             LocalDate end = LocalDate.parse(endDate);
-            spec = spec.and((root, query, cb) ->
+            spec = spec.and((root, query, cb) -> 
                 cb.lessThanOrEqualTo(root.get("reservedDate"), end));
         }
-
+        
         // 검색어 필터 추가
         if (search != null && !search.isEmpty()) {
             if ("name".equals(searchType)) {
@@ -563,7 +567,7 @@ public class ReservationService {
             } else if ("reservationId".equals(searchType)) {
                 try {
                     Long id = Long.parseLong(search);
-                    spec = spec.and((root, query, cb) ->
+                    spec = spec.and((root, query, cb) -> 
                         cb.equal(root.get("reservationId"), id));
                 } catch (NumberFormatException e) {
                     // 숫자가 아닌 경우 무시
@@ -578,23 +582,23 @@ public class ReservationService {
                 });
             }
         }
-
+        
         // distinct 설정을 위한 추가 Specification
         Specification<Reservation> distinctSpec = (root, query, cb) -> {
             query.distinct(true);
             return cb.conjunction();
         };
-
+        
         // 기존 조건과 distinct 조건 결합
         spec = spec.and(distinctSpec);
-
+        
         return reservationRepository.findAll(spec, pageable);
     }
 
     public List<ReservationDto> getReservationsByUserAndDateRange(String userEmail, LocalDate startDate, LocalDate endDate) {
         // 수정된 메서드 이름으로 호출
         List<Reservation> reservations = reservationRepository.findByUser_EmailAndReservedDateBetween(userEmail, startDate, endDate);
-
+        
         return reservations.stream().map(reservation -> {
             ReservationDto dto = new ReservationDto();
             dto.setReservationId(Long.valueOf(String.valueOf(reservation.getReservationId())));
@@ -618,27 +622,38 @@ public class ReservationService {
 
     public List<ReservationDto> getUpcomingReservationsByUser(String userEmail, LocalDate startDate, LocalDate endDate) {
         List<Reservation> reservations = reservationRepository.findByUser_EmailAndReservedDateBetween(userEmail, startDate, endDate);
-
+        
         return reservations.stream().map(reservation -> {
             ReservationDto dto = new ReservationDto();
-            dto.setReservationId(Long.valueOf(String.valueOf(reservation.getReservationId())));
+            dto.setReservationId(reservation.getReservationId());
             dto.setReservedDate(reservation.getReservedDate().atStartOfDay());
             dto.setStatus(reservation.getStatus().name());
             dto.setMessage(reservation.getMessage());
-
-            // 매물 정보가 있는 경우 설정
-            if (reservation.getProperties() != null && !reservation.getProperties().isEmpty()) {
-                List<PropertyDto> propertyDtos = reservation.getProperties().stream()
-                    .map(property -> {
-                        PropertyDto propertyDto = new PropertyDto();
-                        propertyDto.setTitle(property.getTitle());
-                        // 필요한 경우 다른 속성도 설정
-                        return propertyDto;
-                    })
-                    .collect(Collectors.toList());
-                dto.setProperties(propertyDtos);
+            
+            // 사용자 정보 설정
+            if (reservation.getUser() != null) {
+                dto.setName(reservation.getUser().getName());
+                dto.setEmail(reservation.getUser().getEmail());
+                dto.setPhone(reservation.getUser().getPhone());
             }
-
+            
+            // 매물 ID와 제목, 위치만 설정
+            if (reservation.getProperties() != null && !reservation.getProperties().isEmpty()) {
+                List<Long> propertyIds = new ArrayList<>();
+                List<String> propertyTitles = new ArrayList<>();
+                List<String> propertyLocations = new ArrayList<>();
+                
+                for (Property property : reservation.getProperties()) {
+                    propertyIds.add(property.getPropertyId());
+                    propertyTitles.add(property.getTitle());
+                    propertyLocations.add(property.getLocation());
+                }
+                
+                dto.setPropertyIds(propertyIds);
+                dto.setPropertyTitles(propertyTitles);
+                dto.setPropertyLocations(propertyLocations);
+            }
+            
             return dto;
         }).collect(Collectors.toList());
     }
@@ -647,14 +662,14 @@ public class ReservationService {
         // LocalDate를 LocalDateTime으로 변환
         LocalDateTime startDateTime = today.atStartOfDay();
         LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay().minusNanos(1); // 날짜의 마지막 순간으로 설정
-
+        
         // LocalDateTime을 사용하여 메서드 호출
         // 기존 메서드 사용:
         List<Reservation> reservations = reservationRepository.findByReservedDateBetween(startDateTime, endDateTime);
-
+        
         // 또는 새로 추가한 메서드 사용:
         // List<Reservation> reservations = reservationRepository.findByDateRange(today, endDate);
-
+        
         // 예약 정보를 DTO로 변환
         return reservations.stream().map(reservation -> {
             ReservationDto dto = new ReservationDto();
@@ -662,29 +677,31 @@ public class ReservationService {
             dto.setReservedDate(reservation.getReservedDate().atStartOfDay());
             dto.setStatus(reservation.getStatus().name());
             dto.setMessage(reservation.getMessage());
-
+            
             // 사용자 정보 설정
             if (reservation.getUser() != null) {
                 dto.setName(reservation.getUser().getName());
                 dto.setEmail(reservation.getUser().getEmail());
                 dto.setPhone(reservation.getUser().getPhone());
             }
-
-            // 매물 정보가 있는 경우 설정
+            
+            // 매물 정보를 ID, 제목, 위치로만 설정
             if (reservation.getProperties() != null && !reservation.getProperties().isEmpty()) {
-                List<PropertyDto> propertyDtos = reservation.getProperties().stream()
-                    .map(property -> {
-                        PropertyDto propertyDto = new PropertyDto();
-                        propertyDto.setId(property.getPropertyId());
-                        propertyDto.setTitle(property.getTitle());
-                        propertyDto.setLocation(property.getLocation());
-                        // 필요한 경우 다른 속성도 설정
-                        return propertyDto;
-                    })
-                    .collect(Collectors.toList());
-                dto.setProperties(propertyDtos);
+                List<Long> propertyIds = new ArrayList<>();
+                List<String> propertyTitles = new ArrayList<>();
+                List<String> propertyLocations = new ArrayList<>();
+                
+                for (Property property : reservation.getProperties()) {
+                    propertyIds.add(property.getPropertyId());
+                    propertyTitles.add(property.getTitle());
+                    propertyLocations.add(property.getLocation());
+                }
+                
+                dto.setPropertyIds(propertyIds);
+                dto.setPropertyTitles(propertyTitles);
+                dto.setPropertyLocations(propertyLocations);
             }
-
+            
             return dto;
         }).collect(Collectors.toList());
     }

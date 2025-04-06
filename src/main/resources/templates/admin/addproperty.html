@@ -14,30 +14,6 @@
     />
     <link rel="stylesheet" th:href="@{/css/nav_admin.css}" />
     <link rel="stylesheet" th:href="@{/css/addproperty.css}" />
-    <style>
-      /* 매물 관리 페이지에서 상단 여백 제거 */
-      body {
-        padding-top: 0 !important;
-        margin: 0;
-      }
-
-      /* 사이드바가 상단에 정확히 붙도록 설정 */
-      .admin-sidebar {
-        top: 0;
-        margin-top: 0;
-        padding-top: 20px;
-      }
-
-      /* 메인 컨텐츠 영역 조정 */
-      main {
-        margin-left: 250px;
-        padding-top: 0;
-      }
-
-      .container-fluid {
-        padding-top: 0;
-      }
-    </style>
   </head>
   <body>
     <!-- 네비게이션바 include -->
@@ -51,23 +27,51 @@
             class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3"
           >
             <h2>매물 관리</h2>
-            <div class="d-flex align-items-center">
-              <!-- 검색 폼 수정 -->
-              <form th:action="@{/admin/addproperty}" method="get" class="d-flex me-2" style="width: 600px;">
-                <select name="searchType" class="form-select me-2" style="width: 120px;">
-                  <option value="all" th:selected="${searchType == 'all'}">전체</option>
-                  <option value="id" th:selected="${searchType == 'id'}">매물 ID</option>
-                  <option value="title" th:selected="${searchType == 'title'}">매물명</option>
+            <button id="createPropertyBtn" class="btn btn-primary">
+              <i class="fas fa-plus"></i><span>매물 등록</span>
+            </button>
+          </div>
+
+          <!-- 검색 폼 추가 -->
+          <div class="search-container mb-4">
+            <form th:action="@{/admin/addproperty}" method="get" class="search-form">
+              <div class="input-group shadow-sm">
+                <select name="searchType" class="form-select search-select">
+                  <option value="all" th:selected="${param.searchType == 'all'}">ID + 제목</option>
+                  <option value="id" th:selected="${param.searchType == 'id'}">매물 ID</option>
+                  <option value="title" th:selected="${param.searchType == 'title'}">매물 제목</option>
                 </select>
-                <input type="text" name="keyword" class="form-control me-2"
-                       th:value="${keyword}" placeholder="검색어를 입력하세요">
-                <button type="submit" class="btn btn-primary" style="width: 100px;">
+                <input 
+                  type="text" 
+                  name="keyword" 
+                  class="form-control search-input" 
+                  placeholder="검색어를 입력하세요"
+                  th:value="${param.keyword}" 
+                  autocomplete="off"
+                />
+                <button type="submit" class="btn btn-primary px-4">
                   <i class="fas fa-search"></i> 검색
                 </button>
-              </form>
-              <button id="createPropertyBtn" class="btn btn-primary">
-                <i class="fas fa-plus"></i><span>매물 등록</span>
-              </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- 검색 상태 표시 -->
+          <div th:if="${param.keyword != null and param.keyword != '' and param.searchType != null}" class="search-status alert alert-info mb-3 d-flex align-items-center">
+            <i class="fas fa-search me-2"></i>
+            <div>
+              <strong>
+                <span th:if="${param.searchType == 'all'}">ID + 제목</span>
+                <span th:if="${param.searchType == 'id'}">매물 ID</span>
+                <span th:if="${param.searchType == 'title'}">매물 제목</span>
+              </strong>
+              <span class="ms-1">검색어: "<span th:text="${param.keyword}" class="fw-bold"></span>"</span>
+              <span class="ms-2 badge bg-dark text-white">
+                <span th:text="${#lists.size(properties)}"></span>개 결과
+              </span>
+              <a th:href="@{/admin/addproperty}" class="ms-2 text-decoration-none">
+                <i class="fas fa-times-circle"></i> 필터 초기화
+              </a>
             </div>
           </div>
 
@@ -102,8 +106,20 @@
                     </tr>
                   </thead>
                   <tbody>
+                    <!-- 검색 결과가 없을 때 표시할 메시지 -->
+                    <tr th:if="${#lists.isEmpty(properties)}">
+                      <td colspan="10" class="text-center py-5">
+                        <p class="text-muted">
+                          <i class="fas fa-search me-2"></i>
+                          검색 결과가 없습니다.
+                        </p>
+                        <a th:href="@{/admin/addproperty}" class="btn btn-primary mt-2">
+                          <i class="fas fa-list me-1"></i> 모든 매물 보기
+                        </a>
+                      </td>
+                    </tr>
                     <!-- 타임리프를 사용한 매물 목록 반복 -->
-                    <tr th:each="property : ${properties}">
+                    <tr th:each="property : ${properties}" th:unless="${#lists.isEmpty(properties)}">
                       <td>
                         <div class="form-check">
                           <input
@@ -123,7 +139,7 @@
                       <td th:text="${property.builtYear}">건축년도</td>
                       <td>
                         <span th:class="'status-badge ' + ${property.status.name().toLowerCase()}"
-                              th:text="${property.status.name() == '예약가능' ? '공실' :
+                              th:text="${property.status.name() == '예약가능' ? '공실' : 
                                       property.status.name() == '예약중' ? '계약 진행중' : '계약 완료'}">상태</span>
                       </td>
                       <td>
@@ -153,25 +169,25 @@
               <ul class="pagination">
                 <!-- 이전 페이지 그룹으로 이동 -->
                 <li class="page-item" th:if="${hasPrevious}">
-                  <a class="page-link"
-                     th:href="@{/admin/addproperty(page=${previousPageGroup}, searchType=${searchType}, keyword=${keyword})}"
+                  <a class="page-link" 
+                     th:href="@{/admin/addproperty(page=${previousPageGroup}, searchType=${param.searchType}, keyword=${param.keyword})}" 
                      aria-label="Previous group">
                     <span aria-hidden="true">&laquo;</span>
                   </a>
                 </li>
-
+                
                 <!-- 페이지 번호 -->
-                <li class="page-item" th:each="pageNumber : ${pageNumbers}"
+                <li class="page-item" th:each="pageNumber : ${pageNumbers}" 
                     th:classappend="${pageNumber == currentPage} ? 'active'">
-                  <a class="page-link"
-                     th:href="@{/admin/addproperty(page=${pageNumber}, searchType=${searchType}, keyword=${keyword})}"
+                  <a class="page-link" 
+                     th:href="@{/admin/addproperty(page=${pageNumber}, searchType=${param.searchType}, keyword=${param.keyword})}" 
                      th:text="${pageNumber}">1</a>
                 </li>
-
+                
                 <!-- 다음 페이지 그룹으로 이동 -->
                 <li class="page-item" th:if="${hasNext}">
-                  <a class="page-link"
-                     th:href="@{/admin/addproperty(page=${nextPageGroup}, searchType=${searchType}, keyword=${keyword})}"
+                  <a class="page-link" 
+                     th:href="@{/admin/addproperty(page=${nextPageGroup}, searchType=${param.searchType}, keyword=${param.keyword})}" 
                      aria-label="Next group">
                     <span aria-hidden="true">&raquo;</span>
                   </a>

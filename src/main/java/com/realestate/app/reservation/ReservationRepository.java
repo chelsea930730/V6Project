@@ -21,7 +21,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
   List<Reservation> findByPropertyId(@Param("propertyId") Long propertyId);
 
   List<Reservation> findByStatus(ReservationStatus status);
+
   List<Reservation> findByReservedDateBetween(LocalDateTime start, LocalDateTime end);
+
   List<Reservation> findByUser_UserIdAndStatus(Long userId, ReservationStatus status);
 
   @Query("SELECT r FROM Reservation r JOIN r.properties p WHERE r.user.userId = :userId AND p.propertyId = :propertyId")
@@ -50,13 +52,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
   Page<Reservation> findByStatusAndReservedDate(ReservationStatus status, LocalDate date, Pageable pageable);
 
   Page<Reservation> findByStatusAndUserNameContainingOrUserEmailContaining(
-      ReservationStatus status, String name, String email, Pageable pageable);
+          ReservationStatus status, String name, String email, Pageable pageable);
 
   Page<Reservation> findByReservedDateAndUserNameContainingOrUserEmailContaining(
-      LocalDate date, String name, String email, Pageable pageable);
+          LocalDate date, String name, String email, Pageable pageable);
 
   Page<Reservation> findByStatusAndReservedDateAndUserNameContainingOrUserEmailContaining(
-      ReservationStatus status, LocalDate date, String name, String email, Pageable pageable);
+          ReservationStatus status, LocalDate date, String name, String email, Pageable pageable);
 
   Page<Reservation> findByReservedDateBetween(LocalDate startDate, LocalDate endDate, Pageable pageable);
 
@@ -75,21 +77,21 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
   Page<Reservation> findByReservedDateBetweenAndAdminNotesContaining(LocalDate startDate, LocalDate endDate, String adminNotes, Pageable pageable);
 
   Page<Reservation> findByReservedDateBetweenAndUserNameContainingOrReservedDateBetweenAndUserEmailContaining(
-      LocalDate startDate1, LocalDate endDate1, String name,
-      LocalDate startDate2, LocalDate endDate2, String email, Pageable pageable);
+          LocalDate startDate1, LocalDate endDate1, String name,
+          LocalDate startDate2, LocalDate endDate2, String email, Pageable pageable);
 
   Page<Reservation> findByStatusAndReservedDateBetweenAndMessageContaining(
-      ReservationStatus status, LocalDate startDate, LocalDate endDate, String message, Pageable pageable);
+          ReservationStatus status, LocalDate startDate, LocalDate endDate, String message, Pageable pageable);
 
   Page<Reservation> findByStatusAndReservedDateBetweenAndAdminNotesContaining(
-      ReservationStatus status, LocalDate startDate, LocalDate endDate, String adminNotes, Pageable pageable);
+          ReservationStatus status, LocalDate startDate, LocalDate endDate, String adminNotes, Pageable pageable);
 
   Page<Reservation> findByStatusAndReservedDateBetweenAndUserNameContainingOrStatusAndReservedDateBetweenAndUserEmailContaining(
-      ReservationStatus status1, LocalDate startDate1, LocalDate endDate1, String name,
-      ReservationStatus status2, LocalDate startDate2, LocalDate endDate2, String email, Pageable pageable);
+          ReservationStatus status1, LocalDate startDate1, LocalDate endDate1, String name,
+          ReservationStatus status2, LocalDate startDate2, LocalDate endDate2, String email, Pageable pageable);
 
   Page<Reservation> findByPropertiesTitleContainingOrPropertiesLocationContaining(
-      String title, String location, Pageable pageable);
+          String title, String location, Pageable pageable);
 
   // 상태별 예약 개수 조회
   long countByStatus(ReservationStatus status);

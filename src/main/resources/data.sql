@@ -13505,7 +13505,6 @@ INSERT INTO property (
 *교통
 東府中→新宿 전철 이용 시, 약 29분'
          );
-
 UPDATE property SET station = '早稲田 (와세다)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区 西早稲田1丁目16-11';
 UPDATE property SET station = '北参道 (키타산도)', floor = '4층', thumbnail_image = NULL WHERE location = '東京都渋谷区千駄ヶ谷３丁目3－3';
 UPDATE property SET station = '新大久保 (신오오쿠보)', floor = '3층', thumbnail_image = NULL WHERE location = '東京都新宿区北新宿１丁目12－15';
