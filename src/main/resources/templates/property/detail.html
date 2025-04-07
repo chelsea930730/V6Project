@@ -226,14 +226,10 @@
 
                 </div>
         
-                <!-- 로그인한 사용자에게만 표시 -->
-                <div class="add-to-cart" th:if="${isLoggedIn}">
-                    <button class="cart-button" onclick="addToCart()">Add to cart</button>
-                </div>
-
-                <!-- 로그인하지 않은 사용자에게 표시 -->
-                <div class="add-to-cart" th:unless="${isLoggedIn}">
-                    <button class="cart-button" onclick="location.href='/user/login'">로그인 후 장바구니에 추가</button>
+                <!-- 장바구니 버튼 -->
+                <div class="add-to-cart">
+                    <button class="cart-button" onclick="addToCart()" th:if="${isLoggedIn && !#authorization.expression('hasRole(''ROLE_ADMIN'')')}">Add to cart</button>
+                    <button class="cart-button" onclick="location.href='/user/login'" th:unless="${isLoggedIn}">로그인 후 장바구니에 추가</button>
                 </div>
             </div>
         </div>
@@ -320,8 +316,9 @@
 
     <input type="hidden" id="propertyIdValue" th:value="${property.propertyId}">
 
+    <!-- 상담예약 버튼 -->
     <div class="appointment">
-       <a th:href="@{/reservation(propertyIds=${property.propertyId})}" class="appointment-button">상담예약 페이지 이동</a>
+       <a th:if="${!#authorization.expression('hasRole(''ROLE_ADMIN'')')}" th:href="@{/reservation(propertyIds=${property.propertyId})}" class="appointment-button">상담예약 페이지 이동</a>
     </div>
 
     <script th:src="@{/js/navbar.js}"></script>
