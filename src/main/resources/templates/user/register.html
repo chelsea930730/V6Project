@@ -18,6 +18,9 @@
     <form action="/user/register" method="post" th:object="${userRegisterDto}">
 
       <!-- 이메일 -->
+      <div th:if="${error}" class="alert alert-danger">
+        <p th:text="${error}"></p>
+      </div>
       <div class="input-wrapper">
         <input type="email" th:field="*{email}" class="form-control" placeholder="이메일" id="email" required />
       </div>

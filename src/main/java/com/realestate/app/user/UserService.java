@@ -54,6 +54,14 @@ public class UserService {
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
+        /**
+     * 이메일 중복 확인
+     * @param email 확인할 이메일
+     * @return 이메일이 이미 존재하면 true, 아니면 false
+     */
+    public boolean isEmailExists(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
 
     /**
      * 이메일로 사용자를 찾고, 없으면 새로 생성합니다 (OAuth2 로그인용)

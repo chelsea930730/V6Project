@@ -37,10 +37,26 @@ public class UserController {
         return "/user/register";
     }
     @PostMapping("register")
-    public String register(@ModelAttribute UserRegisterDto userRegisterDto) {
+    public String register(@ModelAttribute UserRegisterDto userRegisterDto, Model model) {
         log.info("userRegisterDto: {}", userRegisterDto);
+        
+        // 이메일 중복 확인
+        if (userService.isEmailExists(userRegisterDto.getEmail())) {
+            model.addAttribute("userRegisterDto", userRegisterDto);
+            model.addAttribute("error", "이미 사용 중인 이메일입니다.");
+            return "/user/register";
+        }
+        
         userService.save(userRegisterDto);
         return "redirect:/";
+    }
+
+    @GetMapping("/check-email")
+    @ResponseBody
+    public ResponseEntity<Map<String, Boolean>> checkEmailDuplicate(@RequestParam String email) {
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("exists", userService.isEmailExists(email));
+        return ResponseEntity.ok(response);
     }
 
     //로그인 페이지를 요청하는 메서드
