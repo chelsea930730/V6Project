@@ -92,7 +92,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (confirm(checkboxes.length + '개의 매물을 장바구니에서 삭제하시겠습니까?')) {
             // 선택된 매물 ID 수집
-            const propertyIds = Array.from(checkboxes).map(cb => cb.value);
+            const propertyIds = Array.from(checkboxes)
+                .filter(cb => cb.id !== 'select-all-checkbox' && cb.value)
+                .map(cb => cb.value);
+
+            if (propertyIds.length === 0) {
+                alert('선택한 항목에 유효한 매물 ID가 없습니다.');
+                return;
+            }
+
 
             // CSRF 토큰 가져오기 (Spring Security 사용 시)
             const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
