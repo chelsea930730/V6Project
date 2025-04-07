@@ -30,6 +30,23 @@ main {
   padding: 0 20px;
 }
 
+.cart-container {
+  display: flex;
+  justify-content: center;
+  padding: 80px 0;
+  background-color: var(--bg-light);
+}
+
+.cart-content {
+  width: 1100px; /* ✅ 매물 카드와 동일한 고정 너비 */
+}
+
+.cart-header,
+.property-info,
+.empty-message {
+  width: 100%;
+}
+
 .cart-header {
   display: flex;
   align-items: center;
@@ -40,7 +57,9 @@ main {
   border-radius: var(--card-radius);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   position: relative;
-  overflow: hidden;
+  /*overflow: hidden;*/
+  min-height: 80px;
+  width: 100%;
 }
 
 .cart-header::before {
@@ -54,7 +73,11 @@ main {
 }
 
 .cart-title {
-  position: relative;
+  flex: 0 0 auto;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .cart-title h1 {
@@ -276,6 +299,11 @@ main {
   font-size: 18px;
   position: relative;
   overflow: hidden;
+  width: 100%;
+  min-height: 300px; /* 원하는 높이 값으로 조정 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .empty-message::before {
@@ -390,13 +418,17 @@ input[type="checkbox"]:hover {
     gap: 16px;
     text-align: center;
     padding: 20px;
+    min-height: 180px;
   }
 
   .select-all-container {
     margin: 16px 0;
+    width: 100%;
+    justify-content: center;
   }
 
   .delete-cart-btn {
     width: 100%;
+    margin-top: 10px;
   }
 }

@@ -20,7 +20,8 @@
 
 <div id="navbar-placeholder"></div>
 
-<main>
+<main class="cart-container">
+    <div class="cart-content">
     <div class="cart-header">
         <div class="cart-title">
             <h1>장바구니</h1>
@@ -35,6 +36,7 @@
     </div>
 
     <!-- 장바구니가 비어있을 경우 메시지 표시 -->
+
     <div th:if="${#lists.isEmpty(properties)}" class="empty-message">
         장바구니에 담긴 매물이 없습니다.
     </div>
@@ -93,6 +95,7 @@
         <form th:action="@{/reservation}" method="get" id="consultForm">
             <button type="button" onclick="submitSelectedProperties()" class="consult-btn">선택한 매물 상담 예약하기</button>
         </form>
+    </div>
     </div>
 </main>
 
