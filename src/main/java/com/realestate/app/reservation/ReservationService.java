@@ -705,4 +705,9 @@ public class ReservationService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+
+    public Object getReservationsByDateRange(LocalDate startDate, LocalDate endDate) {
+        return reservationRepository.findByDateRange(startDate, endDate);
+    }
 }

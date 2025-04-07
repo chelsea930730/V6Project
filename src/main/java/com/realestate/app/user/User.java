@@ -27,6 +27,8 @@ public class User {
     private String name;
     private String phone;
 
+    private LocalDateTime lastLoginTime;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 

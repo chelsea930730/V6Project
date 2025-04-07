@@ -3,6 +3,9 @@ package com.realestate.app.config;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import com.realestate.app.user.User;
@@ -11,9 +14,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-public class AuthenticatedUser implements UserDetails, OAuth2User {
+public class AuthenticatedUser implements UserDetails, OidcUser {
     private User user;
     private Map<String, Object> attributes;
+    private OidcIdToken idToken;
+    private OidcUserInfo userInfo;
 
     // UserDetailsService에서 리턴 값으로 사용
     public AuthenticatedUser(User user) {
@@ -24,6 +29,14 @@ public class AuthenticatedUser implements UserDetails, OAuth2User {
     public AuthenticatedUser(User user, Map<String, Object> attributes) {
         this.user = user;
         this.attributes = attributes;
+    }
+
+    // OidcUserService에서 리턴 값으로 사용
+    public AuthenticatedUser(User user, Map<String, Object> attributes, OidcIdToken idToken, OidcUserInfo userInfo) {
+        this.user = user;
+        this.attributes = attributes;
+        this.idToken = idToken;
+        this.userInfo = userInfo;
     }
 
     // User 객체를 반환하는 메서드
@@ -84,5 +97,21 @@ public class AuthenticatedUser implements UserDetails, OAuth2User {
     // 이 사용자가 OAuth2 사용자인지 확인하는 헬퍼 메서드
     public boolean isOAuth2User() {
         return attributes != null;
+    }
+
+    // OidcUser 인터페이스 구현 메서드
+    @Override
+    public Map<String, Object> getClaims() {
+        return this.attributes;
+    }
+
+    @Override
+    public OidcUserInfo getUserInfo() {
+        return this.userInfo;
+    }
+
+    @Override
+    public OidcIdToken getIdToken() {
+        return this.idToken;
     }
 }
