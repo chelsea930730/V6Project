@@ -32,9 +32,10 @@ import org.springframework.security.authentication.AuthenticationProvider;
 @EnableWebSecurity
 public class SecurityConfig {
     private final CustomOAuthUserService customOAuthUserService;
+    private final CustomOidcUserService customOidcUserService; // 추가
     private final AuthenticationFailureHandler authenticationFailureHandler;
-    private final org.springframework.security.oauth2.client.userinfo.OAuth2UserService<OAuth2UserRequest, OAuth2User> OAuth2UserService;
     private final AuthenticationUserDetails userDetailsService;
+
 
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
@@ -88,7 +89,10 @@ public class SecurityConfig {
             .oauth2Login(oauth2 -> oauth2
                 .loginPage("/user/login")
                 .successHandler(authenticationSuccessHandler())
-                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuthUserService))
+                .userInfoEndpoint(userInfo -> {
+                    userInfo.userService(customOAuthUserService);
+                    userInfo.oidcUserService(customOidcUserService); // OidcUserService 추가
+                })
             )
             .logout(logout -> logout
                 .logoutUrl("/user/logout")
