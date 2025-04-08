@@ -10,6 +10,9 @@ var lastSeenTimestamps = {};
 function connect() {
     var socket = new SockJS('/chat');
     stompClient = Stomp.over(socket);
+    
+    // 디버그 메시지 비활성화
+    stompClient.debug = null;
 
     // WebSocket 연결 시 사용자 이메일 설정
     stompClient.connect({}, function (frame) {
@@ -37,9 +40,36 @@ function connect() {
 
         // 개인 메시지 구독 (모든 사용자)
         stompClient.subscribe('/user/' + currentUserEmail + '/queue/messages', function(message) {
+            console.log('Received message:', message.body);
             var chatMessage = JSON.parse(message.body);
             showMessage(chatMessage);
         });
+        
+        // 채팅방 전체 메시지 구독 - 서버에 구현된 기능 사용
+        const urlParams = new URLSearchParams(window.location.search);
+        const chatPartner = urlParams.get('user') || (isAdmin ? "" : "admin@realestate.com");
+        
+        if (chatPartner) {
+            const roomId = getRoomId(currentUserEmail, chatPartner);
+            stompClient.subscribe('/topic/chat/' + roomId, function(message) {
+                var chatMessage = JSON.parse(message.body);
+                // 자신이 보낸 메시지가 아닌 경우에만 표시 (중복 방지)
+                if (chatMessage.sender !== currentUserEmail) {
+                    showMessage(chatMessage);
+                }
+            });
+        }
+        
+    }, function(error) {
+        // 연결 실패 처리
+        console.error('연결 실패:', error);
+        
+        // 최대 5회까지 자동 재연결 시도
+        setTimeout(function() {
+            if (!stompClient || !stompClient.connected) {
+                connect();
+            }
+        }, 3000);
     });
 
     // 이미 HTML input에서 이메일을 읽어온 경우
@@ -49,23 +79,20 @@ function connect() {
         console.log('Email from input:', currentUserEmail);
         isAdmin = (currentUserEmail === "admin@realestate.com");
     }
-
-    // URL에서 사용자 이메일 가져오기
-    const urlParams = new URLSearchParams(window.location.search);
-    const userEmail = urlParams.get('user');
-
-    if (userEmail) {
-        // 관리자가 특정 유저와 채팅하는 경우
-        console.log('Chatting with user:', userEmail);
-    }
 }
 
-// 개인 채팅방 구독
+// 채팅방 ID 생성 함수
+function getRoomId(user1, user2) {
+    // 두 사용자 이메일을 알파벳 순으로 정렬하여 일관된 roomId 생성
+    return [user1, user2].sort().join('_');
+}
+
+// 개인 채팅방 구독 함수
 function subscribeToPrivateChat() {
     // 일반 유저는 관리자와의 채팅방만 표시
     document.getElementById('chatRoomTitle').textContent = '관리자와의 채팅';
 
-    // 기존 채팅 내역 불러오기
+    // 기존 채팅 내역 다시 불러오기
     loadChatHistory("admin@realestate.com");
 }
 
@@ -96,11 +123,16 @@ function sendMessage() {
             sender: currentUserEmail,
             recipient: recipient,
             sentAt: new Date().toISOString(),
-            type: isUrl ? "url" : "text" // URL이면 타입을 url로 설정
+            type: isUrl ? "url" : "text", // URL이면 타입을 url로 설정
+            roomId: getRoomId(currentUserEmail, recipient) // 채팅방 ID 추가
         };
 
-        // WebSocket을 통해 메시지 전송
+        // 기본 개인 메시지 전송
         stompClient.send("/app/private-chat", {}, JSON.stringify(chatMessage));
+        
+        // 채팅방 전체 메시지 전송 - 서버에 구현된 기능 사용
+        stompClient.send("/app/chat-room/" + chatMessage.roomId, {}, JSON.stringify(chatMessage));
+        
         document.getElementById('message').value = '';
 
         // 메시지를 UI에 추가
@@ -110,9 +142,7 @@ function sendMessage() {
     }
 }
 
-// URL 메시지 전송 함수
 function sendUrlMessage(url) {
-    // 로컬호스트나 IP 주소도 허용하는 URL 체크
     if (!url.match(/^https?:\/\//i)) {
         url = "http://" + url;
     }
@@ -126,13 +156,16 @@ function sendUrlMessage(url) {
         sender: currentUserEmail,
         recipient: recipient,
         sentAt: new Date().toISOString(),
-        type: "url"
+        type: "url",
+        roomId: getRoomId(currentUserEmail, recipient) // 채팅방 ID 추가
     };
 
-    // WebSocket을 통해 메시지 전송
+    // 기본 개인 메시지 전송
     stompClient.send("/app/private-chat", {}, JSON.stringify(chatMessage));
+    
+    // 채팅방 전체 메시지 전송 - 서버에 구현된 기능 사용
+    stompClient.send("/app/chat-room/" + chatMessage.roomId, {}, JSON.stringify(chatMessage));
 
-    // 메시지를 UI에 추가
     showMessage(chatMessage);
 }
 
@@ -191,71 +224,123 @@ function startPrivateChat(userEmail) {
     window.location.href = `/mypage/chat.html?user=${userEmail}`;
 }
 
-// 엔터키로 메시지 전송
-document.getElementById('message').addEventListener('keypress', function (event) {
-    if (event.key === 'Enter') {
-        sendMessage();
-    }
-});
-
 // 채팅 기록 불러오기
 function loadChatHistory(partnerEmail) {
+    const messagesDiv = document.getElementById('messages');
+    messagesDiv.innerHTML = '<div class="loading-message">채팅 내역을 불러오는 중...</div>';
+    
     fetch(`/api/chat/history?partner=${partnerEmail}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('채팅 내역을 불러오는데 실패했습니다.');
+            }
+            return response.json();
+        })
         .then(messages => {
-            if (Array.isArray(messages)) {
+            messagesDiv.innerHTML = ''; // 로딩 메시지 제거
+            
+            if (Array.isArray(messages) && messages.length > 0) {
                 messages.forEach(chatMessage => {
                     showMessage(chatMessage);
                 });
+                console.log(`${messages.length}개의 채팅 내역을 불러왔습니다.`);
+            } else if (Array.isArray(messages) && messages.length === 0) {
+                messagesDiv.innerHTML = '<div class="no-messages">아직 대화 내역이 없습니다.</div>';
+                console.log('채팅 내역이 없습니다.');
             } else {
                 console.error("Expected an array but got:", messages);
+                messagesDiv.innerHTML = '<div class="error-message">채팅 내역을 불러오는데 문제가 발생했습니다.</div>';
             }
         })
-        .catch(error => console.error("Error fetching chat history:", error));
+        .catch(error => {
+            console.error("Error fetching chat history:", error);
+            messagesDiv.innerHTML = '<div class="error-message">채팅 내역을 불러오는데 실패했습니다.</div>';
+        });
 }
 
-// 페이지 로드 시 웹소켓 연결 및 이전 메시지 불러오기
+// URL 자동 감지 및 링크 변환 함수 (더 포괄적인 패턴)
+function autoDetectLinks(text) {
+    // 더 포괄적인 URL 패턴 (로컬호스트, IP 주소 포함)
+    const urlPattern = /(https?:\/\/(?:localhost|127\.0\.0\.1|[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::\d+)?(?:\/[^\s]*)?)/gi;
+
+    return text.replace(urlPattern, function(url) {
+        return `<a href="${url}" class="message-url" target="_blank">${url}</a>`;
+    });
+}
+
+// 연결 상태 확인 및 주기적 하트비트 추가
+let heartbeatInterval;
+let connectionStatus = false;
+
+function startHeartbeat() {
+    // 기존 인터벌 제거
+    clearInterval(heartbeatInterval);
+    
+    // 5초마다 연결 상태 확인
+    heartbeatInterval = setInterval(function() {
+        if (stompClient && stompClient.connected) {
+            connectionStatus = true;
+        } else {
+            connectionStatus = false;
+            console.warn('WebSocket 연결이 끊어졌습니다. 재연결 시도...');
+            connect(); // 재연결 시도
+            clearInterval(heartbeatInterval); // 재연결 시도 중 인터벌 중지
+        }
+    }, 5000);
+}
+
+// 페이지 가시성 변경 감지하여 연결 관리
+document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') {
+        // 페이지가 보이면 연결 확인
+        if (!connectionStatus) {
+            console.log('페이지가 보이는 상태로 변경되었습니다. 연결 확인...');
+            connect();
+        }
+    }
+});
+
+// 페이지 로드 시 이벤트 설정
 document.addEventListener("DOMContentLoaded", function () {
-    // 먼저 WebSocket 연결 설정
+    // WebSocket 연결 설정
     connect();
+    
+    // 하트비트 시작
+    startHeartbeat();
 
     // chat.html인지 chat-list.html인지 확인
     const isChatListPage = window.location.pathname.includes('chat-list.html');
     const isChatPage = window.location.pathname.includes('chat.html');
 
-    // 관리자인 경우 처리
-    if (currentUserEmail === "admin@realestate.com") {
-        if (isChatPage) {
-            // user-selection 영역 제거 (숨기기)
-            const userSelectionDiv = document.getElementById('user-selection');
-            if (userSelectionDiv) {
-                userSelectionDiv.style.display = 'none';
-            }
-
-            // URL에 user 파라미터가 있으면 특정 유저와의 채팅 로드
-            const urlParams = new URLSearchParams(window.location.search);
-            const userEmail = urlParams.get('user');
-
-            if (userEmail) {
-                document.getElementById('chatRoomTitle').textContent = `${userEmail}님과의 채팅`;
-                loadChatHistory(userEmail);
-
-                // 읽음 상태로 업데이트
-                unreadMessageCounts[userEmail] = 0;
+    // 채팅 페이지에서 초기 채팅 내역 로드
+    if (isChatPage) {
+        // 이메일 정보 확인
+        const emailInput = document.getElementById('currentUserEmail');
+        if (emailInput && emailInput.value) {
+            currentUserEmail = emailInput.value;
+            isAdmin = (currentUserEmail === "admin@realestate.com");
+            
+            if (isAdmin) {
+                // 관리자인 경우 URL에서 특정 유저와의 채팅 확인
+                const urlParams = new URLSearchParams(window.location.search);
+                const userEmail = urlParams.get('user');
+                
+                if (userEmail) {
+                    document.getElementById('chatRoomTitle').textContent = `${userEmail}님과의 채팅`;
+                    loadChatHistory(userEmail);
+                } else {
+                    // user 파라미터가 없으면 chat-list.html로 리다이렉트
+                    window.location.href = '/mypage/chat-list.html';
+                }
             } else {
-                // user 파라미터가 없으면 chat-list.html로 리다이렉트
-                window.location.href = '/mypage/chat-list.html';
+                // 일반 유저는 관리자와의 채팅만 로드
+                document.getElementById('chatRoomTitle').textContent = '관리자와의 채팅';
+                loadChatHistory("admin@realestate.com");
             }
         }
-        else if (isChatListPage) {
-            // chat-list.html 페이지에서만 사용자 선택 UI 표시
-            showUserSelection();
-        }
-    } else {
-        // 일반 유저는 관리자와의 채팅방으로 설정
-        if (isChatPage) {
-            document.getElementById('chatRoomTitle').textContent = '관리자와의 채팅';
-        }
+    } else if (isChatListPage && isAdmin) {
+        // 관리자의 채팅 목록 페이지인 경우
+        showUserSelection();
     }
 
     // URL 버튼 클릭 이벤트
@@ -308,37 +393,33 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // 스타일 직접 추가
-    const styleElement = document.createElement('style');
-    styleElement.textContent = `
-        .unread-chat {
-            background-color: #e6f2ff !important; /* 더 밝은 파란색 배경 */
-            border-left: 4px solid #0084ff !important; /* 페이스북 메신저 스타일 파란색 테두리 */
-        }
-
-        .unread-chat .user-email,
-        .unread-chat .last-message {
-            font-weight: bold !important;
-            color: #1c1e21 !important;
-        }
-
-        .unread-indicator {
-            display: none !important;
-        }
-        
-        .chat-user-item {
-            transition: all 0.2s ease;
-            border-left: 4px solid transparent;
-            margin-bottom: 8px;
-            padding: 12px;
+    // 추가 스타일 - 로딩 및 오류 메시지 스타일
+    const additionalStyles = document.createElement('style');
+    additionalStyles.textContent = `
+        .loading-message, .error-message, .no-messages {
+            text-align: center;
+            padding: 20px;
+            margin: 20px 0;
             border-radius: 8px;
         }
         
-        .chat-user-item:hover {
-            background-color: #f7f8fa !important;
+        .loading-message {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+        
+        .error-message {
+            background-color: #ffeeee;
+            color: #cc0000;
+        }
+        
+        .no-messages {
+            background-color: #f9f9f9;
+            color: #888;
+            font-style: italic;
         }
     `;
-    document.head.appendChild(styleElement);
+    document.head.appendChild(additionalStyles);
 });
 
 // 관리자가 채팅 버튼 클릭 시 chat-list.html로 이동
@@ -584,13 +665,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-// URL 자동 감지 및 링크 변환 함수 (더 포괄적인 패턴)
-function autoDetectLinks(text) {
-    // 더 포괄적인 URL 패턴 (로컬호스트, IP 주소 포함)
-    const urlPattern = /(https?:\/\/(?:localhost|127\.0\.0\.1|[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::\d+)?(?:\/[^\s]*)?)/gi;
-
-    return text.replace(urlPattern, function(url) {
-        return `<a href="${url}" class="message-url" target="_blank">${url}</a>`;
-    });
-}

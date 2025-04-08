@@ -3,6 +3,7 @@ package com.realestate.app.chat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 
 import java.security.Principal;
 import java.util.List;
@@ -110,5 +112,12 @@ public class ChatController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @MessageMapping("/chat-room/{roomId}")
+    @SendTo("/topic/chat/{roomId}")
+    public ChatMessage sendToRoom(@DestinationVariable String roomId, ChatMessage message) {
+        // 필요한 처리 (메시지 저장 등)
+        return message;
     }
 }
